@@ -49,7 +49,7 @@ class Building(ByteHandler):
         self.old_overlap_id = self.read_int_16()
         self.tech_id = self.read_int_16()
         self.can_burn = self.read_int_8()
-        self.annexes = self.read_building_annex_array(4)
+        self.annexes = self.read_class_array(BuildingAnnex, 4)
         self.head_unit = self.read_int_16()
         self.transform_unit = self.read_int_16()
         self.transform_sound = self.read_int_16()
@@ -61,11 +61,3 @@ class Building(ByteHandler):
         self.garrison_repair_rate = self.read_float()
         self.pile_unit = self.read_int_16()
         self.looting_table = self.read_int_8_array(6)
-
-    def read_building_annex_array(self, size: int) -> list[BuildingAnnex]:
-        elements = []
-        for i in range(size):
-            building_annex = BuildingAnnex(self.content[self.offset:])
-            elements.append(building_annex)
-            self.offset += building_annex.offset
-        return elements

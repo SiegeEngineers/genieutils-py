@@ -35,9 +35,9 @@ class Type50(ByteHandler):
         super().__init__(content)
         self.base_armor = self.read_int_16()
         self.attack_count = self.read_int_16()
-        self.attacks = self.read_attack_or_armor_array(self.attack_count)
+        self.attacks = self.read_class_array(AttackOrArmor, self.attack_count)
         self.armour_count = self.read_int_16()
-        self.armours = self.read_attack_or_armor_array(self.armour_count)
+        self.armours = self.read_class_array(AttackOrArmor, self.armour_count)
         self.defense_terrain_bonus = self.read_int_16()
         self.bonus_damage_resistance = self.read_float()
         self.max_range = self.read_float()
@@ -57,11 +57,3 @@ class Type50(ByteHandler):
         self.displayed_range = self.read_float()
         self.displayed_reload_time = self.read_float()
         self.blast_damage = self.read_float()
-
-    def read_attack_or_armor_array(self, size: int) -> list[AttackOrArmor]:
-        elements = []
-        for i in range(size):
-            attack_or_armor = AttackOrArmor(self.content[self.offset:])
-            elements.append(attack_or_armor)
-            self.offset += attack_or_armor.offset
-        return elements

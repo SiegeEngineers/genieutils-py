@@ -28,7 +28,7 @@ class Tech(ByteHandler):
     def __init__(self, content: memoryview):
         super().__init__(content)
         self.required_techs = self.read_int_16_array(6)
-        self.resource_costs = self.read_research_resource_cost_array(3)
+        self.resource_costs = self.read_class_array(ResearchResourceCost, 3)
         self.required_tech_count = self.read_int_16()
         self.civ = self.read_int_16()
         self.full_tech_mode = self.read_int_16()
@@ -45,11 +45,3 @@ class Tech(ByteHandler):
         self.hot_key = self.read_int_32()
         self.name = self.read_debug_string()
         self.repeatable = self.read_int_8()
-
-    def read_research_resource_cost_array(self, size: int) -> list[ResearchResourceCost]:
-        elements = []
-        for i in range(size):
-            research_resource_cost = ResearchResourceCost(self.content[self.offset:])
-            elements.append(research_resource_cost)
-            self.offset += research_resource_cost.offset
-        return elements

@@ -31,14 +31,9 @@ class TechTreeAge(ByteHandler):
         self.units = self.read_int_32_array(self.buildings_count)
         self.techs_count = self.read_int_8()
         self.techs = self.read_int_32_array(self.buildings_count)
-        self.common = self.read_common()
+        self.common = self.read_class(Common)
         self.num_building_levels = self.read_int_8()
         self.buildings_per_zone = self.read_int_8_array(10)
         self.group_length_per_zone = self.read_int_8_array(10)
         self.max_age_length = self.read_int_8()
         self.line_mode = self.read_int_32()
-
-    def read_common(self) -> Common:
-        common = Common(self.content[self.offset:])
-        self.offset += common.offset
-        return common

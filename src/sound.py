@@ -20,12 +20,4 @@ class Sound(ByteHandler):
         self.items_size = self.read_int_16()
         self.cache_time = self.read_int_32()
         self.total_probability = self.read_int_16()
-        self.items = self.read_sound_items_array(self.items_size)
-
-    def read_sound_items_array(self, size: int) -> list[SoundItem]:
-        elements = []
-        for i in range(size):
-            sound_item = SoundItem(self.content[self.offset:])
-            elements.append(sound_item)
-            self.offset += sound_item.offset
-        return elements
+        self.items = self.read_class_array(SoundItem, self.items_size)

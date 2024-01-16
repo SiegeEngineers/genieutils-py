@@ -16,4 +16,3 @@ class TerrainPassGraphic(ByteHandler):
         self.enter_tile_sprite_id = self.read_int_32()
         self.walk_tile_sprite_id = self.read_int_32()
         self.walk_sprite_rate = self.read_int_32()
-

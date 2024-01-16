@@ -50,9 +50,9 @@ class TerrainBlock(ByteHandler):
         self.map_height = self.read_int_32()
         self.world_width = self.read_int_32()
         self.world_height = self.read_int_32()
-        self.tile_sizes = self.read_tile_size_array(TILE_TYPE_COUNT)
+        self.tile_sizes = self.read_class_array(TileSize, TILE_TYPE_COUNT)
         self.padding_ts = self.read_int_16()
-        self.terrains = self.read_terrain_array(TERRAIN_COUNT)
+        self.terrains = self.read_class_array(Terrain, TERRAIN_COUNT)
         self.map_min_x = self.read_float()
         self.map_min_y = self.read_float()
         self.map_max_x = self.read_float()
@@ -78,19 +78,3 @@ class TerrainBlock(ByteHandler):
         self.any_frame_change = self.read_int_8()
         self.map_visible_flag = self.read_int_8()
         self.fog_flag = self.read_int_8()
-
-    def read_tile_size_array(self, size: int) -> list[TileSize]:
-        elements = []
-        for i in range(size):
-            tile_size = TileSize(self.content[self.offset:])
-            elements.append(tile_size)
-            self.offset += tile_size.offset
-        return elements
-
-    def read_terrain_array(self, size: int) -> list[Terrain]:
-        elements = []
-        for i in range(size):
-            terrain = Terrain(self.content[self.offset:])
-            elements.append(terrain)
-            self.offset += terrain.offset
-        return elements

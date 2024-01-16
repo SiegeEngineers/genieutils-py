@@ -33,7 +33,7 @@ class Graphic(ByteHandler):
     deltas: list[GraphicDelta]
     angle_sounds: list[GraphicAngleSound]
 
-    def __init__(self, content: memoryview, pointers: list[int]):
+    def __init__(self, content: memoryview):
         super().__init__(content)
 
         self.name = self.read_debug_string()
@@ -59,22 +59,5 @@ class Graphic(ByteHandler):
         self.id = self.read_int_16()
         self.mirroring_mode = self.read_int_8()
         self.editor_flag = self.read_int_8()
-        self.deltas = self.read_graphic_deltas_array(self.delta_count)
-        self.angle_sounds = self.read_angle_sounds_array(self.angle_sounds_used, self.angle_count)
-
-    def read_graphic_deltas_array(self, size: int) -> list[GraphicDelta]:
-        elements = []
-        for i in range(size):
-            graphic_delta = GraphicDelta(self.content[self.offset:])
-            elements.append(graphic_delta)
-            self.offset += graphic_delta.offset
-        return elements
-
-    def read_angle_sounds_array(self, used: int, size: int) -> list[GraphicAngleSound]:
-        elements = []
-        if used:
-            for i in range(size):
-                graphic_delta = GraphicAngleSound(self.content[self.offset:])
-                elements.append(graphic_delta)
-                self.offset += graphic_delta.offset
-        return elements
+        self.deltas = self.read_class_array(GraphicDelta, self.delta_count)
+        self.angle_sounds = self.read_class_array(GraphicAngleSound, self.angle_count) if self.angle_sounds_used else []

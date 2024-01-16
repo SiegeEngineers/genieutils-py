@@ -35,7 +35,7 @@ class Creatable(ByteHandler):
 
     def __init__(self, content: memoryview):
         super().__init__(content)
-        self.resource_costs = self.read_resource_cost_array(3)
+        self.resource_costs = self.read_class_array(ResourceCost, 3)
         self.train_time = self.read_int_16()
         self.train_location_id = self.read_int_16()
         self.button_id = self.read_int_8()
@@ -61,11 +61,3 @@ class Creatable(ByteHandler):
         self.special_graphic = self.read_int_32()
         self.special_ability = self.read_int_8()
         self.displayed_pierce_armor = self.read_int_16()
-
-    def read_resource_cost_array(self, size: int) -> list[ResourceCost]:
-        elements = []
-        for i in range(size):
-            resource_cost = ResourceCost(self.content[self.offset:])
-            elements.append(resource_cost)
-            self.offset += resource_cost.offset
-        return elements

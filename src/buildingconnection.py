@@ -31,14 +31,9 @@ class BuildingConnection(ByteHandler):
         self.units = self.read_int_32_array(self.units_count)
         self.techs_count = self.read_int_8()
         self.techs = self.read_int_32_array(self.techs_count)
-        self.common = self.read_common()
+        self.common = self.read_class(Common)
         self.location_in_age = self.read_int_8()
         self.units_techs_total = self.read_int_8_array(5)
         self.units_techs_first = self.read_int_8_array(5)
         self.line_mode = self.read_int_32()
         self.enabling_research = self.read_int_32()
-
-    def read_common(self) -> Common:
-        common = Common(self.content[self.offset:])
-        self.offset += common.offset
-        return common

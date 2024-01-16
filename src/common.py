@@ -1,4 +1,5 @@
 from enum import IntEnum
+from typing import TypeVar
 
 from src.datatypes import Int, Float, String
 
@@ -18,6 +19,9 @@ class UnitType(IntEnum):
     Creatable = 70
     Building = 80
     AoeTrees = 90
+
+
+C = TypeVar('C')
 
 
 class ByteHandler:
@@ -76,4 +80,27 @@ class ByteHandler:
         elements = []
         for i in range(size):
             elements.append(self.read_float())
+        return elements
+
+    def read_class(self, class_: type[C]) -> C:
+        element = class_(self.content[self.offset:])
+        self.offset += element.offset
+        return element
+
+    def read_class_array(self, class_: type[C], size: int) -> list[C]:
+        elements = []
+        for i in range(size):
+            element = class_(self.content[self.offset:])
+            elements.append(element)
+            self.offset += element.offset
+        return elements
+
+    def read_class_array_with_pointers(self, class_: type[C], size: int, pointers: list[int]) -> list[C | None]:
+        elements = []
+        for i in range(size):
+            element = None
+            if pointers[i]:
+                element = class_(self.content[self.offset:])
+                self.offset += element.offset
+            elements.append(element)
         return elements

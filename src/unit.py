@@ -161,9 +161,9 @@ class Unit(ByteHandler):
         self.outline_size_z = self.read_float()
         self.scenario_triggers_1 = self.read_int_32()
         self.scenario_triggers_2 = self.read_int_32()
-        self.resource_storages = self.read_resource_storage_array(3)
+        self.resource_storages = self.read_class_array(ResourceStorage, 3)
         self.damage_graphic_size = self.read_int_8()
-        self.damage_graphics = self.read_damage_graphic_array(self.damage_graphic_size)
+        self.damage_graphics = self.read_class_array(DamageGraphic, self.damage_graphic_size)
         self.selection_sound = self.read_int_16()
         self.dying_sound = self.read_int_16()
         self.wwise_train_sound_id = self.read_int_32()
@@ -182,60 +182,14 @@ class Unit(ByteHandler):
         else:
             return
         if self.type >= UnitType.DeadFish:
-            self.dead_fish = self.read_dead_fish()
+            self.dead_fish = self.read_class(DeadFish)
         if self.type >= UnitType.Bird:
-            self.bird = self.read_bird()
+            self.bird = self.read_class(Bird)
         if self.type >= UnitType.Combatant:
-            self.type_50 = self.read_type_50()
+            self.type_50 = self.read_class(Type50)
         if self.type == UnitType.Projectile:
-            self.projectile = self.read_projectile()
+            self.projectile = self.read_class(Projectile)
         if self.type >= UnitType.Creatable:
-            self.creatable = self.read_creatable()
+            self.creatable = self.read_class(Creatable)
         if self.type == UnitType.Building:
-            self.building = self.read_building()
-
-    def read_resource_storage_array(self, size: int) -> list[ResourceStorage]:
-        elements = []
-        for i in range(size):
-            resource_storage = ResourceStorage(self.content[self.offset:])
-            elements.append(resource_storage)
-            self.offset += resource_storage.offset
-        return elements
-
-    def read_damage_graphic_array(self, size: int) -> list[DamageGraphic]:
-        elements = []
-        for i in range(size):
-            damage_graphic = DamageGraphic(self.content[self.offset:])
-            elements.append(damage_graphic)
-            self.offset += damage_graphic.offset
-        return elements
-
-    def read_dead_fish(self) -> DeadFish:
-        dead_fish = DeadFish(self.content[self.offset:])
-        self.offset += dead_fish.offset
-        return dead_fish
-
-    def read_bird(self) -> Bird:
-        bird = Bird(self.content[self.offset:])
-        self.offset += bird.offset
-        return bird
-
-    def read_type_50(self) -> Type50:
-        type_50 = Type50(self.content[self.offset:])
-        self.offset += type_50.offset
-        return type_50
-
-    def read_projectile(self) -> Projectile:
-        projectile = Projectile(self.content[self.offset:])
-        self.offset += projectile.offset
-        return projectile
-
-    def read_creatable(self) -> Creatable:
-        creatable = Creatable(self.content[self.offset:])
-        self.offset += creatable.offset
-        return creatable
-
-    def read_building(self) -> Building:
-        building = Building(self.content[self.offset:])
-        self.offset += building.offset
-        return building
+            self.building = self.read_class(Building)

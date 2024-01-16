@@ -15,7 +15,7 @@ class Civ(ByteHandler):
     icon_set: int
     units_size: int
     unit_pointers: list[int]
-    units: list[Unit|None]
+    units: list[Unit | None]
 
     def __init__(self, content: memoryview):
         super().__init__(content)
@@ -28,14 +28,4 @@ class Civ(ByteHandler):
         self.icon_set = self.read_int_8()
         self.units_size = self.read_int_16()
         self.unit_pointers = self.read_int_32_array(self.units_size)
-        self.units = self.read_unit_array(self.units_size, self.unit_pointers)
-
-    def read_unit_array(self, size: int, pointers: list[int]) -> list[Unit]:
-        elements = []
-        for i in range(size):
-            unit = None
-            if pointers[i]:
-                unit = Unit(self.content[self.offset:])
-                self.offset += unit.offset
-            elements.append(unit)
-        return elements
+        self.units = self.read_class_array_with_pointers(Unit, self.units_size, self.unit_pointers)

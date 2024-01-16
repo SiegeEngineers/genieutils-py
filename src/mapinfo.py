@@ -46,45 +46,13 @@ class MapInfo(ByteHandler):
         self.unused_id = self.read_int_32()
         self.map_lands_size = self.read_int_32(signed=False)
         self.map_lands_ptr = self.read_int_32()
-        self.map_lands = self.read_map_lands_array(self.map_lands_size)
+        self.map_lands = self.read_class_array(MapLand, self.map_lands_size)
         self.map_terrains_size = self.read_int_32(signed=False)
         self.map_terrains_ptr = self.read_int_32()
-        self.map_terrains = self.read_map_terrains_array(self.map_terrains_size)
+        self.map_terrains = self.read_class_array(MapTerrain, self.map_terrains_size)
         self.map_units_size = self.read_int_32(signed=False)
         self.map_units_ptr = self.read_int_32()
-        self.map_units = self.read_map_units_array(self.map_units_size)
+        self.map_units = self.read_class_array(MapUnit, self.map_units_size)
         self.map_elevations_size = self.read_int_32(signed=False)
         self.map_elevations_ptr = self.read_int_32()
-        self.map_elevations = self.read_map_elevations_array(self.map_elevations_size)
-
-    def read_map_lands_array(self, size: int) -> list[MapLand]:
-        elements = []
-        for i in range(size):
-            map_land = MapLand(self.content[self.offset:])
-            elements.append(map_land)
-            self.offset += map_land.offset
-        return elements
-
-    def read_map_terrains_array(self, size: int) -> list[MapTerrain]:
-        elements = []
-        for i in range(size):
-            map_terrain = MapTerrain(self.content[self.offset:])
-            elements.append(map_terrain)
-            self.offset += map_terrain.offset
-        return elements
-
-    def read_map_units_array(self, size: int) -> list[MapUnit]:
-        elements = []
-        for i in range(size):
-            map_unit = MapUnit(self.content[self.offset:])
-            elements.append(map_unit)
-            self.offset += map_unit.offset
-        return elements
-
-    def read_map_elevations_array(self, size: int) -> list[MapElevation]:
-        elements = []
-        for i in range(size):
-            map_elevation = MapElevation(self.content[self.offset:])
-            elements.append(map_elevation)
-            self.offset += map_elevation.offset
-        return elements
+        self.map_elevations = self.read_class_array(MapElevation, self.map_elevations_size)

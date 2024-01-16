@@ -15,12 +15,4 @@ class UnitHeaders(ByteHandler):
         self.exists = self.read_int_8()
         if self.exists:
             self.task_count = self.read_int_16()
-            self.task_list = self.read_task_array(self.task_count)
-
-    def read_task_array(self, size: int) -> list[Task]:
-        elements = []
-        for i in range(size):
-            task = Task(self.content[self.offset:])
-            elements.append(task)
-            self.offset += task.offset
-        return elements
+            self.task_list = self.read_class_array(Task, self.task_count)

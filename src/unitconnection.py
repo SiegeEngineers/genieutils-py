@@ -23,7 +23,7 @@ class UnitConnection(ByteHandler):
         self.id = self.read_int_32()
         self.status = self.read_int_8()
         self.upper_building = self.read_int_32()
-        self.common = self.read_common()
+        self.common = self.read_class(Common)
         self.vertical_line = self.read_int_32()
         self.units_count = self.read_int_8()
         self.units = self.read_int_32_array(self.units_count)
@@ -31,8 +31,3 @@ class UnitConnection(ByteHandler):
         self.required_research = self.read_int_32()
         self.line_mode = self.read_int_32()
         self.enabling_research = self.read_int_32()
-
-    def read_common(self) -> Common:
-        common = Common(self.content[self.offset:])
-        self.offset += common.offset
-        return common

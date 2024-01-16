@@ -76,7 +76,7 @@ class Terrain(ByteHandler):
         self.animate_last = self.read_float()
         self.frame_changed = self.read_int_8()
         self.drawn = self.read_int_8()
-        self.frame_data = self.read_frame_data_array(TILE_TYPE_COUNT)
+        self.frame_data = self.read_class_array(FrameData, TILE_TYPE_COUNT)
         self.terrain_to_draw = self.read_int_16()
         self.terrain_dimensions = self.read_int_16_array(2)
         self.terrain_unit_masked_density = self.read_int_16_array(TERRAIN_UNITS_SIZE)
@@ -85,11 +85,3 @@ class Terrain(ByteHandler):
         self.terrain_unit_centering = self.read_int_8_array(TERRAIN_UNITS_SIZE)
         self.number_of_terrain_units_used = self.read_int_16()
         self.phantom = self.read_int_16()
-
-    def read_frame_data_array(self, size: int) -> list[FrameData]:
-        elements = []
-        for i in range(size):
-            frame_data = FrameData(self.content[self.offset:])
-            elements.append(frame_data)
-            self.offset += frame_data.offset
-        return elements
