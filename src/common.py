@@ -1,8 +1,24 @@
+from enum import IntEnum
+
 from src.datatypes import Int, Float, String
 
 TILE_TYPE_COUNT = 19
 TERRAIN_COUNT = 200
 TERRAIN_UNITS_SIZE = 30
+
+
+class UnitType(IntEnum):
+    EyeCandy = 10
+    Trees = 15
+    Flag = 20
+    DeadFish = 30
+    Bird = 40
+    Combatant = 50
+    Projectile = 60
+    Creatable = 70
+    Building = 80
+    AoeTrees = 90
+
 
 class ByteHandler:
     def __init__(self, content: memoryview):
@@ -17,6 +33,8 @@ class ByteHandler:
 
     def read_debug_string(self) -> str:
         tmp_size = self.read_int_16(signed=False)
+        if tmp_size != 0x0A60:
+            pass
         assert tmp_size == 0x0A60
         size = self.read_int_16(signed=False)
         return String.from_bytes(self.consume_range(size))

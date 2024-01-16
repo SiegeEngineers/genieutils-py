@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from src.civ import Civ
 from src.common import ByteHandler
 from src.effect import Effect
 from src.graphic import Graphic
@@ -8,6 +9,7 @@ from src.randommaps import RandomMaps
 from src.sound import Sound
 from src.terrainblock import TerrainBlock
 from src.terrainrestriction import TerrainRestriction
+from src.unitheaders import UnitHeaders
 
 
 @dataclass
@@ -29,10 +31,10 @@ class DatFile(ByteHandler):
     random_maps: RandomMaps
     effects_size: int
     effects: list[Effect]
-    # unit_headers_size: int
-    # unit_headers: list[UnitHeader]
-    # civs_size: int
-    # civs: list[Civ]
+    unit_headers_size: int
+    unit_headers: list[UnitHeaders]
+    civs_size: int
+    civs: list[Civ]
     # techs_size: int
     # techs: list[Tech]
     # time_slice: int
@@ -63,10 +65,10 @@ class DatFile(ByteHandler):
         self.random_maps = self.read_random_maps()
         self.effects_size = self.read_int_32()
         self.effects = self.read_effects_array(self.effects_size)
-        # self.unit_headers_size = self.read_int_32()
-        # self.unit_headers = self.read_unit_headers_array(self.unit_headers_size)
-        # self.civs_size = self.read_int_16()
-        # self.civs = self.read_civ_array(self.civs_size)
+        self.unit_headers_size = self.read_int_32()
+        self.unit_headers = self.read_unit_headers_array(self.unit_headers_size)
+        self.civs_size = self.read_int_16()
+        self.civs = self.read_civ_array(self.civs_size)
         # self.techs_size = self.read_int_16()
         # self.techs = self.read_tech_array(self.techs_size)
         # self.time_slice = self.read_int_32()
@@ -130,22 +132,22 @@ class DatFile(ByteHandler):
             self.offset += effect.offset
         return elements
 
-    # def read_unit_headers_array(self, size: int) -> list[UnitHeaders]:
-    #     elements = []
-    #     for i in range(size):
-    #         unit_headers = UnitHeaders(self.content[self.offset:])
-    #         elements.append(unit_headers)
-    #         self.offset += unit_headers.offset
-    #     return elements
-    #
-    # def read_civ_array(self, size: int) -> list[Civ]:
-    #     elements = []
-    #     for i in range(size):
-    #         civ = Civ(self.content[self.offset:])
-    #         elements.append(civ)
-    #         self.offset += civ.offset
-    #     return elements
-    #
+    def read_unit_headers_array(self, size: int) -> list[UnitHeaders]:
+        elements = []
+        for i in range(size):
+            unit_headers = UnitHeaders(self.content[self.offset:])
+            elements.append(unit_headers)
+            self.offset += unit_headers.offset
+        return elements
+
+    def read_civ_array(self, size: int) -> list[Civ]:
+        elements = []
+        for i in range(size):
+            civ = Civ(self.content[self.offset:])
+            elements.append(civ)
+            self.offset += civ.offset
+        return elements
+
     # def read_tech_array(self, size: int) -> list[Tech]:
     #     elements = []
     #     for i in range(size):

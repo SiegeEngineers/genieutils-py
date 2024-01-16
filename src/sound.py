@@ -2,8 +2,6 @@ from dataclasses import dataclass
 
 from src.common import ByteHandler
 from src.sounditem import SoundItem
-from src.terrainpassgraphic import TerrainPassGraphic
-
 
 
 @dataclass

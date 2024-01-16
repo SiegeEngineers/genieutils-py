@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from src.common import ByteHandler
 from src.graphicanglesound import GraphicAngleSound
 from src.graphicdelta import GraphicDelta
-from src.terrainpassgraphic import TerrainPassGraphic
 
 
 @dataclass

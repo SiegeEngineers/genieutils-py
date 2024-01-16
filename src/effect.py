@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from src.common import ByteHandler
 from src.effectcommand import EffectCommand
-from src.mapinfo import MapInfo
 
 
 @dataclass
