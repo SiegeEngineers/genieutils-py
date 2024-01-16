@@ -7,6 +7,8 @@ from src.graphic import Graphic
 from src.playercolour import PlayerColour
 from src.randommaps import RandomMaps
 from src.sound import Sound
+from src.tech import Tech
+from src.techtree import TechTree
 from src.terrainblock import TerrainBlock
 from src.terrainrestriction import TerrainRestriction
 from src.unitheaders import UnitHeaders
@@ -35,16 +37,16 @@ class DatFile(ByteHandler):
     unit_headers: list[UnitHeaders]
     civs_size: int
     civs: list[Civ]
-    # techs_size: int
-    # techs: list[Tech]
-    # time_slice: int
-    # unit_kill_rate: int
-    # unit_kill_total: int
-    # unit_hit_point_rate: int
-    # unit_hit_point_total: int
-    # razing_kill_rate: int
-    # razing_kill_total: int
-    # tech_tree: TechTree
+    techs_size: int
+    techs: list[Tech]
+    time_slice: int
+    unit_kill_rate: int
+    unit_kill_total: int
+    unit_hit_point_rate: int
+    unit_hit_point_total: int
+    razing_kill_rate: int
+    razing_kill_total: int
+    tech_tree: TechTree
 
     def __init__(self, content: memoryview):
         super().__init__(content)
@@ -69,16 +71,16 @@ class DatFile(ByteHandler):
         self.unit_headers = self.read_unit_headers_array(self.unit_headers_size)
         self.civs_size = self.read_int_16()
         self.civs = self.read_civ_array(self.civs_size)
-        # self.techs_size = self.read_int_16()
-        # self.techs = self.read_tech_array(self.techs_size)
-        # self.time_slice = self.read_int_32()
-        # self.unit_kill_rate = self.read_int_32()
-        # self.unit_kill_total = self.read_int_32()
-        # self.unit_hit_point_rate = self.read_int_32()
-        # self.unit_hit_point_total = self.read_int_32()
-        # self.razing_kill_rate = self.read_int_32()
-        # self.razing_kill_total = self.read_int_32()
-        # self.tech_tree = self.read_tech_tree()
+        self.techs_size = self.read_int_16()
+        self.techs = self.read_tech_array(self.techs_size)
+        self.time_slice = self.read_int_32()
+        self.unit_kill_rate = self.read_int_32()
+        self.unit_kill_total = self.read_int_32()
+        self.unit_hit_point_rate = self.read_int_32()
+        self.unit_hit_point_total = self.read_int_32()
+        self.razing_kill_rate = self.read_int_32()
+        self.razing_kill_total = self.read_int_32()
+        self.tech_tree = self.read_tech_tree()
 
     def read_terrain_restriction_array(self, size: int) -> list[TerrainRestriction]:
         elements = []
@@ -148,15 +150,15 @@ class DatFile(ByteHandler):
             self.offset += civ.offset
         return elements
 
-    # def read_tech_array(self, size: int) -> list[Tech]:
-    #     elements = []
-    #     for i in range(size):
-    #         tech = Tech(self.content[self.offset:])
-    #         elements.append(tech)
-    #         self.offset += tech.offset
-    #     return elements
-    #
-    # def read_tech_tree(self) -> TechTree:
-    #     random_maps = TechTree(self.content[self.offset:])
-    #     self.offset += random_maps.offset
-    #     return random_maps
+    def read_tech_array(self, size: int) -> list[Tech]:
+        elements = []
+        for i in range(size):
+            tech = Tech(self.content[self.offset:])
+            elements.append(tech)
+            self.offset += tech.offset
+        return elements
+
+    def read_tech_tree(self) -> TechTree:
+        tech_tree = TechTree(self.content[self.offset:])
+        self.offset += tech_tree.offset
+        return tech_tree
