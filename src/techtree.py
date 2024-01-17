@@ -17,6 +17,13 @@ class Common(GenieClass):
             mode=content.read_int_32_array(10),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.slots_used),
+            self.write_int_32_array(self.unit_research),
+            self.write_int_32_array(self.mode),
+        ])
+
 
 @dataclass
 class TechTreeAge(GenieClass):
@@ -37,7 +44,7 @@ class TechTreeAge(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'TechTreeAge':
-        id = content.read_int_32()
+        id_ = content.read_int_32()
         status = content.read_int_8()
         buildings_count = content.read_int_8()
         buildings = content.read_int_32_array(buildings_count)
@@ -52,7 +59,7 @@ class TechTreeAge(GenieClass):
         max_age_length = content.read_int_8()
         line_mode = content.read_int_32()
         return cls(
-            id=id,
+            id=id_,
             status=status,
             buildings_count=buildings_count,
             buildings=buildings,
@@ -67,6 +74,24 @@ class TechTreeAge(GenieClass):
             max_age_length=max_age_length,
             line_mode=line_mode,
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.id),
+            self.write_int_8(self.status),
+            self.write_int_8(self.buildings_count),
+            self.write_int_32_array(self.buildings),
+            self.write_int_8(self.units_count),
+            self.write_int_32_array(self.units),
+            self.write_int_8(self.techs_count),
+            self.write_int_32_array(self.techs),
+            self.write_class(self.common),
+            self.write_int_8(self.num_building_levels),
+            self.write_int_8_array(self.buildings_per_zone),
+            self.write_int_8_array(self.group_length_per_zone),
+            self.write_int_8(self.max_age_length),
+            self.write_int_32(self.line_mode),
+        ])
 
 
 @dataclass
@@ -88,7 +113,7 @@ class BuildingConnection(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'BuildingConnection':
-        id = content.read_int_32()
+        id_ = content.read_int_32()
         status = content.read_int_8()
         buildings_count = content.read_int_8()
         buildings = content.read_int_32_array(buildings_count)
@@ -103,7 +128,7 @@ class BuildingConnection(GenieClass):
         line_mode = content.read_int_32()
         enabling_research = content.read_int_32()
         return cls(
-            id=id,
+            id=id_,
             status=status,
             buildings_count=buildings_count,
             buildings=buildings,
@@ -118,6 +143,24 @@ class BuildingConnection(GenieClass):
             line_mode=line_mode,
             enabling_research=enabling_research,
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.id),
+            self.write_int_8(self.status),
+            self.write_int_8(self.buildings_count),
+            self.write_int_32_array(self.buildings),
+            self.write_int_8(self.units_count),
+            self.write_int_32_array(self.units),
+            self.write_int_8(self.techs_count),
+            self.write_int_32_array(self.techs),
+            self.write_class(self.common),
+            self.write_int_8(self.location_in_age),
+            self.write_int_8_array(self.units_techs_total),
+            self.write_int_8_array(self.units_techs_first),
+            self.write_int_32(self.line_mode),
+            self.write_int_32(self.enabling_research),
+        ])
 
 
 @dataclass
@@ -136,7 +179,7 @@ class UnitConnection(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'UnitConnection':
-        id = content.read_int_32()
+        id_ = content.read_int_32()
         status = content.read_int_8()
         upper_building = content.read_int_32()
         common = content.read_class(Common)
@@ -148,7 +191,7 @@ class UnitConnection(GenieClass):
         line_mode = content.read_int_32()
         enabling_research = content.read_int_32()
         return cls(
-            id=id,
+            id=id_,
             status=status,
             upper_building=upper_building,
             common=common,
@@ -160,6 +203,21 @@ class UnitConnection(GenieClass):
             line_mode=line_mode,
             enabling_research=enabling_research,
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.id),
+            self.write_int_8(self.status),
+            self.write_int_32(self.upper_building),
+            self.write_class(self.common),
+            self.write_int_32(self.vertical_line),
+            self.write_int_8(self.units_count),
+            self.write_int_32_array(self.units),
+            self.write_int_32(self.location_in_age),
+            self.write_int_32(self.required_research),
+            self.write_int_32(self.line_mode),
+            self.write_int_32(self.enabling_research),
+        ])
 
 
 @dataclass
@@ -209,6 +267,23 @@ class ResearchConnection(GenieClass):
             line_mode=line_mode,
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.id),
+            self.write_int_8(self.status),
+            self.write_int_32(self.upper_building),
+            self.write_int_8(self.buildings_count),
+            self.write_int_32_array(self.buildings),
+            self.write_int_8(self.units_count),
+            self.write_int_32_array(self.units),
+            self.write_int_8(self.techs_count),
+            self.write_int_32_array(self.techs),
+            self.write_class(self.common),
+            self.write_int_32(self.vertical_line),
+            self.write_int_32(self.location_in_age),
+            self.write_int_32(self.line_mode),
+        ])
+
 
 @dataclass
 class TechTree(GenieClass):
@@ -244,3 +319,16 @@ class TechTree(GenieClass):
             unit_connections=unit_connections,
             research_connections=research_connections,
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_8(self.age_count),
+            self.write_int_8(self.building_count),
+            self.write_int_8(self.unit_count),
+            self.write_int_8(self.research_count),
+            self.write_int_32(self.total_unit_tech_groups),
+            self.write_class_array(self.tech_tree_ages),
+            self.write_class_array(self.building_connections),
+            self.write_class_array(self.unit_connections),
+            self.write_class_array(self.research_connections),
+        ])

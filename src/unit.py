@@ -18,6 +18,13 @@ class ResourceStorage(GenieClass):
             flag=content.read_int_8(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.type),
+            self.write_float(self.amount),
+            self.write_int_8(self.flag),
+        ])
+
 
 @dataclass
 class DamageGraphic(GenieClass):
@@ -32,6 +39,13 @@ class DamageGraphic(GenieClass):
             damage_percent=content.read_int_16(),
             apply_mode=content.read_int_8(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.graphic_id),
+            self.write_int_16(self.damage_percent),
+            self.write_int_8(self.apply_mode),
+        ])
 
 
 @dataclass
@@ -69,6 +83,24 @@ class DeadFish(GenieClass):
             max_yaw_per_second_stationary=content.read_float(),
             min_collision_size_multiplier=content.read_float(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.walking_graphic),
+            self.write_int_16(self.running_graphic),
+            self.write_float(self.rotation_speed),
+            self.write_int_8(self.old_size_class),
+            self.write_int_16(self.tracking_unit),
+            self.write_int_8(self.tracking_unit_mode),
+            self.write_float(self.tracking_unit_density),
+            self.write_int_8(self.old_move_algorithm),
+            self.write_float(self.turn_radius),
+            self.write_float(self.turn_radius_speed),
+            self.write_float(self.max_yaw_per_second_moving),
+            self.write_float(self.stationary_yaw_revolution_time),
+            self.write_float(self.max_yaw_per_second_stationary),
+            self.write_float(self.min_collision_size_multiplier),
+        ])
 
 
 @dataclass
@@ -115,6 +147,22 @@ class Bird(GenieClass):
             tasks=tasks,
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.default_task_id),
+            self.write_float(self.search_radius),
+            self.write_float(self.work_rate),
+            self.write_int_16_array(self.drop_sites),
+            self.write_int_8(self.task_swap_group),
+            self.write_int_16(self.attack_sound),
+            self.write_int_16(self.move_sound),
+            self.write_int_32(self.wwise_attack_sound_id),
+            self.write_int_32(self.wwise_move_sound_id),
+            self.write_int_8(self.run_pattern),
+            self.write_int_16(self.task_size),
+            self.write_class_array(self.tasks),
+        ])
+
 
 @dataclass
 class AttackOrArmor(GenieClass):
@@ -127,6 +175,12 @@ class AttackOrArmor(GenieClass):
             class_=content.read_int_16(),
             amount=content.read_int_16(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.class_),
+            self.write_int_16(self.amount),
+        ])
 
 
 @dataclass
@@ -209,6 +263,34 @@ class Type50(GenieClass):
             blast_damage=blast_damage,
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.base_armor),
+            self.write_int_16(self.attack_count),
+            self.write_class_array(self.attacks),
+            self.write_int_16(self.armour_count),
+            self.write_class_array(self.armours),
+            self.write_int_16(self.defense_terrain_bonus),
+            self.write_float(self.bonus_damage_resistance),
+            self.write_float(self.max_range),
+            self.write_float(self.blast_width),
+            self.write_float(self.reload_time),
+            self.write_int_16(self.projectile_unit_id),
+            self.write_int_16(self.accuracy_percent),
+            self.write_int_8(self.break_off_combat),
+            self.write_int_16(self.frame_delay),
+            self.write_float_array(self.graphic_displacement),
+            self.write_int_8(self.blast_attack_level),
+            self.write_float(self.min_range),
+            self.write_float(self.accuracy_dispersion),
+            self.write_int_16(self.attack_graphic),
+            self.write_int_16(self.displayed_melee_armour),
+            self.write_int_16(self.displayed_attack),
+            self.write_float(self.displayed_range),
+            self.write_float(self.displayed_reload_time),
+            self.write_float(self.blast_damage),
+        ])
+
 
 @dataclass
 class Projectile(GenieClass):
@@ -230,6 +312,16 @@ class Projectile(GenieClass):
             projectile_arc=content.read_float(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_8(self.projectile_type),
+            self.write_int_8(self.smart_mode),
+            self.write_int_8(self.hit_mode),
+            self.write_int_8(self.vanish_mode),
+            self.write_int_8(self.area_effect_specials),
+            self.write_float(self.projectile_arc),
+        ])
+
 
 @dataclass
 class ResourceCost(GenieClass):
@@ -244,6 +336,13 @@ class ResourceCost(GenieClass):
             amount=content.read_int_16(),
             flag=content.read_int_16(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.type),
+            self.write_int_16(self.amount),
+            self.write_int_16(self.flag),
+        ])
 
 
 @dataclass
@@ -306,6 +405,36 @@ class Creatable(GenieClass):
             displayed_pierce_armor=content.read_int_16(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_class_array(self.resource_costs),
+            self.write_int_16(self.train_time),
+            self.write_int_16(self.train_location_id),
+            self.write_int_8(self.button_id),
+            self.write_float(self.rear_attack_modifier),
+            self.write_float(self.flank_attack_modifier),
+            self.write_int_8(self.creatable_type),
+            self.write_int_8(self.hero_mode),
+            self.write_int_32(self.garrison_graphic),
+            self.write_int_16(self.spawning_graphic),
+            self.write_int_16(self.upgrade_graphic),
+            self.write_int_16(self.hero_glow_graphic),
+            self.write_float(self.max_charge),
+            self.write_float(self.recharge_rate),
+            self.write_int_16(self.charge_event),
+            self.write_int_16(self.charge_type),
+            self.write_float(self.min_conversion_time_mod),
+            self.write_float(self.max_conversion_time_mod),
+            self.write_float(self.conversion_chance_mod),
+            self.write_float(self.total_projectiles),
+            self.write_int_8(self.max_total_projectiles),
+            self.write_float_array(self.projectile_spawning_area),
+            self.write_int_32(self.secondary_projectile_unit),
+            self.write_int_32(self.special_graphic),
+            self.write_int_8(self.special_ability),
+            self.write_int_16(self.displayed_pierce_armor),
+        ])
+
 
 @dataclass
 class BuildingAnnex(GenieClass):
@@ -320,6 +449,13 @@ class BuildingAnnex(GenieClass):
             misplacement_x=content.read_float(),
             misplacement_y=content.read_float(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.unit_id),
+            self.write_float(self.misplacement_x),
+            self.write_float(self.misplacement_y),
+        ])
 
 
 @dataclass
@@ -381,6 +517,36 @@ class Building(GenieClass):
             pile_unit=content.read_int_16(),
             looting_table=content.read_int_8_array(6),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.construction_graphic_id),
+            self.write_int_16(self.snow_graphic_id),
+            self.write_int_16(self.destruction_graphic_id),
+            self.write_int_16(self.destruction_rubble_graphic_id),
+            self.write_int_16(self.researching_graphic),
+            self.write_int_16(self.research_completed_graphic),
+            self.write_int_8(self.adjacent_mode),
+            self.write_int_16(self.graphics_angle),
+            self.write_int_8(self.disappears_when_built),
+            self.write_int_16(self.stack_unit_id),
+            self.write_int_16(self.foundation_terrain_id),
+            self.write_int_16(self.old_overlap_id),
+            self.write_int_16(self.tech_id),
+            self.write_int_8(self.can_burn),
+            self.write_class_array(self.annexes),
+            self.write_int_16(self.head_unit),
+            self.write_int_16(self.transform_unit),
+            self.write_int_16(self.transform_sound),
+            self.write_int_16(self.construction_sound),
+            self.write_int_32(self.wwise_transform_sound_id),
+            self.write_int_32(self.wwise_construction_sound_id),
+            self.write_int_8(self.garrison_type),
+            self.write_float(self.garrison_heal_rate),
+            self.write_float(self.garrison_repair_rate),
+            self.write_int_16(self.pile_unit),
+            self.write_int_8_array(self.looting_table),
+        ])
 
 
 @dataclass
@@ -471,8 +637,8 @@ class Unit(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Unit':
-        type = content.read_int_8()
-        id = content.read_int_16()
+        type_ = content.read_int_8()
+        id_ = content.read_int_16()
         language_dll_name = content.read_int_32()
         language_dll_creation = content.read_int_32()
         class_ = content.read_int_16()
@@ -554,25 +720,25 @@ class Unit(GenieClass):
         projectile = None
         creatable = None
         building = None
-        if type != UnitType.AoeTrees:
-            if type >= UnitType.Flag:
+        if type_ != UnitType.AoeTrees:
+            if type_ >= UnitType.Flag:
                 speed = content.read_float()
-                if type >= UnitType.DeadFish:
+                if type_ >= UnitType.DeadFish:
                     dead_fish = content.read_class(DeadFish)
-                if type >= UnitType.Bird:
+                if type_ >= UnitType.Bird:
                     bird = content.read_class(Bird)
-                if type >= UnitType.Combatant:
+                if type_ >= UnitType.Combatant:
                     type_50 = content.read_class(Type50)
-                if type == UnitType.Projectile:
+                if type_ == UnitType.Projectile:
                     projectile = content.read_class(Projectile)
-                if type >= UnitType.Creatable:
+                if type_ >= UnitType.Creatable:
                     creatable = content.read_class(Creatable)
-                if type == UnitType.Building:
+                if type_ == UnitType.Building:
                     building = content.read_class(Building)
 
         return cls(
-            type=type,
-            id=id,
+            type=type_,
+            id=id_,
             language_dll_name=language_dll_name,
             language_dll_creation=language_dll_creation,
             class_=class_,
@@ -655,3 +821,112 @@ class Unit(GenieClass):
             creatable=creatable,
             building=building,
         )
+
+    def to_bytes(self) -> bytes:
+        speed = b''
+        dead_fish = b''
+        bird = b''
+        type_50 = b''
+        projectile = b''
+        creatable = b''
+        building = b''
+        if self.type != UnitType.AoeTrees:
+            if self.type >= UnitType.Flag:
+                speed = self.write_float(self.speed)
+                if self.type >= UnitType.DeadFish:
+                    dead_fish = self.write_class(self.dead_fish)
+                if self.type >= UnitType.Bird:
+                    bird = self.write_class(self.bird)
+                if self.type >= UnitType.Combatant:
+                    type_50 = self.write_class(self.type_50)
+                if self.type == UnitType.Projectile:
+                    projectile = self.write_class(self.projectile)
+                if self.type >= UnitType.Creatable:
+                    creatable = self.write_class(self.creatable)
+                if self.type == UnitType.Building:
+                    building = self.write_class(self.building)
+        return b''.join([
+            self.write_int_8(self.type),
+            self.write_int_16(self.id),
+            self.write_int_32(self.language_dll_name),
+            self.write_int_32(self.language_dll_creation),
+            self.write_int_16(self.class_),
+            self.write_int_16_array(self.standing_graphic),
+            self.write_int_16(self.dying_graphic),
+            self.write_int_16(self.undead_graphic),
+            self.write_int_8(self.undead_mode),
+            self.write_int_16(self.hit_points),
+            self.write_float(self.line_of_sight),
+            self.write_int_8(self.garrison_capacity),
+            self.write_float(self.collision_size_x),
+            self.write_float(self.collision_size_y),
+            self.write_float(self.collision_size_z),
+            self.write_int_16(self.train_sound),
+            self.write_int_16(self.damage_sound),
+            self.write_int_16(self.dead_unit_id),
+            self.write_int_16(self.blood_unit_id),
+            self.write_int_8(self.sort_number),
+            self.write_int_8(self.can_be_built_on),
+            self.write_int_16(self.icon_id),
+            self.write_int_8(self.hide_in_editor),
+            self.write_int_16(self.old_portrait_pict),
+            self.write_int_8(self.enabled),
+            self.write_int_8(self.disabled),
+            self.write_int_16_array(self.placement_side_terrain),
+            self.write_int_16_array(self.placement_terrain),
+            self.write_float_array(self.clearance_size),
+            self.write_int_8(self.hill_mode),
+            self.write_int_8(self.fog_visibility),
+            self.write_int_16(self.terrain_restriction),
+            self.write_int_8(self.fly_mode),
+            self.write_int_16(self.resource_capacity),
+            self.write_float(self.resource_decay),
+            self.write_int_8(self.blast_defense_level),
+            self.write_int_8(self.combat_level),
+            self.write_int_8(self.interation_mode),
+            self.write_int_8(self.minimap_mode),
+            self.write_int_8(self.interface_kind),
+            self.write_float(self.multiple_attribute_mode),
+            self.write_int_8(self.minimap_color),
+            self.write_int_32(self.language_dll_help),
+            self.write_int_32(self.language_dll_hotkey_text),
+            self.write_int_32(self.hot_key),
+            self.write_int_8(self.recyclable),
+            self.write_int_8(self.enable_auto_gather),
+            self.write_int_8(self.create_doppelganger_on_death),
+            self.write_int_8(self.resource_gather_group),
+            self.write_int_8(self.occlusion_mode),
+            self.write_int_8(self.obstruction_type),
+            self.write_int_8(self.obstruction_class),
+            self.write_int_8(self.trait),
+            self.write_int_8(self.civilization),
+            self.write_int_16(self.nothing),
+            self.write_int_8(self.selection_effect),
+            self.write_int_8(self.editor_selection_colour),
+            self.write_float(self.outline_size_x),
+            self.write_float(self.outline_size_y),
+            self.write_float(self.outline_size_z),
+            self.write_int_32(self.scenario_triggers_1),
+            self.write_int_32(self.scenario_triggers_2),
+            self.write_class_array(self.resource_storages),
+            self.write_int_8(self.damage_graphic_size),
+            self.write_class_array(self.damage_graphics),
+            self.write_int_16(self.selection_sound),
+            self.write_int_16(self.dying_sound),
+            self.write_int_32(self.wwise_train_sound_id),
+            self.write_int_32(self.wwise_damage_sound_id),
+            self.write_int_32(self.wwise_selection_sound_id),
+            self.write_int_32(self.wwise_dying_sound_id),
+            self.write_int_8(self.old_attack_reaction),
+            self.write_int_8(self.convert_terrain),
+            self.write_debug_string(self.name),
+            self.write_int_16(self.copy_id),
+            self.write_int_16(self.base_id),
+            speed,
+            dead_fish,
+            bird,
+            type_50,
+            projectile,
+            creatable,
+            building,
+        ])

@@ -25,6 +25,17 @@ class GraphicDelta(GenieClass):
             padding_2=content.read_int_16(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.graphic_id),
+            self.write_int_16(self.padding_1),
+            self.write_int_32(self.sprite_ptr),
+            self.write_int_16(self.offset_x),
+            self.write_int_16(self.offset_y),
+            self.write_int_16(self.display_angle),
+            self.write_int_16(self.padding_2),
+        ])
+
 
 @dataclass
 class GraphicAngleSound(GenieClass):
@@ -51,6 +62,19 @@ class GraphicAngleSound(GenieClass):
             sound_id_3=content.read_int_16(),
             wwise_sound_id_3=content.read_int_32(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.frame_num),
+            self.write_int_16(self.sound_id),
+            self.write_int_32(self.wwise_sound_id),
+            self.write_int_16(self.frame_num_2),
+            self.write_int_16(self.sound_id_2),
+            self.write_int_32(self.wwise_sound_id_2),
+            self.write_int_16(self.frame_num_3),
+            self.write_int_16(self.sound_id_3),
+            self.write_int_32(self.wwise_sound_id_3),
+        ])
 
 
 @dataclass
@@ -135,3 +159,32 @@ class Graphic(GenieClass):
             deltas=deltas,
             angle_sounds=angle_sounds,
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_debug_string(self.name),
+            self.write_debug_string(self.file_name),
+            self.write_debug_string(self.particle_effect_name),
+            self.write_int_32(self.slp),
+            self.write_int_8(self.is_loaded),
+            self.write_int_8(self.old_color_flag),
+            self.write_int_8(self.layer),
+            self.write_int_16(self.player_color),
+            self.write_int_8(self.transparent_selection),
+            self.write_int_16_array(self.coordinates),
+            self.write_int_16(self.delta_count),
+            self.write_int_16(self.sound_id),
+            self.write_int_32(self.wwise_sound_id),
+            self.write_int_8(self.angle_sounds_used),
+            self.write_int_16(self.frame_count),
+            self.write_int_16(self.angle_count),
+            self.write_float(self.speed_multiplier),
+            self.write_float(self.frame_duration),
+            self.write_float(self.replay_delay),
+            self.write_int_8(self.sequence_type),
+            self.write_int_16(self.id),
+            self.write_int_8(self.mirroring_mode),
+            self.write_int_8(self.editor_flag),
+            self.write_class_array(self.deltas),
+            self.write_class_array(self.angle_sounds),
+        ])

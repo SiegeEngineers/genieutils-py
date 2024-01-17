@@ -1,4 +1,3 @@
-import typing
 from dataclasses import dataclass
 
 from src.common import ByteHandler, GenieClass
@@ -25,3 +24,10 @@ class UnitHeaders(GenieClass):
             task_count=task_count,
             task_list=task_list,
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_8(self.exists),
+            self.write_int_16(self.task_count) if self.exists else b'',
+            self.write_class_array(self.task_list) if self.exists else b'',
+        ])

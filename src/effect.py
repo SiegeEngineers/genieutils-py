@@ -21,6 +21,15 @@ class EffectCommand(GenieClass):
             d=content.read_float(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_8(self.type),
+            self.write_int_16(self.a),
+            self.write_int_16(self.b),
+            self.write_int_16(self.c),
+            self.write_float(self.d),
+        ])
+
 
 @dataclass
 class Effect(GenieClass):
@@ -38,3 +47,10 @@ class Effect(GenieClass):
             effect_command_count=effect_command_count,
             effect_commands=effect_commands,
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_debug_string(self.name),
+            self.write_int_16(self.effect_command_count),
+            self.write_class_array(self.effect_commands),
+        ])

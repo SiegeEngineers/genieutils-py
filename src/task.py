@@ -1,4 +1,3 @@
-import typing
 from dataclasses import dataclass
 
 from src.common import ByteHandler, GenieClass
@@ -73,3 +72,38 @@ class Task(GenieClass):
             wwise_resource_gathering_sound_id=content.read_int_32(),
             wwise_resource_deposit_sound_id=content.read_int_32(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.task_type),
+            self.write_int_16(self.id),
+            self.write_int_8(self.is_default),
+            self.write_int_16(self.action_type),
+            self.write_int_16(self.class_id),
+            self.write_int_16(self.unit_id),
+            self.write_int_16(self.terrain_id),
+            self.write_int_16(self.resource_in),
+            self.write_int_16(self.resource_multiplier),
+            self.write_int_16(self.resource_out),
+            self.write_int_16(self.unused_resource),
+            self.write_float(self.work_value_1),
+            self.write_float(self.work_value_2),
+            self.write_float(self.work_range),
+            self.write_int_8(self.auto_search_targets),
+            self.write_float(self.search_wait_time),
+            self.write_int_8(self.enable_targeting),
+            self.write_int_8(self.combat_level_flag),
+            self.write_int_16(self.gather_type),
+            self.write_int_16(self.work_flag_2),
+            self.write_int_8(self.target_diplomacy),
+            self.write_int_8(self.carry_check),
+            self.write_int_8(self.pick_for_construction),
+            self.write_int_16(self.moving_graphic_id),
+            self.write_int_16(self.proceeding_graphic_id),
+            self.write_int_16(self.working_graphic_id),
+            self.write_int_16(self.carrying_graphic_id),
+            self.write_int_16(self.resource_gathering_sound_id),
+            self.write_int_16(self.resource_deposit_sound_id),
+            self.write_int_32(self.wwise_resource_gathering_sound_id),
+            self.write_int_32(self.wwise_resource_deposit_sound_id),
+        ])

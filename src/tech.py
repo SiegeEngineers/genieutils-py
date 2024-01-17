@@ -1,4 +1,3 @@
-import typing
 from dataclasses import dataclass
 
 from src.common import ByteHandler, GenieClass
@@ -17,6 +16,13 @@ class ResearchResourceCost(GenieClass):
             amount=content.read_int_16(),
             flag=content.read_int_8(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.type),
+            self.write_int_16(self.amount),
+            self.write_int_8(self.flag),
+        ])
 
 
 @dataclass
@@ -62,3 +68,25 @@ class Tech(GenieClass):
             name=content.read_debug_string(),
             repeatable=content.read_int_8(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16_array(self.required_techs),
+            self.write_class_array(self.resource_costs),
+            self.write_int_16(self.required_tech_count),
+            self.write_int_16(self.civ),
+            self.write_int_16(self.full_tech_mode),
+            self.write_int_16(self.research_location),
+            self.write_int_32(self.language_dll_name),
+            self.write_int_32(self.language_dll_description),
+            self.write_int_16(self.research_time),
+            self.write_int_16(self.effect_id),
+            self.write_int_16(self.type),
+            self.write_int_16(self.icon_id),
+            self.write_int_8(self.button_id),
+            self.write_int_32(self.language_dll_help),
+            self.write_int_32(self.language_dll_tech_tree),
+            self.write_int_32(self.hot_key),
+            self.write_debug_string(self.name),
+            self.write_int_8(self.repeatable),
+        ])

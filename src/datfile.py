@@ -1,4 +1,3 @@
-import typing
 import zlib
 from dataclasses import dataclass
 from pathlib import Path
@@ -65,7 +64,8 @@ class DatFile(GenieClass):
         terrains_used_1 = content.read_int_16()
         float_ptr_terrain_tables = content.read_int_32_array(terrain_restrictions_size)
         terrain_pass_graphic_pointers = content.read_int_32_array(terrain_restrictions_size)
-        terrain_restrictions = content.read_class_array_with_param(TerrainRestriction, terrain_restrictions_size, terrains_used_1)
+        terrain_restrictions = content.read_class_array_with_param(TerrainRestriction, terrain_restrictions_size,
+                                                                   terrains_used_1)
         player_colours_size = content.read_int_16()
         player_colours = content.read_class_array(PlayerColour, player_colours_size)
         sounds_size = content.read_int_16()
@@ -124,3 +124,38 @@ class DatFile(GenieClass):
             razing_kill_total,
             tech_tree,
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_string(8, self.version),
+            self.write_int_16(self.terrain_restrictions_size),
+            self.write_int_16(self.terrains_used_1),
+            self.write_int_32_array(self.float_ptr_terrain_tables),
+            self.write_int_32_array(self.terrain_pass_graphic_pointers),
+            self.write_class_array(self.terrain_restrictions),
+            self.write_int_16(self.player_colours_size),
+            self.write_class_array(self.player_colours),
+            self.write_int_16(self.sounds_size),
+            self.write_class_array(self.sounds),
+            self.write_int_16(self.graphics_size),
+            self.write_int_32_array(self.graphic_pointers),
+            self.write_class_array_with_pointers(self.graphic_pointers, self.graphics),
+            self.write_class(self.terrain_block),
+            self.write_class(self.random_maps),
+            self.write_int_32(self.effects_size),
+            self.write_class_array(self.effects),
+            self.write_int_32(self.unit_headers_size),
+            self.write_class_array(self.unit_headers),
+            self.write_int_16(self.civs_size),
+            self.write_class_array(self.civs),
+            self.write_int_16(self.techs_size),
+            self.write_class_array(self.techs),
+            self.write_int_32(self.time_slice),
+            self.write_int_32(self.unit_kill_rate),
+            self.write_int_32(self.unit_kill_total),
+            self.write_int_32(self.unit_hit_point_rate),
+            self.write_int_32(self.unit_hit_point_total),
+            self.write_int_32(self.razing_kill_rate),
+            self.write_int_32(self.razing_kill_total),
+            self.write_class(self.tech_tree),
+        ])

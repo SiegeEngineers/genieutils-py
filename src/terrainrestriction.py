@@ -19,6 +19,14 @@ class TerrainPassGraphic(GenieClass):
             walk_sprite_rate=content.read_int_32(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.exit_tile_sprite_id),
+            self.write_int_32(self.enter_tile_sprite_id),
+            self.write_int_32(self.walk_tile_sprite_id),
+            self.write_int_32(self.walk_sprite_rate),
+        ])
+
 
 @dataclass
 class TerrainRestriction(GenieClass):
@@ -31,3 +39,9 @@ class TerrainRestriction(GenieClass):
             passable_buildable_dmg_multiplier=content.read_float_array(terrain_count),
             terrain_pass_graphics=content.read_class_array(TerrainPassGraphic, terrain_count),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_float_array(self.passable_buildable_dmg_multiplier),
+            self.write_class_array(self.terrain_pass_graphics),
+        ])

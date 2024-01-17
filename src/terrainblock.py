@@ -17,6 +17,13 @@ class FrameData(GenieClass):
             shape_id=content.read_int_16(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.frame_count),
+            self.write_int_16(self.angle_count),
+            self.write_int_16(self.shape_id),
+        ])
+
 
 @dataclass
 class Terrain(GenieClass):
@@ -36,7 +43,7 @@ class Terrain(GenieClass):
     blend_type: int
     overlay_mask_name: str
     colors: list[int]
-    cliffColors: list[int]
+    cliff_colors: list[int]
     passable_terrain: int
     impassable_terrain: int
     is_animated: int
@@ -78,7 +85,7 @@ class Terrain(GenieClass):
             blend_type=content.read_int_32(),
             overlay_mask_name=content.read_debug_string(),
             colors=content.read_int_8_array(3),
-            cliffColors=content.read_int_8_array(2),
+            cliff_colors=content.read_int_8_array(2),
             passable_terrain=content.read_int_8(),
             impassable_terrain=content.read_int_8(),
             is_animated=content.read_int_8(),
@@ -102,6 +109,48 @@ class Terrain(GenieClass):
             phantom=content.read_int_16(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_8(self.enabled),
+            self.write_int_8(self.random),
+            self.write_int_8(self.is_water),
+            self.write_int_8(self.hide_in_editor),
+            self.write_int_32(self.string_id),
+            self.write_debug_string(self.name),
+            self.write_debug_string(self.name_2),
+            self.write_int_32(self.slp),
+            self.write_int_32(self.shape_ptr),
+            self.write_int_32(self.sound_id),
+            self.write_int_32(self.wwise_sound_id, signed=False),
+            self.write_int_32(self.wwise_sound_stop_id, signed=False),
+            self.write_int_32(self.blend_priority),
+            self.write_int_32(self.blend_type),
+            self.write_debug_string(self.overlay_mask_name),
+            self.write_int_8_array(self.colors),
+            self.write_int_8_array(self.cliff_colors),
+            self.write_int_8(self.passable_terrain),
+            self.write_int_8(self.impassable_terrain),
+            self.write_int_8(self.is_animated),
+            self.write_int_16(self.animation_frames),
+            self.write_int_16(self.pause_frames),
+            self.write_float(self.interval),
+            self.write_float(self.pause_between_loops),
+            self.write_int_16(self.frame),
+            self.write_int_16(self.draw_frame),
+            self.write_float(self.animate_last),
+            self.write_int_8(self.frame_changed),
+            self.write_int_8(self.drawn),
+            self.write_class_array(self.frame_data),
+            self.write_int_16(self.terrain_to_draw),
+            self.write_int_16_array(self.terrain_dimensions),
+            self.write_int_16_array(self.terrain_unit_masked_density),
+            self.write_int_16_array(self.terrain_unit_id),
+            self.write_int_16_array(self.terrain_unit_density),
+            self.write_int_8_array(self.terrain_unit_centering),
+            self.write_int_16(self.number_of_terrain_units_used),
+            self.write_int_16(self.phantom),
+        ])
+
 
 @dataclass
 class TileSize(GenieClass):
@@ -116,6 +165,13 @@ class TileSize(GenieClass):
             height=content.read_int_16(),
             delta_y=content.read_int_16(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.width),
+            self.write_int_16(self.height),
+            self.write_int_16(self.delta_y),
+        ])
 
 
 @dataclass
@@ -193,3 +249,41 @@ class TerrainBlock(GenieClass):
             map_visible_flag=content.read_int_8(),
             fog_flag=content.read_int_8(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.virtual_function_ptr, signed=False),
+            self.write_int_32(self.map_pointer, signed=False),
+            self.write_int_32(self.map_width),
+            self.write_int_32(self.map_height),
+            self.write_int_32(self.world_width),
+            self.write_int_32(self.world_height),
+            self.write_class_array(self.tile_sizes),
+            self.write_int_16(self.padding_ts),
+            self.write_class_array(self.terrains),
+            self.write_float(self.map_min_x),
+            self.write_float(self.map_min_y),
+            self.write_float(self.map_max_x),
+            self.write_float(self.map_max_y),
+            self.write_float(self.map_max_x_plus_1),
+            self.write_float(self.map_max_y_plus_1),
+            self.write_int_16(self.terrains_used_2),
+            self.write_int_16(self.borders_used),
+            self.write_int_16(self.max_terrain),
+            self.write_int_16(self.tile_width),
+            self.write_int_16(self.tile_height),
+            self.write_int_16(self.tile_half_height),
+            self.write_int_16(self.tile_half_width),
+            self.write_int_16(self.elev_height),
+            self.write_int_16(self.cur_row),
+            self.write_int_16(self.cur_col),
+            self.write_int_16(self.block_beg_row),
+            self.write_int_16(self.block_end_row),
+            self.write_int_16(self.block_beg_col),
+            self.write_int_16(self.block_end_col),
+            self.write_int_32(self.search_map_ptr, signed=False),
+            self.write_int_32(self.search_map_rows_ptr, signed=False),
+            self.write_int_8(self.any_frame_change),
+            self.write_int_8(self.map_visible_flag),
+            self.write_int_8(self.fog_flag),
+        ])

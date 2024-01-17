@@ -21,6 +21,15 @@ class SoundItem(GenieClass):
             icon_set=content.read_int_16(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_debug_string(self.filename),
+            self.write_int_32(self.resource_id),
+            self.write_int_16(self.probability),
+            self.write_int_16(self.civilization),
+            self.write_int_16(self.icon_set),
+        ])
+
 
 @dataclass
 class Sound(GenieClass):
@@ -47,3 +56,13 @@ class Sound(GenieClass):
             total_probability=total_probability,
             items=items,
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_16(self.id),
+            self.write_int_16(self.play_delay),
+            self.write_int_16(self.items_size),
+            self.write_int_32(self.cache_time),
+            self.write_int_16(self.total_probability),
+            self.write_class_array(self.items),
+        ])

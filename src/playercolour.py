@@ -1,4 +1,3 @@
-import typing
 from dataclasses import dataclass
 
 from src.common import ByteHandler, GenieClass
@@ -29,3 +28,16 @@ class PlayerColour(GenieClass):
             minimap_color_3=content.read_int_32(),
             statistics_text=content.read_int_32(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.id),
+            self.write_int_32(self.player_color_base),
+            self.write_int_32(self.unit_outline_color),
+            self.write_int_32(self.unit_selection_color_1),
+            self.write_int_32(self.unit_selection_color_2),
+            self.write_int_32(self.minimap_color),
+            self.write_int_32(self.minimap_color_2),
+            self.write_int_32(self.minimap_color_3),
+            self.write_int_32(self.statistics_text),
+        ])

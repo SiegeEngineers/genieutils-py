@@ -37,6 +37,23 @@ class MapUnit(GenieClass):
             max_distance_to_players=content.read_int_32(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.unit),
+            self.write_int_32(self.host_terrain),
+            self.write_int_8(self.group_placing),
+            self.write_int_8(self.scale_flag),
+            self.write_int_16(self.padding_1),
+            self.write_int_32(self.objects_per_group),
+            self.write_int_32(self.fluctuation),
+            self.write_int_32(self.groups_per_player),
+            self.write_int_32(self.group_arena),
+            self.write_int_32(self.player_id),
+            self.write_int_32(self.set_place_for_all_players),
+            self.write_int_32(self.min_distance_to_players),
+            self.write_int_32(self.max_distance_to_players),
+        ])
+
 
 @dataclass
 class MapTerrain(GenieClass):
@@ -57,6 +74,16 @@ class MapTerrain(GenieClass):
             placement_terrain=content.read_int_32(),
             clumpiness=content.read_int_32(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.proportion),
+            self.write_int_32(self.terrain),
+            self.write_int_32(self.clump_count),
+            self.write_int_32(self.edge_spacing),
+            self.write_int_32(self.placement_terrain),
+            self.write_int_32(self.clumpiness),
+        ])
 
 
 @dataclass
@@ -97,6 +124,25 @@ class MapLand(GenieClass):
             clumpiness=content.read_int_32(),
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.land_id),
+            self.write_int_32(self.terrain, signed=False),
+            self.write_int_32(self.land_spacing),
+            self.write_int_32(self.base_size),
+            self.write_int_8(self.zone),
+            self.write_int_8(self.placement_type),
+            self.write_int_16(self.padding_1),
+            self.write_int_32(self.base_x),
+            self.write_int_32(self.base_y),
+            self.write_int_8(self.land_proportion),
+            self.write_int_8(self.by_player_flag),
+            self.write_int_16(self.padding_2),
+            self.write_int_32(self.start_area_radius),
+            self.write_int_32(self.terrain_edge_fade),
+            self.write_int_32(self.clumpiness),
+        ])
+
 
 @dataclass
 class MapElevation(GenieClass):
@@ -117,6 +163,16 @@ class MapElevation(GenieClass):
             base_elevation=content.read_int_32(),
             tile_spacing=content.read_int_32(),
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.proportion),
+            self.write_int_32(self.terrain),
+            self.write_int_32(self.clump_count),
+            self.write_int_32(self.base_terrain),
+            self.write_int_32(self.base_elevation),
+            self.write_int_32(self.tile_spacing),
+        ])
 
 
 @dataclass
@@ -193,6 +249,32 @@ class MapInfo(GenieClass):
             map_elevations=map_elevations,
         )
 
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.map_id),
+            self.write_int_32(self.border_south_west),
+            self.write_int_32(self.border_north_west),
+            self.write_int_32(self.border_north_east),
+            self.write_int_32(self.border_south_east),
+            self.write_int_32(self.border_usage),
+            self.write_int_32(self.water_shape),
+            self.write_int_32(self.base_terrain),
+            self.write_int_32(self.land_coverage),
+            self.write_int_32(self.unused_id),
+            self.write_int_32(self.map_lands_size, signed=False),
+            self.write_int_32(self.map_lands_ptr),
+            self.write_class_array(self.map_lands),
+            self.write_int_32(self.map_terrains_size, signed=False),
+            self.write_int_32(self.map_terrains_ptr),
+            self.write_class_array(self.map_terrains),
+            self.write_int_32(self.map_units_size, signed=False),
+            self.write_int_32(self.map_units_ptr),
+            self.write_class_array(self.map_units),
+            self.write_int_32(self.map_elevations_size, signed=False),
+            self.write_int_32(self.map_elevations_ptr),
+            self.write_class_array(self.map_elevations),
+        ])
+
 
 @dataclass
 class RandomMaps(GenieClass):
@@ -213,3 +295,11 @@ class RandomMaps(GenieClass):
             map_info_1=map_info_1,
             map_info_2=map_info_2,
         )
+
+    def to_bytes(self) -> bytes:
+        return b''.join([
+            self.write_int_32(self.random_map_count, signed=False),
+            self.write_int_32(self.random_maps_ptr),
+            self.write_class_array(self.map_info_1),
+            self.write_class_array(self.map_info_2),
+        ])
