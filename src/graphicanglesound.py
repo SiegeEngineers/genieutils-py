@@ -17,7 +17,7 @@ class GraphicAngleSound(GenieClass):
     wwise_sound_id_3: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'GraphicAngleSound':
         return cls(
             frame_num=content.read_int_16(),
             sound_id=content.read_int_16(),

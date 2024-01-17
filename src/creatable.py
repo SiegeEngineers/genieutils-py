@@ -35,7 +35,7 @@ class Creatable(GenieClass):
     displayed_pierce_armor: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Creatable':
         return cls(
             resource_costs=content.read_class_array(ResourceCost, 3),
             train_time=content.read_int_16(),

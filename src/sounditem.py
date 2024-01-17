@@ -13,7 +13,7 @@ class SoundItem(GenieClass):
     icon_set: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'SoundItem':
         return cls(
             filename=content.read_debug_string(),
             resource_id=content.read_int_32(),

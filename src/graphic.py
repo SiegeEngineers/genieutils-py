@@ -35,7 +35,7 @@ class Graphic(GenieClass):
     angle_sounds: list[GraphicAngleSound]
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Graphic':
         name = content.read_debug_string()
         file_name = content.read_debug_string()
         particle_effect_name = content.read_debug_string()

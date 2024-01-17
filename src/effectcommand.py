@@ -12,7 +12,7 @@ class EffectCommand(GenieClass):
     d: float
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler):
+    def from_bytes(cls, content: ByteHandler) -> 'EffectCommand':
         return cls(
             type=content.read_int_8(),
             a=content.read_int_16(),

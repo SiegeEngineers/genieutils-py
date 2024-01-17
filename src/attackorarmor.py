@@ -10,7 +10,7 @@ class AttackOrArmor(GenieClass):
     amount: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'AttackOrArmor':
         return cls(
             class_=content.read_int_16(),
             amount=content.read_int_16(),

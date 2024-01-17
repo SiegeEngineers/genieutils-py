@@ -27,7 +27,7 @@ class Tech(GenieClass):
     repeatable: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Tech':
         return cls(
             required_techs=content.read_int_16_array(6),
             resource_costs=content.read_class_array(ResearchResourceCost, 3),

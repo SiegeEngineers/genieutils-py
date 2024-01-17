@@ -11,7 +11,7 @@ class ResearchResourceCost(GenieClass):
     flag: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'ResearchResourceCost':
         return cls(
             type=content.read_int_16(),
             amount=content.read_int_16(),

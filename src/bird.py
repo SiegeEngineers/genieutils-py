@@ -21,7 +21,7 @@ class Bird(GenieClass):
     tasks: list[Task]
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Bird':
         default_task_id = content.read_int_16()
         search_radius = content.read_float()
         work_rate = content.read_float()

@@ -11,7 +11,7 @@ class Common(GenieClass):
     mode: list[int]
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Common':
         return cls(
             slots_used=content.read_int_32(),
             unit_research=content.read_int_32_array(10),

@@ -23,7 +23,7 @@ class MapLand(GenieClass):
     clumpiness: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'MapLand':
         return cls(
             land_id=content.read_int_32(),
             terrain=content.read_int_32(signed=False),

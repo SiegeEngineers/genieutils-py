@@ -13,7 +13,7 @@ class RandomMaps(GenieClass):
     map_info_2: list[MapInfo]
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'RandomMaps':
         random_map_count = content.read_int_32(signed=False)
         random_maps_ptr = content.read_int_32()
         map_info_1 = content.read_class_array(MapInfo, random_map_count)

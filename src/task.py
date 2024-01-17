@@ -39,7 +39,7 @@ class Task(GenieClass):
     wwise_resource_deposit_sound_id: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Task':
         return cls(
             task_type=content.read_int_16(),
             id=content.read_int_16(),

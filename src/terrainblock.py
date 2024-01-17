@@ -44,7 +44,7 @@ class TerrainBlock(GenieClass):
     fog_flag: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'TerrainBlock':
         return cls(
             virtual_function_ptr=content.read_int_32(signed=False),
             map_pointer=content.read_int_32(signed=False),

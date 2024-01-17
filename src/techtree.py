@@ -21,7 +21,7 @@ class TechTree(GenieClass):
     research_connections: list[ResearchConnection]
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'TechTree':
         age_count = content.read_int_8()
         building_count = content.read_int_8()
         unit_count = content.read_int_8()

@@ -23,7 +23,7 @@ class TechTreeAge(GenieClass):
     line_mode: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'TechTreeAge':
         id = content.read_int_32()
         status = content.read_int_8()
         buildings_count = content.read_int_8()

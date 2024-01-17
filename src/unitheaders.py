@@ -12,7 +12,7 @@ class UnitHeaders(GenieClass):
     task_list: list[Task] | None = None
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'UnitHeaders':
         super().__init__(content)
         exists = content.read_int_8()
         task_count = None

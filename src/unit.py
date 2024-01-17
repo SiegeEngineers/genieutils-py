@@ -99,7 +99,7 @@ class Unit(GenieClass):
     building: Building | None = None
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Unit':
         type = content.read_int_8()
         id = content.read_int_16()
         language_dll_name = content.read_int_32()

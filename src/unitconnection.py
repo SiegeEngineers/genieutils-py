@@ -20,7 +20,7 @@ class UnitConnection(GenieClass):
     enabling_research: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'UnitConnection':
         id = content.read_int_32()
         status = content.read_int_8()
         upper_building = content.read_int_32()

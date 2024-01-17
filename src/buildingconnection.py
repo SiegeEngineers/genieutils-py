@@ -23,7 +23,7 @@ class BuildingConnection(GenieClass):
     enabling_research: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'BuildingConnection':
         id = content.read_int_32()
         status = content.read_int_8()
         buildings_count = content.read_int_8()

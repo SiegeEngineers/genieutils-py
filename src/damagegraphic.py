@@ -11,7 +11,7 @@ class DamageGraphic(GenieClass):
     apply_mode: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'DamageGraphic':
         return cls(
             graphic_id=content.read_int_16(),
             damage_percent=content.read_int_16(),

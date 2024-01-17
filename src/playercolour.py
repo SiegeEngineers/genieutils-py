@@ -17,7 +17,7 @@ class PlayerColour(GenieClass):
     statistics_text: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'PlayerColour':
         return cls(
             id=content.read_int_32(),
             player_color_base=content.read_int_32(),

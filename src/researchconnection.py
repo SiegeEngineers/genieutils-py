@@ -21,8 +21,8 @@ class ResearchConnection(GenieClass):
     line_mode: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler):
-        id = content.read_int_32()
+    def from_bytes(cls, content: ByteHandler) -> 'ResearchConnection':
+        id_ = content.read_int_32()
         status = content.read_int_8()
         upper_building = content.read_int_32()
         buildings_count = content.read_int_8()
@@ -36,7 +36,7 @@ class ResearchConnection(GenieClass):
         location_in_age = content.read_int_32()
         line_mode = content.read_int_32()
         return cls(
-            id=id,
+            id=id_,
             status=status,
             upper_building=upper_building,
             buildings_count=buildings_count,

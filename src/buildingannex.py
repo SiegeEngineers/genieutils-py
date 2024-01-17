@@ -11,7 +11,7 @@ class BuildingAnnex(GenieClass):
     misplacement_y: float
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'BuildingAnnex':
         return cls(
             unit_id=content.read_int_16(),
             misplacement_x=content.read_float(),

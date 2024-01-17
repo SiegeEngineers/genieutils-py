@@ -14,7 +14,7 @@ class Projectile(GenieClass):
     projectile_arc: float
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Projectile':
         return cls(
             projectile_type=content.read_int_8(),
             smart_mode=content.read_int_8(),

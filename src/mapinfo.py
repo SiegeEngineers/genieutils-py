@@ -34,7 +34,7 @@ class MapInfo(GenieClass):
     map_elevations: list[MapElevation]
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'MapInfo':
         map_id = content.read_int_32()
         border_south_west = content.read_int_32()
         border_north_west = content.read_int_32()

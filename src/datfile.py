@@ -52,14 +52,14 @@ class DatFile(GenieClass):
     tech_tree: TechTree
 
     @classmethod
-    def parse(cls, input_file: Path) -> typing.Self:
+    def parse(cls, input_file: Path) -> 'DatFile':
         content = input_file.read_bytes()
         data = zlib.decompress(content, wbits=-15)
         byte_handler = ByteHandler(memoryview(data))
         return cls.from_bytes(byte_handler)
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'DatFile':
         version = content.read_string(8)
         terrain_restrictions_size = content.read_int_16()
         terrains_used_1 = content.read_int_16()

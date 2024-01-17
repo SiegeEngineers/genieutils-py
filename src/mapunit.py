@@ -20,7 +20,7 @@ class MapUnit(GenieClass):
     max_distance_to_players: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler):
+    def from_bytes(cls, content: ByteHandler) -> 'MapUnit':
         return cls(
             unit=content.read_int_32(),
             host_terrain=content.read_int_32(),

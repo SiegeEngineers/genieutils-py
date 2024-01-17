@@ -22,7 +22,7 @@ class DeadFish(GenieClass):
     min_collision_size_multiplier: float
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'DeadFish':
         return cls(
             walking_graphic=content.read_int_16(),
             running_graphic=content.read_int_16(),

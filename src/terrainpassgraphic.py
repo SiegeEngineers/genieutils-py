@@ -11,7 +11,7 @@ class TerrainPassGraphic(GenieClass):
     walk_sprite_rate: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler):
+    def from_bytes(cls, content: ByteHandler) -> 'TerrainPassGraphic':
         return cls(
             exit_tile_sprite_id=content.read_int_32(),
             enter_tile_sprite_id=content.read_int_32(),

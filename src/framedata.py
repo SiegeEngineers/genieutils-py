@@ -11,7 +11,7 @@ class FrameData(GenieClass):
     shape_id: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'FrameData':
         return cls(
             frame_count=content.read_int_16(),
             angle_count=content.read_int_16(),

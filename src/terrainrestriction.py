@@ -11,7 +11,7 @@ class TerrainRestriction(GenieClass):
     terrain_pass_graphics: list[TerrainPassGraphic]
 
     @classmethod
-    def from_bytes_with_count(cls, content: ByteHandler, terrain_count: int) -> typing.Self:
+    def from_bytes_with_count(cls, content: ByteHandler, terrain_count: int) -> 'TerrainRestriction':
         return cls(
             passable_buildable_dmg_multiplier=content.read_float_array(terrain_count),
             terrain_pass_graphics=content.read_class_array(TerrainPassGraphic, terrain_count),

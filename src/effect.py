@@ -12,7 +12,7 @@ class Effect(GenieClass):
     effect_commands: list[EffectCommand]
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Effect':
         name = content.read_debug_string()
         effect_command_count = content.read_int_16()
         effect_commands = content.read_class_array(EffectCommand, effect_command_count)

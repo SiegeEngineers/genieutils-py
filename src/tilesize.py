@@ -11,7 +11,7 @@ class TileSize(GenieClass):
     delta_y: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'TileSize':
         return cls(
             width=content.read_int_16(),
             height=content.read_int_16(),

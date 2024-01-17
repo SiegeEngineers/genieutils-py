@@ -33,7 +33,7 @@ class Type50(GenieClass):
     blast_damage: float
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Type50':
         base_armor = content.read_int_16()
         attack_count = content.read_int_16()
         attacks = content.read_class_array(AttackOrArmor, attack_count)

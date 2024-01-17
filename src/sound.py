@@ -15,7 +15,7 @@ class Sound(GenieClass):
     items: list[SoundItem]
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Sound':
         id_ = content.read_int_16()
         play_delay = content.read_int_16()
         items_size = content.read_int_16()

@@ -15,7 +15,7 @@ class GraphicDelta(GenieClass):
     padding_2: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'GraphicDelta':
         return cls(
             graphic_id=content.read_int_16(),
             padding_1=content.read_int_16(),

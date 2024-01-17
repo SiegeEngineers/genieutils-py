@@ -35,7 +35,7 @@ class Building(GenieClass):
     looting_table: list[int]
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Building':
         return cls(
             construction_graphic_id=content.read_int_16(),
             snow_graphic_id=content.read_int_16(),

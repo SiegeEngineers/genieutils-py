@@ -14,7 +14,7 @@ class MapTerrain(GenieClass):
     clumpiness: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'MapTerrain':
         return cls(
             proportion=content.read_int_32(),
             terrain=content.read_int_32(),

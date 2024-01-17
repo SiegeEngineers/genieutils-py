@@ -47,7 +47,7 @@ class Terrain(GenieClass):
     phantom: int
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+    def from_bytes(cls, content: ByteHandler) -> 'Terrain':
         return cls(
             enabled=content.read_int_8(),
             random=content.read_int_8(),
