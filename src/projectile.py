@@ -1,10 +1,11 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class Projectile(ByteHandler):
+class Projectile(GenieClass):
     projectile_type: int
     smart_mode: int
     hit_mode: int
@@ -12,11 +13,13 @@ class Projectile(ByteHandler):
     area_effect_specials: int
     projectile_arc: float
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.projectile_type = self.read_int_8()
-        self.smart_mode = self.read_int_8()
-        self.hit_mode = self.read_int_8()
-        self.vanish_mode = self.read_int_8()
-        self.area_effect_specials = self.read_int_8()
-        self.projectile_arc = self.read_float()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            projectile_type=content.read_int_8(),
+            smart_mode=content.read_int_8(),
+            hit_mode=content.read_int_8(),
+            vanish_mode=content.read_int_8(),
+            area_effect_specials=content.read_int_8(),
+            projectile_arc=content.read_float(),
+        )

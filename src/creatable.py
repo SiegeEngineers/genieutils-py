@@ -1,11 +1,12 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 from src.resourcecost import ResourceCost
 
 
 @dataclass
-class Creatable(ByteHandler):
+class Creatable(GenieClass):
     resource_costs: list[ResourceCost]
     train_time: int
     train_location_id: int
@@ -33,31 +34,33 @@ class Creatable(ByteHandler):
     special_ability: int
     displayed_pierce_armor: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.resource_costs = self.read_class_array(ResourceCost, 3)
-        self.train_time = self.read_int_16()
-        self.train_location_id = self.read_int_16()
-        self.button_id = self.read_int_8()
-        self.rear_attack_modifier = self.read_float()
-        self.flank_attack_modifier = self.read_float()
-        self.creatable_type = self.read_int_8()
-        self.hero_mode = self.read_int_8()
-        self.garrison_graphic = self.read_int_32()
-        self.spawning_graphic = self.read_int_16()
-        self.upgrade_graphic = self.read_int_16()
-        self.hero_glow_graphic = self.read_int_16()
-        self.max_charge = self.read_float()
-        self.recharge_rate = self.read_float()
-        self.charge_event = self.read_int_16()
-        self.charge_type = self.read_int_16()
-        self.min_conversion_time_mod = self.read_float()
-        self.max_conversion_time_mod = self.read_float()
-        self.conversion_chance_mod = self.read_float()
-        self.total_projectiles = self.read_float()
-        self.max_total_projectiles = self.read_int_8()
-        self.projectile_spawning_area = self.read_float_array(3)
-        self.secondary_projectile_unit = self.read_int_32()
-        self.special_graphic = self.read_int_32()
-        self.special_ability = self.read_int_8()
-        self.displayed_pierce_armor = self.read_int_16()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            resource_costs=content.read_class_array(ResourceCost, 3),
+            train_time=content.read_int_16(),
+            train_location_id=content.read_int_16(),
+            button_id=content.read_int_8(),
+            rear_attack_modifier=content.read_float(),
+            flank_attack_modifier=content.read_float(),
+            creatable_type=content.read_int_8(),
+            hero_mode=content.read_int_8(),
+            garrison_graphic=content.read_int_32(),
+            spawning_graphic=content.read_int_16(),
+            upgrade_graphic=content.read_int_16(),
+            hero_glow_graphic=content.read_int_16(),
+            max_charge=content.read_float(),
+            recharge_rate=content.read_float(),
+            charge_event=content.read_int_16(),
+            charge_type=content.read_int_16(),
+            min_conversion_time_mod=content.read_float(),
+            max_conversion_time_mod=content.read_float(),
+            conversion_chance_mod=content.read_float(),
+            total_projectiles=content.read_float(),
+            max_total_projectiles=content.read_int_8(),
+            projectile_spawning_area=content.read_float_array(3),
+            secondary_projectile_unit=content.read_int_32(),
+            special_graphic=content.read_int_32(),
+            special_ability=content.read_int_8(),
+            displayed_pierce_armor=content.read_int_16(),
+        )

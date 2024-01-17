@@ -1,11 +1,12 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 from src.task import Task
 
 
 @dataclass
-class Bird(ByteHandler):
+class Bird(GenieClass):
     default_task_id: int
     search_radius: float
     work_rate: float
@@ -19,17 +20,31 @@ class Bird(ByteHandler):
     task_size: int
     tasks: list[Task]
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.default_task_id = self.read_int_16()
-        self.search_radius = self.read_float()
-        self.work_rate = self.read_float()
-        self.drop_sites = self.read_int_16_array(3)
-        self.task_swap_group = self.read_int_8()
-        self.attack_sound = self.read_int_16()
-        self.move_sound = self.read_int_16()
-        self.wwise_attack_sound_id = self.read_int_32()
-        self.wwise_move_sound_id = self.read_int_32()
-        self.run_pattern = self.read_int_8()
-        self.task_size = self.read_int_16()
-        self.tasks = self.read_class_array(Task, self.task_size)
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        default_task_id = content.read_int_16()
+        search_radius = content.read_float()
+        work_rate = content.read_float()
+        drop_sites = content.read_int_16_array(3)
+        task_swap_group = content.read_int_8()
+        attack_sound = content.read_int_16()
+        move_sound = content.read_int_16()
+        wwise_attack_sound_id = content.read_int_32()
+        wwise_move_sound_id = content.read_int_32()
+        run_pattern = content.read_int_8()
+        task_size = content.read_int_16()
+        tasks = content.read_class_array(Task, task_size)
+        return cls(
+            default_task_id=default_task_id,
+            search_radius=search_radius,
+            work_rate=work_rate,
+            drop_sites=drop_sites,
+            task_swap_group=task_swap_group,
+            attack_sound=attack_sound,
+            move_sound=move_sound,
+            wwise_attack_sound_id=wwise_attack_sound_id,
+            wwise_move_sound_id=wwise_move_sound_id,
+            run_pattern=run_pattern,
+            task_size=task_size,
+            tasks=tasks,
+        )

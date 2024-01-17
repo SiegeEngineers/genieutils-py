@@ -1,12 +1,13 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler, TILE_TYPE_COUNT, TERRAIN_COUNT
+from src.common import ByteHandler, TILE_TYPE_COUNT, TERRAIN_COUNT, GenieClass
 from src.terrain import Terrain
 from src.tilesize import TileSize
 
 
 @dataclass
-class TerrainBlock(ByteHandler):
+class TerrainBlock(GenieClass):
     virtual_function_ptr: int
     map_pointer: int
     map_width: int
@@ -42,39 +43,41 @@ class TerrainBlock(ByteHandler):
     map_visible_flag: int
     fog_flag: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.virtual_function_ptr = self.read_int_32(signed=False)
-        self.map_pointer = self.read_int_32(signed=False)
-        self.map_width = self.read_int_32()
-        self.map_height = self.read_int_32()
-        self.world_width = self.read_int_32()
-        self.world_height = self.read_int_32()
-        self.tile_sizes = self.read_class_array(TileSize, TILE_TYPE_COUNT)
-        self.padding_ts = self.read_int_16()
-        self.terrains = self.read_class_array(Terrain, TERRAIN_COUNT)
-        self.map_min_x = self.read_float()
-        self.map_min_y = self.read_float()
-        self.map_max_x = self.read_float()
-        self.map_max_y = self.read_float()
-        self.map_max_x_plus_1 = self.read_float()
-        self.map_max_y_plus_1 = self.read_float()
-        self.terrains_used_2 = self.read_int_16()
-        self.borders_used = self.read_int_16()
-        self.max_terrain = self.read_int_16()
-        self.tile_width = self.read_int_16()
-        self.tile_height = self.read_int_16()
-        self.tile_half_height = self.read_int_16()
-        self.tile_half_width = self.read_int_16()
-        self.elev_height = self.read_int_16()
-        self.cur_row = self.read_int_16()
-        self.cur_col = self.read_int_16()
-        self.block_beg_row = self.read_int_16()
-        self.block_end_row = self.read_int_16()
-        self.block_beg_col = self.read_int_16()
-        self.block_end_col = self.read_int_16()
-        self.search_map_ptr = self.read_int_32(signed=False)
-        self.search_map_rows_ptr = self.read_int_32(signed=False)
-        self.any_frame_change = self.read_int_8()
-        self.map_visible_flag = self.read_int_8()
-        self.fog_flag = self.read_int_8()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            virtual_function_ptr=content.read_int_32(signed=False),
+            map_pointer=content.read_int_32(signed=False),
+            map_width=content.read_int_32(),
+            map_height=content.read_int_32(),
+            world_width=content.read_int_32(),
+            world_height=content.read_int_32(),
+            tile_sizes=content.read_class_array(TileSize, TILE_TYPE_COUNT),
+            padding_ts=content.read_int_16(),
+            terrains=content.read_class_array(Terrain, TERRAIN_COUNT),
+            map_min_x=content.read_float(),
+            map_min_y=content.read_float(),
+            map_max_x=content.read_float(),
+            map_max_y=content.read_float(),
+            map_max_x_plus_1=content.read_float(),
+            map_max_y_plus_1=content.read_float(),
+            terrains_used_2=content.read_int_16(),
+            borders_used=content.read_int_16(),
+            max_terrain=content.read_int_16(),
+            tile_width=content.read_int_16(),
+            tile_height=content.read_int_16(),
+            tile_half_height=content.read_int_16(),
+            tile_half_width=content.read_int_16(),
+            elev_height=content.read_int_16(),
+            cur_row=content.read_int_16(),
+            cur_col=content.read_int_16(),
+            block_beg_row=content.read_int_16(),
+            block_end_row=content.read_int_16(),
+            block_beg_col=content.read_int_16(),
+            block_end_col=content.read_int_16(),
+            search_map_ptr=content.read_int_32(signed=False),
+            search_map_rows_ptr=content.read_int_32(signed=False),
+            any_frame_change=content.read_int_8(),
+            map_visible_flag=content.read_int_8(),
+            fog_flag=content.read_int_8(),
+        )

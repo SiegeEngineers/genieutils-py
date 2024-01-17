@@ -1,11 +1,12 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler, TILE_TYPE_COUNT, TERRAIN_UNITS_SIZE
+from src.common import ByteHandler, TILE_TYPE_COUNT, TERRAIN_UNITS_SIZE, GenieClass
 from src.framedata import FrameData
 
 
 @dataclass
-class Terrain(ByteHandler):
+class Terrain(GenieClass):
     enabled: int
     random: int
     is_water: int
@@ -45,43 +46,45 @@ class Terrain(ByteHandler):
     number_of_terrain_units_used: int
     phantom: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.enabled = self.read_int_8()
-        self.random = self.read_int_8()
-        self.is_water = self.read_int_8()
-        self.hide_in_editor = self.read_int_8()
-        self.string_id = self.read_int_32()
-        self.name = self.read_debug_string()
-        self.name_2 = self.read_debug_string()
-        self.slp = self.read_int_32()
-        self.shape_ptr = self.read_int_32()
-        self.sound_id = self.read_int_32()
-        self.wwise_sound_id = self.read_int_32(signed=False)
-        self.wwise_sound_stop_id = self.read_int_32(signed=False)
-        self.blend_priority = self.read_int_32()
-        self.blend_type = self.read_int_32()
-        self.overlay_mask_name = self.read_debug_string()
-        self.colors = self.read_int_8_array(3)
-        self.cliffColors = self.read_int_8_array(2)
-        self.passable_terrain = self.read_int_8()
-        self.impassable_terrain = self.read_int_8()
-        self.is_animated = self.read_int_8()
-        self.animation_frames = self.read_int_16()
-        self.pause_frames = self.read_int_16()
-        self.interval = self.read_float()
-        self.pause_between_loops = self.read_float()
-        self.frame = self.read_int_16()
-        self.draw_frame = self.read_int_16()
-        self.animate_last = self.read_float()
-        self.frame_changed = self.read_int_8()
-        self.drawn = self.read_int_8()
-        self.frame_data = self.read_class_array(FrameData, TILE_TYPE_COUNT)
-        self.terrain_to_draw = self.read_int_16()
-        self.terrain_dimensions = self.read_int_16_array(2)
-        self.terrain_unit_masked_density = self.read_int_16_array(TERRAIN_UNITS_SIZE)
-        self.terrain_unit_id = self.read_int_16_array(TERRAIN_UNITS_SIZE)
-        self.terrain_unit_density = self.read_int_16_array(TERRAIN_UNITS_SIZE)
-        self.terrain_unit_centering = self.read_int_8_array(TERRAIN_UNITS_SIZE)
-        self.number_of_terrain_units_used = self.read_int_16()
-        self.phantom = self.read_int_16()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            enabled=content.read_int_8(),
+            random=content.read_int_8(),
+            is_water=content.read_int_8(),
+            hide_in_editor=content.read_int_8(),
+            string_id=content.read_int_32(),
+            name=content.read_debug_string(),
+            name_2=content.read_debug_string(),
+            slp=content.read_int_32(),
+            shape_ptr=content.read_int_32(),
+            sound_id=content.read_int_32(),
+            wwise_sound_id=content.read_int_32(signed=False),
+            wwise_sound_stop_id=content.read_int_32(signed=False),
+            blend_priority=content.read_int_32(),
+            blend_type=content.read_int_32(),
+            overlay_mask_name=content.read_debug_string(),
+            colors=content.read_int_8_array(3),
+            cliffColors=content.read_int_8_array(2),
+            passable_terrain=content.read_int_8(),
+            impassable_terrain=content.read_int_8(),
+            is_animated=content.read_int_8(),
+            animation_frames=content.read_int_16(),
+            pause_frames=content.read_int_16(),
+            interval=content.read_float(),
+            pause_between_loops=content.read_float(),
+            frame=content.read_int_16(),
+            draw_frame=content.read_int_16(),
+            animate_last=content.read_float(),
+            frame_changed=content.read_int_8(),
+            drawn=content.read_int_8(),
+            frame_data=content.read_class_array(FrameData, TILE_TYPE_COUNT),
+            terrain_to_draw=content.read_int_16(),
+            terrain_dimensions=content.read_int_16_array(2),
+            terrain_unit_masked_density=content.read_int_16_array(TERRAIN_UNITS_SIZE),
+            terrain_unit_id=content.read_int_16_array(TERRAIN_UNITS_SIZE),
+            terrain_unit_density=content.read_int_16_array(TERRAIN_UNITS_SIZE),
+            terrain_unit_centering=content.read_int_8_array(TERRAIN_UNITS_SIZE),
+            number_of_terrain_units_used=content.read_int_16(),
+            phantom=content.read_int_16(),
+        )

@@ -1,10 +1,11 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class MapLand(ByteHandler):
+class MapLand(GenieClass):
     land_id: int
     terrain: int
     land_spacing: int
@@ -21,20 +22,22 @@ class MapLand(ByteHandler):
     terrain_edge_fade: int
     clumpiness: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.land_id = self.read_int_32()
-        self.terrain = self.read_int_32(signed=False)
-        self.land_spacing = self.read_int_32()
-        self.base_size = self.read_int_32()
-        self.zone = self.read_int_8()
-        self.placement_type = self.read_int_8()
-        self.padding_1 = self.read_int_16()
-        self.base_x = self.read_int_32()
-        self.base_y = self.read_int_32()
-        self.land_proportion = self.read_int_8()
-        self.by_player_flag = self.read_int_8()
-        self.padding_2 = self.read_int_16()
-        self.start_area_radius = self.read_int_32()
-        self.terrain_edge_fade = self.read_int_32()
-        self.clumpiness = self.read_int_32()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            land_id=content.read_int_32(),
+            terrain=content.read_int_32(signed=False),
+            land_spacing=content.read_int_32(),
+            base_size=content.read_int_32(),
+            zone=content.read_int_8(),
+            placement_type=content.read_int_8(),
+            padding_1=content.read_int_16(),
+            base_x=content.read_int_32(),
+            base_y=content.read_int_32(),
+            land_proportion=content.read_int_8(),
+            by_player_flag=content.read_int_8(),
+            padding_2=content.read_int_16(),
+            start_area_radius=content.read_int_32(),
+            terrain_edge_fade=content.read_int_32(),
+            clumpiness=content.read_int_32(),
+        )

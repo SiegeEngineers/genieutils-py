@@ -1,11 +1,12 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 from src.unit import Unit
 
 
 @dataclass
-class Civ(ByteHandler):
+class Civ(GenieClass):
     player_type: int
     name: str
     resources_size: int
@@ -17,15 +18,27 @@ class Civ(ByteHandler):
     unit_pointers: list[int]
     units: list[Unit | None]
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.player_type = self.read_int_8()
-        self.name = self.read_debug_string()
-        self.resources_size = self.read_int_16()
-        self.tech_tree_id = self.read_int_16()
-        self.team_bonus_id = self.read_int_16()
-        self.resources = self.read_float_array(self.resources_size)
-        self.icon_set = self.read_int_8()
-        self.units_size = self.read_int_16()
-        self.unit_pointers = self.read_int_32_array(self.units_size)
-        self.units = self.read_class_array_with_pointers(Unit, self.units_size, self.unit_pointers)
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        player_type = content.read_int_8()
+        name = content.read_debug_string()
+        resources_size = content.read_int_16()
+        tech_tree_id = content.read_int_16()
+        team_bonus_id = content.read_int_16()
+        resources = content.read_float_array(resources_size)
+        icon_set = content.read_int_8()
+        units_size = content.read_int_16()
+        unit_pointers = content.read_int_32_array(units_size)
+        units = content.read_class_array_with_pointers(Unit, units_size, unit_pointers)
+        return cls(
+            player_type=player_type,
+            name=name,
+            resources_size=resources_size,
+            tech_tree_id=tech_tree_id,
+            team_bonus_id=team_bonus_id,
+            resources=resources,
+            icon_set=icon_set,
+            units_size=units_size,
+            unit_pointers=unit_pointers,
+            units=units,
+        )

@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 from src.techtreecommon import Common
 
 
 @dataclass
-class ResearchConnection(ByteHandler):
+class ResearchConnection(GenieClass):
     id: int
     status: int
     upper_building: int
@@ -20,18 +20,33 @@ class ResearchConnection(ByteHandler):
     location_in_age: int
     line_mode: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.id = self.read_int_32()
-        self.status = self.read_int_8()
-        self.upper_building = self.read_int_32()
-        self.buildings_count = self.read_int_8()
-        self.buildings = self.read_int_32_array(self.buildings_count)
-        self.units_count = self.read_int_8()
-        self.units = self.read_int_32_array(self.units_count)
-        self.techs_count = self.read_int_8()
-        self.techs = self.read_int_32_array(self.techs_count)
-        self.common = self.read_class(Common)
-        self.vertical_line = self.read_int_32()
-        self.location_in_age = self.read_int_32()
-        self.line_mode = self.read_int_32()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler):
+        id = content.read_int_32()
+        status = content.read_int_8()
+        upper_building = content.read_int_32()
+        buildings_count = content.read_int_8()
+        buildings = content.read_int_32_array(buildings_count)
+        units_count = content.read_int_8()
+        units = content.read_int_32_array(units_count)
+        techs_count = content.read_int_8()
+        techs = content.read_int_32_array(techs_count)
+        common = content.read_class(Common)
+        vertical_line = content.read_int_32()
+        location_in_age = content.read_int_32()
+        line_mode = content.read_int_32()
+        return cls(
+            id=id,
+            status=status,
+            upper_building=upper_building,
+            buildings_count=buildings_count,
+            buildings=buildings,
+            units_count=units_count,
+            units=units,
+            techs_count=techs_count,
+            techs=techs,
+            common=common,
+            vertical_line=vertical_line,
+            location_in_age=location_in_age,
+            line_mode=line_mode,
+        )

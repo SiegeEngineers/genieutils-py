@@ -1,3 +1,4 @@
+from abc import ABC
 from enum import IntEnum
 from typing import TypeVar
 
@@ -21,7 +22,17 @@ class UnitType(IntEnum):
     AoeTrees = 90
 
 
-C = TypeVar('C')
+class GenieClass(ABC):
+    @classmethod
+    def from_bytes(cls, data: 'ByteHandler'):
+        raise NotImplementedError
+
+    @classmethod
+    def from_bytes_with_count(cls, data: 'ByteHandler', terrains_used_1: int):
+        raise NotImplementedError
+
+
+C = TypeVar('C', bound=GenieClass)
 
 
 class ByteHandler:
@@ -37,8 +48,6 @@ class ByteHandler:
 
     def read_debug_string(self) -> str:
         tmp_size = self.read_int_16(signed=False)
-        if tmp_size != 0x0A60:
-            pass
         assert tmp_size == 0x0A60
         size = self.read_int_16(signed=False)
         return String.from_bytes(self.consume_range(size))
@@ -83,16 +92,14 @@ class ByteHandler:
         return elements
 
     def read_class(self, class_: type[C]) -> C:
-        element = class_(self.content[self.offset:])
-        self.offset += element.offset
+        element = class_.from_bytes(self)
         return element
 
     def read_class_array(self, class_: type[C], size: int) -> list[C]:
         elements = []
         for i in range(size):
-            element = class_(self.content[self.offset:])
+            element = class_.from_bytes(self)
             elements.append(element)
-            self.offset += element.offset
         return elements
 
     def read_class_array_with_pointers(self, class_: type[C], size: int, pointers: list[int]) -> list[C | None]:
@@ -100,7 +107,13 @@ class ByteHandler:
         for i in range(size):
             element = None
             if pointers[i]:
-                element = class_(self.content[self.offset:])
-                self.offset += element.offset
+                element = class_.from_bytes(self)
             elements.append(element)
+        return elements
+
+    def read_class_array_with_param(self,  class_: type[C], size: int, terrains_used_1: int) -> list[C]:
+        elements = []
+        for i in range(size):
+            terrain_restriction = class_.from_bytes_with_count(self, terrains_used_1)
+            elements.append(terrain_restriction)
         return elements

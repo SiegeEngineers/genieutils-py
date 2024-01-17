@@ -1,10 +1,11 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class Task(ByteHandler):
+class Task(GenieClass):
     task_type: int
     id: int
     is_default: int
@@ -37,36 +38,38 @@ class Task(ByteHandler):
     wwise_resource_gathering_sound_id: int
     wwise_resource_deposit_sound_id: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.task_type = self.read_int_16()
-        self.id = self.read_int_16()
-        self.is_default = self.read_int_8()
-        self.action_type = self.read_int_16()
-        self.class_id = self.read_int_16()
-        self.unit_id = self.read_int_16()
-        self.terrain_id = self.read_int_16()
-        self.resource_in = self.read_int_16()
-        self.resource_multiplier = self.read_int_16()
-        self.resource_out = self.read_int_16()
-        self.unused_resource = self.read_int_16()
-        self.work_value_1 = self.read_float()
-        self.work_value_2 = self.read_float()
-        self.work_range = self.read_float()
-        self.auto_search_targets = self.read_int_8()
-        self.search_wait_time = self.read_float()
-        self.enable_targeting = self.read_int_8()
-        self.combat_level_flag = self.read_int_8()
-        self.gather_type = self.read_int_16()
-        self.work_flag_2 = self.read_int_16()
-        self.target_diplomacy = self.read_int_8()
-        self.carry_check = self.read_int_8()
-        self.pick_for_construction = self.read_int_8()
-        self.moving_graphic_id = self.read_int_16()
-        self.proceeding_graphic_id = self.read_int_16()
-        self.working_graphic_id = self.read_int_16()
-        self.carrying_graphic_id = self.read_int_16()
-        self.resource_gathering_sound_id = self.read_int_16()
-        self.resource_deposit_sound_id = self.read_int_16()
-        self.wwise_resource_gathering_sound_id = self.read_int_32()
-        self.wwise_resource_deposit_sound_id = self.read_int_32()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            task_type=content.read_int_16(),
+            id=content.read_int_16(),
+            is_default=content.read_int_8(),
+            action_type=content.read_int_16(),
+            class_id=content.read_int_16(),
+            unit_id=content.read_int_16(),
+            terrain_id=content.read_int_16(),
+            resource_in=content.read_int_16(),
+            resource_multiplier=content.read_int_16(),
+            resource_out=content.read_int_16(),
+            unused_resource=content.read_int_16(),
+            work_value_1=content.read_float(),
+            work_value_2=content.read_float(),
+            work_range=content.read_float(),
+            auto_search_targets=content.read_int_8(),
+            search_wait_time=content.read_float(),
+            enable_targeting=content.read_int_8(),
+            combat_level_flag=content.read_int_8(),
+            gather_type=content.read_int_16(),
+            work_flag_2=content.read_int_16(),
+            target_diplomacy=content.read_int_8(),
+            carry_check=content.read_int_8(),
+            pick_for_construction=content.read_int_8(),
+            moving_graphic_id=content.read_int_16(),
+            proceeding_graphic_id=content.read_int_16(),
+            working_graphic_id=content.read_int_16(),
+            carrying_graphic_id=content.read_int_16(),
+            resource_gathering_sound_id=content.read_int_16(),
+            resource_deposit_sound_id=content.read_int_16(),
+            wwise_resource_gathering_sound_id=content.read_int_32(),
+            wwise_resource_deposit_sound_id=content.read_int_32(),
+        )

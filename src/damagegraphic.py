@@ -1,16 +1,19 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class DamageGraphic(ByteHandler):
+class DamageGraphic(GenieClass):
     graphic_id: int
     damage_percent: int
     apply_mode: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.graphic_id = self.read_int_16()
-        self.damage_percent = self.read_int_16()
-        self.apply_mode = self.read_int_8()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            graphic_id=content.read_int_16(),
+            damage_percent=content.read_int_16(),
+            apply_mode=content.read_int_8(),
+        )

@@ -1,10 +1,11 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class PlayerColour(ByteHandler):
+class PlayerColour(GenieClass):
     id: int
     player_color_base: int
     unit_outline_color: int
@@ -15,14 +16,16 @@ class PlayerColour(ByteHandler):
     minimap_color_3: int
     statistics_text: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.id = self.read_int_32()
-        self.player_color_base = self.read_int_32()
-        self.unit_outline_color = self.read_int_32()
-        self.unit_selection_color_1 = self.read_int_32()
-        self.unit_selection_color_2 = self.read_int_32()
-        self.minimap_color = self.read_int_32()
-        self.minimap_color_2 = self.read_int_32()
-        self.minimap_color_3 = self.read_int_32()
-        self.statistics_text = self.read_int_32()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            id=content.read_int_32(),
+            player_color_base=content.read_int_32(),
+            unit_outline_color=content.read_int_32(),
+            unit_selection_color_1=content.read_int_32(),
+            unit_selection_color_2=content.read_int_32(),
+            minimap_color=content.read_int_32(),
+            minimap_color_2=content.read_int_32(),
+            minimap_color_3=content.read_int_32(),
+            statistics_text=content.read_int_32(),
+        )

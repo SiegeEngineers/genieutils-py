@@ -1,12 +1,13 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 from src.graphicanglesound import GraphicAngleSound
 from src.graphicdelta import GraphicDelta
 
 
 @dataclass
-class Graphic(ByteHandler):
+class Graphic(GenieClass):
     name: str
     file_name: str
     particle_effect_name: str
@@ -33,31 +34,57 @@ class Graphic(ByteHandler):
     deltas: list[GraphicDelta]
     angle_sounds: list[GraphicAngleSound]
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-
-        self.name = self.read_debug_string()
-        self.file_name = self.read_debug_string()
-        self.particle_effect_name = self.read_debug_string()
-        self.slp = self.read_int_32()
-        self.is_loaded = self.read_int_8()
-        self.old_color_flag = self.read_int_8()
-        self.layer = self.read_int_8()
-        self.player_color = self.read_int_16()
-        self.transparent_selection = self.read_int_8()
-        self.coordinates = self.read_int_16_array(4)
-        self.delta_count = self.read_int_16()
-        self.sound_id = self.read_int_16()
-        self.wwise_sound_id = self.read_int_32()
-        self.angle_sounds_used = self.read_int_8()
-        self.frame_count = self.read_int_16()
-        self.angle_count = self.read_int_16()
-        self.speed_multiplier = self.read_float()
-        self.frame_duration = self.read_float()
-        self.replay_delay = self.read_float()
-        self.sequence_type = self.read_int_8()
-        self.id = self.read_int_16()
-        self.mirroring_mode = self.read_int_8()
-        self.editor_flag = self.read_int_8()
-        self.deltas = self.read_class_array(GraphicDelta, self.delta_count)
-        self.angle_sounds = self.read_class_array(GraphicAngleSound, self.angle_count) if self.angle_sounds_used else []
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        name = content.read_debug_string()
+        file_name = content.read_debug_string()
+        particle_effect_name = content.read_debug_string()
+        slp = content.read_int_32()
+        is_loaded = content.read_int_8()
+        old_color_flag = content.read_int_8()
+        layer = content.read_int_8()
+        player_color = content.read_int_16()
+        transparent_selection = content.read_int_8()
+        coordinates = content.read_int_16_array(4)
+        delta_count = content.read_int_16()
+        sound_id = content.read_int_16()
+        wwise_sound_id = content.read_int_32()
+        angle_sounds_used = content.read_int_8()
+        frame_count = content.read_int_16()
+        angle_count = content.read_int_16()
+        speed_multiplier = content.read_float()
+        frame_duration = content.read_float()
+        replay_delay = content.read_float()
+        sequence_type = content.read_int_8()
+        id_ = content.read_int_16()
+        mirroring_mode = content.read_int_8()
+        editor_flag = content.read_int_8()
+        deltas = content.read_class_array(GraphicDelta, delta_count)
+        angle_sounds = content.read_class_array(GraphicAngleSound, angle_count) if angle_sounds_used else []
+        return cls(
+            name=name,
+            file_name=file_name,
+            particle_effect_name=particle_effect_name,
+            slp=slp,
+            is_loaded=is_loaded,
+            old_color_flag=old_color_flag,
+            layer=layer,
+            player_color=player_color,
+            transparent_selection=transparent_selection,
+            coordinates=coordinates,
+            delta_count=delta_count,
+            sound_id=sound_id,
+            wwise_sound_id=wwise_sound_id,
+            angle_sounds_used=angle_sounds_used,
+            frame_count=frame_count,
+            angle_count=angle_count,
+            speed_multiplier=speed_multiplier,
+            frame_duration=frame_duration,
+            replay_delay=replay_delay,
+            sequence_type=sequence_type,
+            id=id_,
+            mirroring_mode=mirroring_mode,
+            editor_flag=editor_flag,
+            deltas=deltas,
+            angle_sounds=angle_sounds,
+        )

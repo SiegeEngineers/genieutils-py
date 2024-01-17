@@ -1,14 +1,17 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class AttackOrArmor(ByteHandler):
+class AttackOrArmor(GenieClass):
     class_: int
     amount: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.class_ = self.read_int_16()
-        self.amount = self.read_int_16()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            class_=content.read_int_16(),
+            amount=content.read_int_16(),
+        )

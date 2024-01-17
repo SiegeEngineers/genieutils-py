@@ -1,11 +1,12 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 from src.researchresourcecost import ResearchResourceCost
 
 
 @dataclass
-class Tech(ByteHandler):
+class Tech(GenieClass):
     required_techs: list[int]
     resource_costs: list[ResearchResourceCost]
     required_tech_count: int
@@ -25,23 +26,25 @@ class Tech(ByteHandler):
     name: str
     repeatable: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.required_techs = self.read_int_16_array(6)
-        self.resource_costs = self.read_class_array(ResearchResourceCost, 3)
-        self.required_tech_count = self.read_int_16()
-        self.civ = self.read_int_16()
-        self.full_tech_mode = self.read_int_16()
-        self.research_location = self.read_int_16()
-        self.language_dll_name = self.read_int_32()
-        self.language_dll_description = self.read_int_32()
-        self.research_time = self.read_int_16()
-        self.effect_id = self.read_int_16()
-        self.type = self.read_int_16()
-        self.icon_id = self.read_int_16()
-        self.button_id = self.read_int_8()
-        self.language_dll_help = self.read_int_32()
-        self.language_dll_tech_tree = self.read_int_32()
-        self.hot_key = self.read_int_32()
-        self.name = self.read_debug_string()
-        self.repeatable = self.read_int_8()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            required_techs=content.read_int_16_array(6),
+            resource_costs=content.read_class_array(ResearchResourceCost, 3),
+            required_tech_count=content.read_int_16(),
+            civ=content.read_int_16(),
+            full_tech_mode=content.read_int_16(),
+            research_location=content.read_int_16(),
+            language_dll_name=content.read_int_32(),
+            language_dll_description=content.read_int_32(),
+            research_time=content.read_int_16(),
+            effect_id=content.read_int_16(),
+            type=content.read_int_16(),
+            icon_id=content.read_int_16(),
+            button_id=content.read_int_8(),
+            language_dll_help=content.read_int_32(),
+            language_dll_tech_tree=content.read_int_32(),
+            hot_key=content.read_int_32(),
+            name=content.read_debug_string(),
+            repeatable=content.read_int_8(),
+        )

@@ -12,8 +12,9 @@ DECOMPRESSED_DAT = Path(__file__).with_name('empires2_x2_p1.decompressed.dat')
 def main():
     # content = DAT.read_bytes()
     # decompressed = zlib.decompress(content, wbits=-15)
-    decompressed = DECOMPRESSED_DAT.read_bytes()
-    dat_file = DatFile(memoryview(decompressed))
+    # decompressed = DECOMPRESSED_DAT.read_bytes()
+    # dat_file = DatFile(memoryview(decompressed))
+    dat_file = DatFile.parse(DAT)
     print(json.dumps(dataclasses.asdict(dat_file), indent=2))
 
 

@@ -1,11 +1,12 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 from src.techtreecommon import Common
 
 
 @dataclass
-class UnitConnection(ByteHandler):
+class UnitConnection(GenieClass):
     id: int
     status: int
     upper_building: int
@@ -18,16 +19,29 @@ class UnitConnection(ByteHandler):
     line_mode: int
     enabling_research: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.id = self.read_int_32()
-        self.status = self.read_int_8()
-        self.upper_building = self.read_int_32()
-        self.common = self.read_class(Common)
-        self.vertical_line = self.read_int_32()
-        self.units_count = self.read_int_8()
-        self.units = self.read_int_32_array(self.units_count)
-        self.location_in_age = self.read_int_32()
-        self.required_research = self.read_int_32()
-        self.line_mode = self.read_int_32()
-        self.enabling_research = self.read_int_32()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        id = content.read_int_32()
+        status = content.read_int_8()
+        upper_building = content.read_int_32()
+        common = content.read_class(Common)
+        vertical_line = content.read_int_32()
+        units_count = content.read_int_8()
+        units = content.read_int_32_array(units_count)
+        location_in_age = content.read_int_32()
+        required_research = content.read_int_32()
+        line_mode = content.read_int_32()
+        enabling_research = content.read_int_32()
+        return cls(
+            id=id,
+            status=status,
+            upper_building=upper_building,
+            common=common,
+            vertical_line=vertical_line,
+            units_count=units_count,
+            units=units,
+            location_in_age=location_in_age,
+            required_research=required_research,
+            line_mode=line_mode,
+            enabling_research=enabling_research,
+        )

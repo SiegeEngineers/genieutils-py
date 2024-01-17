@@ -1,16 +1,19 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class ResourceCost(ByteHandler):
+class ResourceCost(GenieClass):
     type: int
     amount: int
     flag: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.type = self.read_int_16()
-        self.amount = self.read_int_16()
-        self.flag = self.read_int_16()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            type=content.read_int_16(),
+            amount=content.read_int_16(),
+            flag=content.read_int_16(),
+        )

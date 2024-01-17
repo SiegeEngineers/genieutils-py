@@ -1,11 +1,12 @@
+import typing
 from dataclasses import dataclass
 
 from src.buildingannex import BuildingAnnex
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class Building(ByteHandler):
+class Building(GenieClass):
     construction_graphic_id: int
     snow_graphic_id: int
     destruction_graphic_id: int
@@ -33,31 +34,33 @@ class Building(ByteHandler):
     pile_unit: int
     looting_table: list[int]
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.construction_graphic_id = self.read_int_16()
-        self.snow_graphic_id = self.read_int_16()
-        self.destruction_graphic_id = self.read_int_16()
-        self.destruction_rubble_graphic_id = self.read_int_16()
-        self.researching_graphic = self.read_int_16()
-        self.research_completed_graphic = self.read_int_16()
-        self.adjacent_mode = self.read_int_8()
-        self.graphics_angle = self.read_int_16()
-        self.disappears_when_built = self.read_int_8()
-        self.stack_unit_id = self.read_int_16()
-        self.foundation_terrain_id = self.read_int_16()
-        self.old_overlap_id = self.read_int_16()
-        self.tech_id = self.read_int_16()
-        self.can_burn = self.read_int_8()
-        self.annexes = self.read_class_array(BuildingAnnex, 4)
-        self.head_unit = self.read_int_16()
-        self.transform_unit = self.read_int_16()
-        self.transform_sound = self.read_int_16()
-        self.construction_sound = self.read_int_16()
-        self.wwise_transform_sound_id = self.read_int_32()
-        self.wwise_construction_sound_id = self.read_int_32()
-        self.garrison_type = self.read_int_8()
-        self.garrison_heal_rate = self.read_float()
-        self.garrison_repair_rate = self.read_float()
-        self.pile_unit = self.read_int_16()
-        self.looting_table = self.read_int_8_array(6)
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            construction_graphic_id=content.read_int_16(),
+            snow_graphic_id=content.read_int_16(),
+            destruction_graphic_id=content.read_int_16(),
+            destruction_rubble_graphic_id=content.read_int_16(),
+            researching_graphic=content.read_int_16(),
+            research_completed_graphic=content.read_int_16(),
+            adjacent_mode=content.read_int_8(),
+            graphics_angle=content.read_int_16(),
+            disappears_when_built=content.read_int_8(),
+            stack_unit_id=content.read_int_16(),
+            foundation_terrain_id=content.read_int_16(),
+            old_overlap_id=content.read_int_16(),
+            tech_id=content.read_int_16(),
+            can_burn=content.read_int_8(),
+            annexes=content.read_class_array(BuildingAnnex, 4),
+            head_unit=content.read_int_16(),
+            transform_unit=content.read_int_16(),
+            transform_sound=content.read_int_16(),
+            construction_sound=content.read_int_16(),
+            wwise_transform_sound_id=content.read_int_32(),
+            wwise_construction_sound_id=content.read_int_32(),
+            garrison_type=content.read_int_8(),
+            garrison_heal_rate=content.read_float(),
+            garrison_repair_rate=content.read_float(),
+            pile_unit=content.read_int_16(),
+            looting_table=content.read_int_8_array(6),
+        )

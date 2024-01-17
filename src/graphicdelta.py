@@ -1,10 +1,11 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class GraphicDelta(ByteHandler):
+class GraphicDelta(GenieClass):
     graphic_id: int
     padding_1: int
     sprite_ptr: int
@@ -13,12 +14,14 @@ class GraphicDelta(ByteHandler):
     display_angle: int
     padding_2: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.graphic_id = self.read_int_16()
-        self.padding_1 = self.read_int_16()
-        self.sprite_ptr = self.read_int_32()
-        self.offset_x = self.read_int_16()
-        self.offset_y = self.read_int_16()
-        self.display_angle = self.read_int_16()
-        self.padding_2 = self.read_int_16()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            graphic_id=content.read_int_16(),
+            padding_1=content.read_int_16(),
+            sprite_ptr=content.read_int_32(),
+            offset_x=content.read_int_16(),
+            offset_y=content.read_int_16(),
+            display_angle=content.read_int_16(),
+            padding_2=content.read_int_16(),
+        )

@@ -1,10 +1,11 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class DeadFish(ByteHandler):
+class DeadFish(GenieClass):
     walking_graphic: int
     running_graphic: int
     rotation_speed: float
@@ -20,19 +21,21 @@ class DeadFish(ByteHandler):
     max_yaw_per_second_stationary: float
     min_collision_size_multiplier: float
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.walking_graphic = self.read_int_16()
-        self.running_graphic = self.read_int_16()
-        self.rotation_speed = self.read_float()
-        self.old_size_class = self.read_int_8()
-        self.tracking_unit = self.read_int_16()
-        self.tracking_unit_mode = self.read_int_8()
-        self.tracking_unit_density = self.read_float()
-        self.old_move_algorithm = self.read_int_8()
-        self.turn_radius = self.read_float()
-        self.turn_radius_speed = self.read_float()
-        self.max_yaw_per_second_moving = self.read_float()
-        self.stationary_yaw_revolution_time = self.read_float()
-        self.max_yaw_per_second_stationary = self.read_float()
-        self.min_collision_size_multiplier = self.read_float()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            walking_graphic=content.read_int_16(),
+            running_graphic=content.read_int_16(),
+            rotation_speed=content.read_float(),
+            old_size_class=content.read_int_8(),
+            tracking_unit=content.read_int_16(),
+            tracking_unit_mode=content.read_int_8(),
+            tracking_unit_density=content.read_float(),
+            old_move_algorithm=content.read_int_8(),
+            turn_radius=content.read_float(),
+            turn_radius_speed=content.read_float(),
+            max_yaw_per_second_moving=content.read_float(),
+            stationary_yaw_revolution_time=content.read_float(),
+            max_yaw_per_second_stationary=content.read_float(),
+            min_collision_size_multiplier=content.read_float(),
+        )

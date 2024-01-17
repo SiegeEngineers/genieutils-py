@@ -1,6 +1,7 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 from src.mapelevation import MapElevation
 from src.mapland import MapLand
 from src.mapterrain import MapTerrain
@@ -8,7 +9,7 @@ from src.mapunit import MapUnit
 
 
 @dataclass
-class MapInfo(ByteHandler):
+class MapInfo(GenieClass):
     map_id: int
     border_south_west: int
     border_north_west: int
@@ -32,27 +33,51 @@ class MapInfo(ByteHandler):
     map_elevations_ptr: int
     map_elevations: list[MapElevation]
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.map_id = self.read_int_32()
-        self.border_south_west = self.read_int_32()
-        self.border_north_west = self.read_int_32()
-        self.border_north_east = self.read_int_32()
-        self.border_south_east = self.read_int_32()
-        self.border_usage = self.read_int_32()
-        self.water_shape = self.read_int_32()
-        self.base_terrain = self.read_int_32()
-        self.land_coverage = self.read_int_32()
-        self.unused_id = self.read_int_32()
-        self.map_lands_size = self.read_int_32(signed=False)
-        self.map_lands_ptr = self.read_int_32()
-        self.map_lands = self.read_class_array(MapLand, self.map_lands_size)
-        self.map_terrains_size = self.read_int_32(signed=False)
-        self.map_terrains_ptr = self.read_int_32()
-        self.map_terrains = self.read_class_array(MapTerrain, self.map_terrains_size)
-        self.map_units_size = self.read_int_32(signed=False)
-        self.map_units_ptr = self.read_int_32()
-        self.map_units = self.read_class_array(MapUnit, self.map_units_size)
-        self.map_elevations_size = self.read_int_32(signed=False)
-        self.map_elevations_ptr = self.read_int_32()
-        self.map_elevations = self.read_class_array(MapElevation, self.map_elevations_size)
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        map_id = content.read_int_32()
+        border_south_west = content.read_int_32()
+        border_north_west = content.read_int_32()
+        border_north_east = content.read_int_32()
+        border_south_east = content.read_int_32()
+        border_usage = content.read_int_32()
+        water_shape = content.read_int_32()
+        base_terrain = content.read_int_32()
+        land_coverage = content.read_int_32()
+        unused_id = content.read_int_32()
+        map_lands_size = content.read_int_32(signed=False)
+        map_lands_ptr = content.read_int_32()
+        map_lands = content.read_class_array(MapLand, map_lands_size)
+        map_terrains_size = content.read_int_32(signed=False)
+        map_terrains_ptr = content.read_int_32()
+        map_terrains = content.read_class_array(MapTerrain, map_terrains_size)
+        map_units_size = content.read_int_32(signed=False)
+        map_units_ptr = content.read_int_32()
+        map_units = content.read_class_array(MapUnit, map_units_size)
+        map_elevations_size = content.read_int_32(signed=False)
+        map_elevations_ptr = content.read_int_32()
+        map_elevations = content.read_class_array(MapElevation, map_elevations_size)
+        return cls(
+            map_id=map_id,
+            border_south_west=border_south_west,
+            border_north_west=border_north_west,
+            border_north_east=border_north_east,
+            border_south_east=border_south_east,
+            border_usage=border_usage,
+            water_shape=water_shape,
+            base_terrain=base_terrain,
+            land_coverage=land_coverage,
+            unused_id=unused_id,
+            map_lands_size=map_lands_size,
+            map_lands_ptr=map_lands_ptr,
+            map_lands=map_lands,
+            map_terrains_size=map_terrains_size,
+            map_terrains_ptr=map_terrains_ptr,
+            map_terrains=map_terrains,
+            map_units_size=map_units_size,
+            map_units_ptr=map_units_ptr,
+            map_units=map_units,
+            map_elevations_size=map_elevations_size,
+            map_elevations_ptr=map_elevations_ptr,
+            map_elevations=map_elevations,
+        )

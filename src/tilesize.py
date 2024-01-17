@@ -1,16 +1,19 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class TileSize(ByteHandler):
+class TileSize(GenieClass):
     width: int
     height: int
     delta_y: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.width = self.read_int_16()
-        self.height = self.read_int_16()
-        self.delta_y = self.read_int_16()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            width=content.read_int_16(),
+            height=content.read_int_16(),
+            delta_y=content.read_int_16(),
+        )

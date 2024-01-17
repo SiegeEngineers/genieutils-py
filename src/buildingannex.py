@@ -1,16 +1,19 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class BuildingAnnex(ByteHandler):
+class BuildingAnnex(GenieClass):
     unit_id: int
     misplacement_x: float
     misplacement_y: float
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.unit_id = self.read_int_16()
-        self.misplacement_x = self.read_float()
-        self.misplacement_y = self.read_float()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            unit_id=content.read_int_16(),
+            misplacement_x=content.read_float(),
+            misplacement_y=content.read_float(),
+        )

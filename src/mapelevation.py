@@ -1,10 +1,11 @@
+import typing
 from dataclasses import dataclass
 
-from src.common import ByteHandler
+from src.common import ByteHandler, GenieClass
 
 
 @dataclass
-class MapElevation(ByteHandler):
+class MapElevation(GenieClass):
     proportion: int
     terrain: int
     clump_count: int
@@ -12,11 +13,13 @@ class MapElevation(ByteHandler):
     base_elevation: int
     tile_spacing: int
 
-    def __init__(self, content: memoryview):
-        super().__init__(content)
-        self.proportion = self.read_int_32()
-        self.terrain = self.read_int_32()
-        self.clump_count = self.read_int_32()
-        self.base_terrain = self.read_int_32()
-        self.base_elevation = self.read_int_32()
-        self.tile_spacing = self.read_int_32()
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> typing.Self:
+        return cls(
+            proportion=content.read_int_32(),
+            terrain=content.read_int_32(),
+            clump_count=content.read_int_32(),
+            base_terrain=content.read_int_32(),
+            base_elevation=content.read_int_32(),
+            tile_spacing=content.read_int_32(),
+        )
