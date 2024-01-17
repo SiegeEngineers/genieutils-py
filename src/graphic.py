@@ -1,9 +1,56 @@
-import typing
 from dataclasses import dataclass
 
 from src.common import ByteHandler, GenieClass
-from src.graphicanglesound import GraphicAngleSound
-from src.graphicdelta import GraphicDelta
+
+
+@dataclass
+class GraphicDelta(GenieClass):
+    graphic_id: int
+    padding_1: int
+    sprite_ptr: int
+    offset_x: int
+    offset_y: int
+    display_angle: int
+    padding_2: int
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'GraphicDelta':
+        return cls(
+            graphic_id=content.read_int_16(),
+            padding_1=content.read_int_16(),
+            sprite_ptr=content.read_int_32(),
+            offset_x=content.read_int_16(),
+            offset_y=content.read_int_16(),
+            display_angle=content.read_int_16(),
+            padding_2=content.read_int_16(),
+        )
+
+
+@dataclass
+class GraphicAngleSound(GenieClass):
+    frame_num: int
+    sound_id: int
+    wwise_sound_id: int
+    frame_num_2: int
+    sound_id_2: int
+    wwise_sound_id_2: int
+    frame_num_3: int
+    sound_id_3: int
+    wwise_sound_id_3: int
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'GraphicAngleSound':
+        return cls(
+            frame_num=content.read_int_16(),
+            sound_id=content.read_int_16(),
+            wwise_sound_id=content.read_int_32(),
+            frame_num_2=content.read_int_16(),
+            sound_id_2=content.read_int_16(),
+            wwise_sound_id_2=content.read_int_32(),
+            frame_num_3=content.read_int_16(),
+            sound_id_3=content.read_int_16(),
+            wwise_sound_id_3=content.read_int_32(),
+        )
 
 
 @dataclass

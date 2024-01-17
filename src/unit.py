@@ -1,15 +1,386 @@
-import typing
 from dataclasses import dataclass
 
-from src.bird import Bird
-from src.building import Building
 from src.common import ByteHandler, UnitType, GenieClass
-from src.creatable import Creatable
-from src.damagegraphic import DamageGraphic
-from src.deadfish import DeadFish
-from src.projectile import Projectile
-from src.resourcestorage import ResourceStorage
-from src.type50 import Type50
+from src.task import Task
+
+
+@dataclass
+class ResourceStorage(GenieClass):
+    type: int
+    amount: float
+    flag: int
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'ResourceStorage':
+        return cls(
+            type=content.read_int_16(),
+            amount=content.read_float(),
+            flag=content.read_int_8(),
+        )
+
+
+@dataclass
+class DamageGraphic(GenieClass):
+    graphic_id: int
+    damage_percent: int
+    apply_mode: int
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'DamageGraphic':
+        return cls(
+            graphic_id=content.read_int_16(),
+            damage_percent=content.read_int_16(),
+            apply_mode=content.read_int_8(),
+        )
+
+
+@dataclass
+class DeadFish(GenieClass):
+    walking_graphic: int
+    running_graphic: int
+    rotation_speed: float
+    old_size_class: int
+    tracking_unit: int
+    tracking_unit_mode: int
+    tracking_unit_density: float
+    old_move_algorithm: int
+    turn_radius: float
+    turn_radius_speed: float
+    max_yaw_per_second_moving: float
+    stationary_yaw_revolution_time: float
+    max_yaw_per_second_stationary: float
+    min_collision_size_multiplier: float
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'DeadFish':
+        return cls(
+            walking_graphic=content.read_int_16(),
+            running_graphic=content.read_int_16(),
+            rotation_speed=content.read_float(),
+            old_size_class=content.read_int_8(),
+            tracking_unit=content.read_int_16(),
+            tracking_unit_mode=content.read_int_8(),
+            tracking_unit_density=content.read_float(),
+            old_move_algorithm=content.read_int_8(),
+            turn_radius=content.read_float(),
+            turn_radius_speed=content.read_float(),
+            max_yaw_per_second_moving=content.read_float(),
+            stationary_yaw_revolution_time=content.read_float(),
+            max_yaw_per_second_stationary=content.read_float(),
+            min_collision_size_multiplier=content.read_float(),
+        )
+
+
+@dataclass
+class Bird(GenieClass):
+    default_task_id: int
+    search_radius: float
+    work_rate: float
+    drop_sites: list[int]
+    task_swap_group: int
+    attack_sound: int
+    move_sound: int
+    wwise_attack_sound_id: int
+    wwise_move_sound_id: int
+    run_pattern: int
+    task_size: int
+    tasks: list[Task]
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'Bird':
+        default_task_id = content.read_int_16()
+        search_radius = content.read_float()
+        work_rate = content.read_float()
+        drop_sites = content.read_int_16_array(3)
+        task_swap_group = content.read_int_8()
+        attack_sound = content.read_int_16()
+        move_sound = content.read_int_16()
+        wwise_attack_sound_id = content.read_int_32()
+        wwise_move_sound_id = content.read_int_32()
+        run_pattern = content.read_int_8()
+        task_size = content.read_int_16()
+        tasks = content.read_class_array(Task, task_size)
+        return cls(
+            default_task_id=default_task_id,
+            search_radius=search_radius,
+            work_rate=work_rate,
+            drop_sites=drop_sites,
+            task_swap_group=task_swap_group,
+            attack_sound=attack_sound,
+            move_sound=move_sound,
+            wwise_attack_sound_id=wwise_attack_sound_id,
+            wwise_move_sound_id=wwise_move_sound_id,
+            run_pattern=run_pattern,
+            task_size=task_size,
+            tasks=tasks,
+        )
+
+
+@dataclass
+class AttackOrArmor(GenieClass):
+    class_: int
+    amount: int
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'AttackOrArmor':
+        return cls(
+            class_=content.read_int_16(),
+            amount=content.read_int_16(),
+        )
+
+
+@dataclass
+class Type50(GenieClass):
+    base_armor: int
+    attack_count: int
+    attacks: list[AttackOrArmor]
+    armour_count: int
+    armours: list[AttackOrArmor]
+    defense_terrain_bonus: int
+    bonus_damage_resistance: float
+    max_range: float
+    blast_width: float
+    reload_time: float
+    projectile_unit_id: int
+    accuracy_percent: int
+    break_off_combat: int
+    frame_delay: int
+    graphic_displacement: list[float]
+    blast_attack_level: int
+    min_range: float
+    accuracy_dispersion: float
+    attack_graphic: int
+    displayed_melee_armour: int
+    displayed_attack: int
+    displayed_range: float
+    displayed_reload_time: float
+    blast_damage: float
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'Type50':
+        base_armor = content.read_int_16()
+        attack_count = content.read_int_16()
+        attacks = content.read_class_array(AttackOrArmor, attack_count)
+        armour_count = content.read_int_16()
+        armours = content.read_class_array(AttackOrArmor, armour_count)
+        defense_terrain_bonus = content.read_int_16()
+        bonus_damage_resistance = content.read_float()
+        max_range = content.read_float()
+        blast_width = content.read_float()
+        reload_time = content.read_float()
+        projectile_unit_id = content.read_int_16()
+        accuracy_percent = content.read_int_16()
+        break_off_combat = content.read_int_8()
+        frame_delay = content.read_int_16()
+        graphic_displacement = content.read_float_array(3)
+        blast_attack_level = content.read_int_8()
+        min_range = content.read_float()
+        accuracy_dispersion = content.read_float()
+        attack_graphic = content.read_int_16()
+        displayed_melee_armour = content.read_int_16()
+        displayed_attack = content.read_int_16()
+        displayed_range = content.read_float()
+        displayed_reload_time = content.read_float()
+        blast_damage = content.read_float()
+        return cls(
+            base_armor=base_armor,
+            attack_count=attack_count,
+            attacks=attacks,
+            armour_count=armour_count,
+            armours=armours,
+            defense_terrain_bonus=defense_terrain_bonus,
+            bonus_damage_resistance=bonus_damage_resistance,
+            max_range=max_range,
+            blast_width=blast_width,
+            reload_time=reload_time,
+            projectile_unit_id=projectile_unit_id,
+            accuracy_percent=accuracy_percent,
+            break_off_combat=break_off_combat,
+            frame_delay=frame_delay,
+            graphic_displacement=graphic_displacement,
+            blast_attack_level=blast_attack_level,
+            min_range=min_range,
+            accuracy_dispersion=accuracy_dispersion,
+            attack_graphic=attack_graphic,
+            displayed_melee_armour=displayed_melee_armour,
+            displayed_attack=displayed_attack,
+            displayed_range=displayed_range,
+            displayed_reload_time=displayed_reload_time,
+            blast_damage=blast_damage,
+        )
+
+
+@dataclass
+class Projectile(GenieClass):
+    projectile_type: int
+    smart_mode: int
+    hit_mode: int
+    vanish_mode: int
+    area_effect_specials: int
+    projectile_arc: float
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'Projectile':
+        return cls(
+            projectile_type=content.read_int_8(),
+            smart_mode=content.read_int_8(),
+            hit_mode=content.read_int_8(),
+            vanish_mode=content.read_int_8(),
+            area_effect_specials=content.read_int_8(),
+            projectile_arc=content.read_float(),
+        )
+
+
+@dataclass
+class ResourceCost(GenieClass):
+    type: int
+    amount: int
+    flag: int
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'ResourceCost':
+        return cls(
+            type=content.read_int_16(),
+            amount=content.read_int_16(),
+            flag=content.read_int_16(),
+        )
+
+
+@dataclass
+class Creatable(GenieClass):
+    resource_costs: list[ResourceCost]
+    train_time: int
+    train_location_id: int
+    button_id: int
+    rear_attack_modifier: float
+    flank_attack_modifier: float
+    creatable_type: int
+    hero_mode: int
+    garrison_graphic: int
+    spawning_graphic: int
+    upgrade_graphic: int
+    hero_glow_graphic: int
+    max_charge: float
+    recharge_rate: float
+    charge_event: int
+    charge_type: int
+    min_conversion_time_mod: float
+    max_conversion_time_mod: float
+    conversion_chance_mod: float
+    total_projectiles: float
+    max_total_projectiles: int
+    projectile_spawning_area: list[float]
+    secondary_projectile_unit: int
+    special_graphic: int
+    special_ability: int
+    displayed_pierce_armor: int
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'Creatable':
+        return cls(
+            resource_costs=content.read_class_array(ResourceCost, 3),
+            train_time=content.read_int_16(),
+            train_location_id=content.read_int_16(),
+            button_id=content.read_int_8(),
+            rear_attack_modifier=content.read_float(),
+            flank_attack_modifier=content.read_float(),
+            creatable_type=content.read_int_8(),
+            hero_mode=content.read_int_8(),
+            garrison_graphic=content.read_int_32(),
+            spawning_graphic=content.read_int_16(),
+            upgrade_graphic=content.read_int_16(),
+            hero_glow_graphic=content.read_int_16(),
+            max_charge=content.read_float(),
+            recharge_rate=content.read_float(),
+            charge_event=content.read_int_16(),
+            charge_type=content.read_int_16(),
+            min_conversion_time_mod=content.read_float(),
+            max_conversion_time_mod=content.read_float(),
+            conversion_chance_mod=content.read_float(),
+            total_projectiles=content.read_float(),
+            max_total_projectiles=content.read_int_8(),
+            projectile_spawning_area=content.read_float_array(3),
+            secondary_projectile_unit=content.read_int_32(),
+            special_graphic=content.read_int_32(),
+            special_ability=content.read_int_8(),
+            displayed_pierce_armor=content.read_int_16(),
+        )
+
+
+@dataclass
+class BuildingAnnex(GenieClass):
+    unit_id: int
+    misplacement_x: float
+    misplacement_y: float
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'BuildingAnnex':
+        return cls(
+            unit_id=content.read_int_16(),
+            misplacement_x=content.read_float(),
+            misplacement_y=content.read_float(),
+        )
+
+
+@dataclass
+class Building(GenieClass):
+    construction_graphic_id: int
+    snow_graphic_id: int
+    destruction_graphic_id: int
+    destruction_rubble_graphic_id: int
+    researching_graphic: int
+    research_completed_graphic: int
+    adjacent_mode: int
+    graphics_angle: int
+    disappears_when_built: int
+    stack_unit_id: int
+    foundation_terrain_id: int
+    old_overlap_id: int
+    tech_id: int
+    can_burn: int
+    annexes: list[BuildingAnnex]
+    head_unit: int
+    transform_unit: int
+    transform_sound: int
+    construction_sound: int
+    wwise_transform_sound_id: int
+    wwise_construction_sound_id: int
+    garrison_type: int
+    garrison_heal_rate: float
+    garrison_repair_rate: float
+    pile_unit: int
+    looting_table: list[int]
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'Building':
+        return cls(
+            construction_graphic_id=content.read_int_16(),
+            snow_graphic_id=content.read_int_16(),
+            destruction_graphic_id=content.read_int_16(),
+            destruction_rubble_graphic_id=content.read_int_16(),
+            researching_graphic=content.read_int_16(),
+            research_completed_graphic=content.read_int_16(),
+            adjacent_mode=content.read_int_8(),
+            graphics_angle=content.read_int_16(),
+            disappears_when_built=content.read_int_8(),
+            stack_unit_id=content.read_int_16(),
+            foundation_terrain_id=content.read_int_16(),
+            old_overlap_id=content.read_int_16(),
+            tech_id=content.read_int_16(),
+            can_burn=content.read_int_8(),
+            annexes=content.read_class_array(BuildingAnnex, 4),
+            head_unit=content.read_int_16(),
+            transform_unit=content.read_int_16(),
+            transform_sound=content.read_int_16(),
+            construction_sound=content.read_int_16(),
+            wwise_transform_sound_id=content.read_int_32(),
+            wwise_construction_sound_id=content.read_int_32(),
+            garrison_type=content.read_int_8(),
+            garrison_heal_rate=content.read_float(),
+            garrison_repair_rate=content.read_float(),
+            pile_unit=content.read_int_16(),
+            looting_table=content.read_int_8_array(6),
+        )
 
 
 @dataclass

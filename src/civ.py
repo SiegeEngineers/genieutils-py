@@ -19,7 +19,7 @@ class Civ(GenieClass):
     units: list[Unit | None]
 
     @classmethod
-    def from_bytes(cls, content: ByteHandler) -> 'XXXXXXX':
+    def from_bytes(cls, content: ByteHandler) -> 'Civ':
         player_type = content.read_int_8()
         name = content.read_debug_string()
         resources_size = content.read_int_16()
