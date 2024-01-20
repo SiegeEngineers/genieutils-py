@@ -115,7 +115,6 @@ class Bird(GenieClass):
     wwise_attack_sound_id: int
     wwise_move_sound_id: int
     run_pattern: int
-    task_size: int
     tasks: list[Task]
 
     @classmethod
@@ -143,7 +142,6 @@ class Bird(GenieClass):
             wwise_attack_sound_id=wwise_attack_sound_id,
             wwise_move_sound_id=wwise_move_sound_id,
             run_pattern=run_pattern,
-            task_size=task_size,
             tasks=tasks,
         )
 
@@ -159,7 +157,7 @@ class Bird(GenieClass):
             self.write_int_32(self.wwise_attack_sound_id),
             self.write_int_32(self.wwise_move_sound_id),
             self.write_int_8(self.run_pattern),
-            self.write_int_16(self.task_size),
+            self.write_int_16(len(self.tasks)),
             self.write_class_array(self.tasks),
         ])
 
@@ -186,9 +184,7 @@ class AttackOrArmor(GenieClass):
 @dataclass
 class Type50(GenieClass):
     base_armor: int
-    attack_count: int
     attacks: list[AttackOrArmor]
-    armour_count: int
     armours: list[AttackOrArmor]
     defense_terrain_bonus: int
     bonus_damage_resistance: float
@@ -238,9 +234,7 @@ class Type50(GenieClass):
         blast_damage = content.read_float()
         return cls(
             base_armor=base_armor,
-            attack_count=attack_count,
             attacks=attacks,
-            armour_count=armour_count,
             armours=armours,
             defense_terrain_bonus=defense_terrain_bonus,
             bonus_damage_resistance=bonus_damage_resistance,
@@ -266,9 +260,9 @@ class Type50(GenieClass):
     def to_bytes(self) -> bytes:
         return b''.join([
             self.write_int_16(self.base_armor),
-            self.write_int_16(self.attack_count),
+            self.write_int_16(len(self.attacks)),
             self.write_class_array(self.attacks),
-            self.write_int_16(self.armour_count),
+            self.write_int_16(len(self.armours)),
             self.write_class_array(self.armours),
             self.write_int_16(self.defense_terrain_bonus),
             self.write_float(self.bonus_damage_resistance),
@@ -614,7 +608,6 @@ class Unit(GenieClass):
     scenario_triggers_1: int
     scenario_triggers_2: int
     resource_storages: tuple[ResourceStorage, ResourceStorage, ResourceStorage]
-    damage_graphic_size: int
     damage_graphics: list[DamageGraphic]
     selection_sound: int
     dying_sound: int
@@ -800,7 +793,6 @@ class Unit(GenieClass):
             scenario_triggers_1=scenario_triggers_1,
             scenario_triggers_2=scenario_triggers_2,
             resource_storages=resource_storages,
-            damage_graphic_size=damage_graphic_size,
             damage_graphics=damage_graphics,
             selection_sound=selection_sound,
             dying_sound=dying_sound,
@@ -909,7 +901,7 @@ class Unit(GenieClass):
             self.write_int_32(self.scenario_triggers_1),
             self.write_int_32(self.scenario_triggers_2),
             self.write_class_array(self.resource_storages),
-            self.write_int_8(self.damage_graphic_size),
+            self.write_int_8(len(self.damage_graphics)),
             self.write_class_array(self.damage_graphics),
             self.write_int_16(self.selection_sound),
             self.write_int_16(self.dying_sound),

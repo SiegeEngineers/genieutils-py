@@ -34,7 +34,6 @@ class EffectCommand(GenieClass):
 @dataclass
 class Effect(GenieClass):
     name: str
-    effect_command_count: int
     effect_commands: list[EffectCommand]
 
     @classmethod
@@ -44,13 +43,12 @@ class Effect(GenieClass):
         effect_commands = content.read_class_array(EffectCommand, effect_command_count)
         return cls(
             name=name,
-            effect_command_count=effect_command_count,
             effect_commands=effect_commands,
         )
 
     def to_bytes(self) -> bytes:
         return b''.join([
             self.write_debug_string(self.name),
-            self.write_int_16(self.effect_command_count),
+            self.write_int_16(len(self.effect_commands)),
             self.write_class_array(self.effect_commands),
         ])

@@ -44,7 +44,6 @@ from genieutils.datfile import DatFile
 
 data = DatFile.parse('path/to/empires2_x2_p1.dat')
 for civ in data.civs:
-    civ.units[434].bird.task_size -= 1
     civ.units[434].bird.tasks.pop()
 data.save('path/to/modded/empires2_x2_p1.dat')
 ```

@@ -41,6 +41,7 @@ class TerrainRestriction(GenieClass):
         )
 
     def to_bytes(self) -> bytes:
+        assert len(self.passable_buildable_dmg_multiplier) == len(self.terrain_pass_graphics)
         return b''.join([
             self.write_float_array(self.passable_buildable_dmg_multiplier),
             self.write_class_array(self.terrain_pass_graphics),

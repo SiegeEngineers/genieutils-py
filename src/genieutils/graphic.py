@@ -89,7 +89,6 @@ class Graphic(GenieClass):
     player_color: int
     transparent_selection: int
     coordinates: tuple[int, int, int, int]
-    delta_count: int
     sound_id: int
     wwise_sound_id: int
     angle_sounds_used: int
@@ -143,7 +142,6 @@ class Graphic(GenieClass):
             player_color=player_color,
             transparent_selection=transparent_selection,
             coordinates=coordinates,
-            delta_count=delta_count,
             sound_id=sound_id,
             wwise_sound_id=wwise_sound_id,
             angle_sounds_used=angle_sounds_used,
@@ -172,7 +170,7 @@ class Graphic(GenieClass):
             self.write_int_16(self.player_color),
             self.write_int_8(self.transparent_selection),
             self.write_int_16_array(self.coordinates),
-            self.write_int_16(self.delta_count),
+            self.write_int_16(len(self.deltas)),
             self.write_int_16(self.sound_id),
             self.write_int_32(self.wwise_sound_id),
             self.write_int_8(self.angle_sounds_used),

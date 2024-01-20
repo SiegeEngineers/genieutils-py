@@ -20,27 +20,17 @@ from genieutils.unitheaders import UnitHeaders
 @dataclass
 class DatFile(GenieClass):
     version: str
-    terrain_restrictions_size: int
-    terrains_used_1: int
     float_ptr_terrain_tables: list[int]
     terrain_pass_graphic_pointers: list[int]
     terrain_restrictions: list[TerrainRestriction]
-    player_colours_size: int
     player_colours: list[PlayerColour]
-    sounds_size: int
     sounds: list[Sound]
-    graphics_size: int
-    graphic_pointers: list[int]
     graphics: list[Graphic | None]
     terrain_block: TerrainBlock
     random_maps: RandomMaps
-    effects_size: int
     effects: list[Effect]
-    unit_headers_size: int
     unit_headers: list[UnitHeaders]
-    civs_size: int
     civs: list[Civ]
-    techs_size: int
     techs: list[Tech]
     time_slice: int
     unit_kill_rate: int
@@ -98,63 +88,63 @@ class DatFile(GenieClass):
         razing_kill_total = content.read_int_32()
         tech_tree = content.read_class(TechTree)
         return cls(
-            version,
-            terrain_restrictions_size,
-            terrains_used_1,
-            float_ptr_terrain_tables,
-            terrain_pass_graphic_pointers,
-            terrain_restrictions,
-            player_colours_size,
-            player_colours,
-            sounds_size,
-            sounds,
-            graphics_size,
-            graphic_pointers,
-            graphics,
-            terrain_block,
-            random_maps,
-            effects_size,
-            effects,
-            unit_headers_size,
-            unit_headers,
-            civs_size,
-            civs,
-            techs_size,
-            techs,
-            time_slice,
-            unit_kill_rate,
-            unit_kill_total,
-            unit_hit_point_rate,
-            unit_hit_point_total,
-            razing_kill_rate,
-            razing_kill_total,
-            tech_tree,
+            version=version,
+            float_ptr_terrain_tables=float_ptr_terrain_tables,
+            terrain_pass_graphic_pointers=terrain_pass_graphic_pointers,
+            terrain_restrictions=terrain_restrictions,
+            player_colours=player_colours,
+            sounds=sounds,
+            graphics=graphics,
+            terrain_block=terrain_block,
+            random_maps=random_maps,
+            effects=effects,
+            unit_headers=unit_headers,
+            civs=civs,
+            techs=techs,
+            time_slice=time_slice,
+            unit_kill_rate=unit_kill_rate,
+            unit_kill_total=unit_kill_total,
+            unit_hit_point_rate=unit_hit_point_rate,
+            unit_hit_point_total=unit_hit_point_total,
+            razing_kill_rate=razing_kill_rate,
+            razing_kill_total=razing_kill_total,
+            tech_tree=tech_tree,
         )
 
+    @property
+    def graphic_pointers(self) -> list[int]:
+        return [(0 if g is None else 1) for g in self.graphics]
+
     def to_bytes(self) -> bytes:
+        terrain_restrictions_size = len(self.terrain_restrictions)
+        assert len(self.float_ptr_terrain_tables) == len(self.terrain_pass_graphic_pointers) == terrain_restrictions_size
+        terrains_used = 0
+        if self.terrain_restrictions:
+            terrains_used = len(self.terrain_restrictions[0].passable_buildable_dmg_multiplier)
+
         return b''.join([
             self.write_string(8, self.version),
-            self.write_int_16(self.terrain_restrictions_size),
-            self.write_int_16(self.terrains_used_1),
+            self.write_int_16(terrain_restrictions_size),
+            self.write_int_16(terrains_used),
             self.write_int_32_array(self.float_ptr_terrain_tables),
             self.write_int_32_array(self.terrain_pass_graphic_pointers),
             self.write_class_array(self.terrain_restrictions),
-            self.write_int_16(self.player_colours_size),
+            self.write_int_16(len(self.player_colours)),
             self.write_class_array(self.player_colours),
-            self.write_int_16(self.sounds_size),
+            self.write_int_16(len(self.sounds)),
             self.write_class_array(self.sounds),
-            self.write_int_16(self.graphics_size),
+            self.write_int_16(len(self.graphics)),
             self.write_int_32_array(self.graphic_pointers),
-            self.write_class_array_with_pointers(self.graphic_pointers, self.graphics),
+            self.write_class_array(self.graphics),
             self.write_class(self.terrain_block),
             self.write_class(self.random_maps),
-            self.write_int_32(self.effects_size),
+            self.write_int_32(len(self.effects)),
             self.write_class_array(self.effects),
-            self.write_int_32(self.unit_headers_size),
+            self.write_int_32(len(self.unit_headers)),
             self.write_class_array(self.unit_headers),
-            self.write_int_16(self.civs_size),
+            self.write_int_16(len(self.civs)),
             self.write_class_array(self.civs),
-            self.write_int_16(self.techs_size),
+            self.write_int_16(len(self.techs)),
             self.write_class_array(self.techs),
             self.write_int_32(self.time_slice),
             self.write_int_32(self.unit_kill_rate),

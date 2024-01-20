@@ -29,11 +29,8 @@ class Common(GenieClass):
 class TechTreeAge(GenieClass):
     id: int
     status: int
-    buildings_count: int
     buildings: list[int]
-    units_count: int
     units: list[int]
-    techs_count: int
     techs: list[int]
     common: Common
     num_building_levels: int
@@ -61,11 +58,8 @@ class TechTreeAge(GenieClass):
         return cls(
             id=id_,
             status=status,
-            buildings_count=buildings_count,
             buildings=buildings,
-            units_count=units_count,
             units=units,
-            techs_count=techs_count,
             techs=techs,
             common=common,
             num_building_levels=num_building_levels,
@@ -79,11 +73,11 @@ class TechTreeAge(GenieClass):
         return b''.join([
             self.write_int_32(self.id),
             self.write_int_8(self.status),
-            self.write_int_8(self.buildings_count),
+            self.write_int_8(len(self.buildings)),
             self.write_int_32_array(self.buildings),
-            self.write_int_8(self.units_count),
+            self.write_int_8(len(self.units)),
             self.write_int_32_array(self.units),
-            self.write_int_8(self.techs_count),
+            self.write_int_8(len(self.techs)),
             self.write_int_32_array(self.techs),
             self.write_class(self.common),
             self.write_int_8(self.num_building_levels),
@@ -98,11 +92,8 @@ class TechTreeAge(GenieClass):
 class BuildingConnection(GenieClass):
     id: int
     status: int
-    buildings_count: int
     buildings: list[int]
-    units_count: int
     units: list[int]
-    techs_count: int
     techs: list[int]
     common: Common
     location_in_age: int
@@ -130,11 +121,8 @@ class BuildingConnection(GenieClass):
         return cls(
             id=id_,
             status=status,
-            buildings_count=buildings_count,
             buildings=buildings,
-            units_count=units_count,
             units=units,
-            techs_count=techs_count,
             techs=techs,
             common=common,
             location_in_age=location_in_age,
@@ -148,11 +136,11 @@ class BuildingConnection(GenieClass):
         return b''.join([
             self.write_int_32(self.id),
             self.write_int_8(self.status),
-            self.write_int_8(self.buildings_count),
+            self.write_int_8(len(self.buildings)),
             self.write_int_32_array(self.buildings),
-            self.write_int_8(self.units_count),
+            self.write_int_8(len(self.units)),
             self.write_int_32_array(self.units),
-            self.write_int_8(self.techs_count),
+            self.write_int_8(len(self.techs)),
             self.write_int_32_array(self.techs),
             self.write_class(self.common),
             self.write_int_8(self.location_in_age),
@@ -170,7 +158,6 @@ class UnitConnection(GenieClass):
     upper_building: int
     common: Common
     vertical_line: int
-    units_count: int
     units: list[int]
     location_in_age: int
     required_research: int
@@ -196,7 +183,6 @@ class UnitConnection(GenieClass):
             upper_building=upper_building,
             common=common,
             vertical_line=vertical_line,
-            units_count=units_count,
             units=units,
             location_in_age=location_in_age,
             required_research=required_research,
@@ -211,7 +197,7 @@ class UnitConnection(GenieClass):
             self.write_int_32(self.upper_building),
             self.write_class(self.common),
             self.write_int_32(self.vertical_line),
-            self.write_int_8(self.units_count),
+            self.write_int_8(len(self.units)),
             self.write_int_32_array(self.units),
             self.write_int_32(self.location_in_age),
             self.write_int_32(self.required_research),
@@ -225,11 +211,8 @@ class ResearchConnection(GenieClass):
     id: int
     status: int
     upper_building: int
-    buildings_count: int
     buildings: list[int]
-    units_count: int
     units: list[int]
-    techs_count: int
     techs: list[int]
     common: Common
     vertical_line: int
@@ -255,11 +238,8 @@ class ResearchConnection(GenieClass):
             id=id_,
             status=status,
             upper_building=upper_building,
-            buildings_count=buildings_count,
             buildings=buildings,
-            units_count=units_count,
             units=units,
-            techs_count=techs_count,
             techs=techs,
             common=common,
             vertical_line=vertical_line,
@@ -272,11 +252,11 @@ class ResearchConnection(GenieClass):
             self.write_int_32(self.id),
             self.write_int_8(self.status),
             self.write_int_32(self.upper_building),
-            self.write_int_8(self.buildings_count),
+            self.write_int_8(len(self.buildings)),
             self.write_int_32_array(self.buildings),
-            self.write_int_8(self.units_count),
+            self.write_int_8(len(self.units)),
             self.write_int_32_array(self.units),
-            self.write_int_8(self.techs_count),
+            self.write_int_8(len(self.techs)),
             self.write_int_32_array(self.techs),
             self.write_class(self.common),
             self.write_int_32(self.vertical_line),
@@ -287,10 +267,6 @@ class ResearchConnection(GenieClass):
 
 @dataclass
 class TechTree(GenieClass):
-    age_count: int
-    building_count: int
-    unit_count: int
-    research_count: int
     total_unit_tech_groups: int
     tech_tree_ages: list[TechTreeAge]
     building_connections: list[BuildingConnection]
@@ -309,10 +285,6 @@ class TechTree(GenieClass):
         unit_connections = content.read_class_array(UnitConnection, unit_count)
         research_connections = content.read_class_array(ResearchConnection, research_count)
         return cls(
-            age_count=age_count,
-            building_count=building_count,
-            unit_count=unit_count,
-            research_count=research_count,
             total_unit_tech_groups=total_unit_tech_groups,
             tech_tree_ages=tech_tree_ages,
             building_connections=building_connections,
@@ -322,10 +294,10 @@ class TechTree(GenieClass):
 
     def to_bytes(self) -> bytes:
         return b''.join([
-            self.write_int_8(self.age_count),
-            self.write_int_8(self.building_count),
-            self.write_int_8(self.unit_count),
-            self.write_int_8(self.research_count),
+            self.write_int_8(len(self.tech_tree_ages)),
+            self.write_int_8(len(self.building_connections)),
+            self.write_int_8(len(self.unit_connections)),
+            self.write_int_8(len(self.research_connections)),
             self.write_int_32(self.total_unit_tech_groups),
             self.write_class_array(self.tech_tree_ages),
             self.write_class_array(self.building_connections),

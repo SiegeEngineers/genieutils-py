@@ -35,7 +35,6 @@ class SoundItem(GenieClass):
 class Sound(GenieClass):
     id: int
     play_delay: int
-    items_size: int
     cache_time: int
     total_probability: int
     items: list[SoundItem]
@@ -51,7 +50,6 @@ class Sound(GenieClass):
         return cls(
             id=id_,
             play_delay=play_delay,
-            items_size=items_size,
             cache_time=cache_time,
             total_probability=total_probability,
             items=items,
@@ -61,7 +59,7 @@ class Sound(GenieClass):
         return b''.join([
             self.write_int_16(self.id),
             self.write_int_16(self.play_delay),
-            self.write_int_16(self.items_size),
+            self.write_int_16(len(self.items)),
             self.write_int_32(self.cache_time),
             self.write_int_16(self.total_probability),
             self.write_class_array(self.items),

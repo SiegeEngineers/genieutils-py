@@ -72,14 +72,8 @@ class GenieClass(ABC):
             return retval
         return b''
 
-    def write_class_array(self, value: Sequence['GenieClass']) -> bytes:
-        retval = b''.join(self.write_class(v) for v in value)
-        if retval:
-            return retval
-        return b''
-
-    def write_class_array_with_pointers(self, pointers: list[int], value: list['GenieClass']) -> bytes:
-        retval = b''.join(self.write_class(v) for i, v in enumerate(value) if pointers[i])
+    def write_class_array(self, value: Sequence['GenieClass | None']) -> bytes:
+        retval = b''.join(self.write_class(v) for v in value if v is not None)
         if retval:
             return retval
         return b''

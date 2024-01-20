@@ -278,7 +278,6 @@ class MapInfo(GenieClass):
 
 @dataclass
 class RandomMaps(GenieClass):
-    random_map_count: int
     random_maps_ptr: int
     map_info_1: list[MapInfo]
     map_info_2: list[MapInfo]
@@ -290,15 +289,15 @@ class RandomMaps(GenieClass):
         map_info_1 = content.read_class_array(MapInfo, random_map_count)
         map_info_2 = content.read_class_array(MapInfo, random_map_count)
         return cls(
-            random_map_count=random_map_count,
             random_maps_ptr=random_maps_ptr,
             map_info_1=map_info_1,
             map_info_2=map_info_2,
         )
 
     def to_bytes(self) -> bytes:
+        assert len(self.map_info_1) == len(self.map_info_2)
         return b''.join([
-            self.write_int_32(self.random_map_count, signed=False),
+            self.write_int_32(len(self.map_info_1), signed=False),
             self.write_int_32(self.random_maps_ptr),
             self.write_class_array(self.map_info_1),
             self.write_class_array(self.map_info_2),
