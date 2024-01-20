@@ -6,15 +6,15 @@ from genieutils.common import ByteHandler, GenieClass
 @dataclass
 class Common(GenieClass):
     slots_used: int
-    unit_research: list[int]
-    mode: list[int]
+    unit_research: tuple[int, int, int, int, int, int, int, int, int, int]
+    mode: tuple[int, int, int, int, int, int, int, int, int, int]
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Common':
         return cls(
             slots_used=content.read_int_32(),
-            unit_research=content.read_int_32_array(10),
-            mode=content.read_int_32_array(10),
+            unit_research=content.read_int_32_array_10(),
+            mode=content.read_int_32_array_10(),
         )
 
     def to_bytes(self) -> bytes:
@@ -37,8 +37,8 @@ class TechTreeAge(GenieClass):
     techs: list[int]
     common: Common
     num_building_levels: int
-    buildings_per_zone: list[int]
-    group_length_per_zone: list[int]
+    buildings_per_zone: tuple[int, int, int, int, int, int, int, int, int, int]
+    group_length_per_zone: tuple[int, int, int, int, int, int, int, int, int, int]
     max_age_length: int
     line_mode: int
 
@@ -54,8 +54,8 @@ class TechTreeAge(GenieClass):
         techs = content.read_int_32_array(techs_count)
         common = content.read_class(Common)
         num_building_levels = content.read_int_8()
-        buildings_per_zone = content.read_int_8_array(10)
-        group_length_per_zone = content.read_int_8_array(10)
+        buildings_per_zone = content.read_int_8_array_10()
+        group_length_per_zone = content.read_int_8_array_10()
         max_age_length = content.read_int_8()
         line_mode = content.read_int_32()
         return cls(
@@ -106,8 +106,8 @@ class BuildingConnection(GenieClass):
     techs: list[int]
     common: Common
     location_in_age: int
-    units_techs_total: list[int]
-    units_techs_first: list[int]
+    units_techs_total: tuple[int, int, int, int, int]
+    units_techs_first: tuple[int, int, int, int, int]
     line_mode: int
     enabling_research: int
 
@@ -123,8 +123,8 @@ class BuildingConnection(GenieClass):
         techs = content.read_int_32_array(techs_count)
         common = content.read_class(Common)
         location_in_age = content.read_int_8()
-        units_techs_total = content.read_int_8_array(5)
-        units_techs_first = content.read_int_8_array(5)
+        units_techs_total = content.read_int_8_array_5()
+        units_techs_first = content.read_int_8_array_5()
         line_mode = content.read_int_32()
         enabling_research = content.read_int_32()
         return cls(

@@ -108,7 +108,7 @@ class Bird(GenieClass):
     default_task_id: int
     search_radius: float
     work_rate: float
-    drop_sites: list[int]
+    drop_sites: tuple[int, int, int]
     task_swap_group: int
     attack_sound: int
     move_sound: int
@@ -123,7 +123,7 @@ class Bird(GenieClass):
         default_task_id = content.read_int_16()
         search_radius = content.read_float()
         work_rate = content.read_float()
-        drop_sites = content.read_int_16_array(3)
+        drop_sites = content.read_int_16_array_3()
         task_swap_group = content.read_int_8()
         attack_sound = content.read_int_16()
         move_sound = content.read_int_16()
@@ -199,7 +199,7 @@ class Type50(GenieClass):
     accuracy_percent: int
     break_off_combat: int
     frame_delay: int
-    graphic_displacement: list[float]
+    graphic_displacement: tuple[float, float, float]
     blast_attack_level: int
     min_range: float
     accuracy_dispersion: float
@@ -226,7 +226,7 @@ class Type50(GenieClass):
         accuracy_percent = content.read_int_16()
         break_off_combat = content.read_int_8()
         frame_delay = content.read_int_16()
-        graphic_displacement = content.read_float_array(3)
+        graphic_displacement = content.read_float_array_3()
         blast_attack_level = content.read_int_8()
         min_range = content.read_float()
         accuracy_dispersion = content.read_float()
@@ -347,7 +347,7 @@ class ResourceCost(GenieClass):
 
 @dataclass
 class Creatable(GenieClass):
-    resource_costs: list[ResourceCost]
+    resource_costs: tuple[ResourceCost, ResourceCost, ResourceCost]
     train_time: int
     train_location_id: int
     button_id: int
@@ -368,7 +368,7 @@ class Creatable(GenieClass):
     conversion_chance_mod: float
     total_projectiles: float
     max_total_projectiles: int
-    projectile_spawning_area: list[float]
+    projectile_spawning_area: tuple[float, float, float]
     secondary_projectile_unit: int
     special_graphic: int
     special_ability: int
@@ -377,7 +377,7 @@ class Creatable(GenieClass):
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Creatable':
         return cls(
-            resource_costs=content.read_class_array(ResourceCost, 3),
+            resource_costs=content.read_class_array_3(ResourceCost),
             train_time=content.read_int_16(),
             train_location_id=content.read_int_16(),
             button_id=content.read_int_8(),
@@ -398,7 +398,7 @@ class Creatable(GenieClass):
             conversion_chance_mod=content.read_float(),
             total_projectiles=content.read_float(),
             max_total_projectiles=content.read_int_8(),
-            projectile_spawning_area=content.read_float_array(3),
+            projectile_spawning_area=content.read_float_array_3(),
             secondary_projectile_unit=content.read_int_32(),
             special_graphic=content.read_int_32(),
             special_ability=content.read_int_8(),
@@ -474,7 +474,7 @@ class Building(GenieClass):
     old_overlap_id: int
     tech_id: int
     can_burn: int
-    annexes: list[BuildingAnnex]
+    annexes: tuple[BuildingAnnex, BuildingAnnex, BuildingAnnex, BuildingAnnex]
     head_unit: int
     transform_unit: int
     transform_sound: int
@@ -485,7 +485,7 @@ class Building(GenieClass):
     garrison_heal_rate: float
     garrison_repair_rate: float
     pile_unit: int
-    looting_table: list[int]
+    looting_table: tuple[int, int, int, int, int, int]
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Building':
@@ -504,7 +504,7 @@ class Building(GenieClass):
             old_overlap_id=content.read_int_16(),
             tech_id=content.read_int_16(),
             can_burn=content.read_int_8(),
-            annexes=content.read_class_array(BuildingAnnex, 4),
+            annexes=content.read_class_array_4(BuildingAnnex),
             head_unit=content.read_int_16(),
             transform_unit=content.read_int_16(),
             transform_sound=content.read_int_16(),
@@ -515,7 +515,7 @@ class Building(GenieClass):
             garrison_heal_rate=content.read_float(),
             garrison_repair_rate=content.read_float(),
             pile_unit=content.read_int_16(),
-            looting_table=content.read_int_8_array(6),
+            looting_table=content.read_int_8_array_6(),
         )
 
     def to_bytes(self) -> bytes:
@@ -556,7 +556,7 @@ class Unit(GenieClass):
     language_dll_name: int
     language_dll_creation: int
     class_: int
-    standing_graphic: list[int]
+    standing_graphic: tuple[int, int]
     dying_graphic: int
     undead_graphic: int
     undead_mode: int
@@ -577,9 +577,9 @@ class Unit(GenieClass):
     old_portrait_pict: int
     enabled: int
     disabled: int
-    placement_side_terrain: list[int]
-    placement_terrain: list[int]
-    clearance_size: list[float]
+    placement_side_terrain: tuple[int, int]
+    placement_terrain: tuple[int, int]
+    clearance_size: tuple[float, float]
     hill_mode: int
     fog_visibility: int
     terrain_restriction: int
@@ -613,7 +613,7 @@ class Unit(GenieClass):
     outline_size_z: float
     scenario_triggers_1: int
     scenario_triggers_2: int
-    resource_storages: list[ResourceStorage]
+    resource_storages: tuple[ResourceStorage, ResourceStorage, ResourceStorage]
     damage_graphic_size: int
     damage_graphics: list[DamageGraphic]
     selection_sound: int
@@ -642,7 +642,7 @@ class Unit(GenieClass):
         language_dll_name = content.read_int_32()
         language_dll_creation = content.read_int_32()
         class_ = content.read_int_16()
-        standing_graphic = content.read_int_16_array(2)
+        standing_graphic = content.read_int_16_array_2()
         dying_graphic = content.read_int_16()
         undead_graphic = content.read_int_16()
         undead_mode = content.read_int_8()
@@ -663,9 +663,9 @@ class Unit(GenieClass):
         old_portrait_pict = content.read_int_16()
         enabled = content.read_int_8()
         disabled = content.read_int_8()
-        placement_side_terrain = content.read_int_16_array(2)
-        placement_terrain = content.read_int_16_array(2)
-        clearance_size = content.read_float_array(2)
+        placement_side_terrain = content.read_int_16_array_2()
+        placement_terrain = content.read_int_16_array_2()
+        clearance_size = content.read_float_array_2()
         hill_mode = content.read_int_8()
         fog_visibility = content.read_int_8()
         terrain_restriction = content.read_int_16()
@@ -699,7 +699,7 @@ class Unit(GenieClass):
         outline_size_z = content.read_float()
         scenario_triggers_1 = content.read_int_32()
         scenario_triggers_2 = content.read_int_32()
-        resource_storages = content.read_class_array(ResourceStorage, 3)
+        resource_storages = content.read_class_array_3(ResourceStorage)
         damage_graphic_size = content.read_int_8()
         damage_graphics = content.read_class_array(DamageGraphic, damage_graphic_size)
         selection_sound = content.read_int_16()

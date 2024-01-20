@@ -27,8 +27,8 @@ class ResearchResourceCost(GenieClass):
 
 @dataclass
 class Tech(GenieClass):
-    required_techs: list[int]
-    resource_costs: list[ResearchResourceCost]
+    required_techs: tuple[int, int, int, int, int, int]
+    resource_costs: tuple[ResearchResourceCost, ResearchResourceCost, ResearchResourceCost]
     required_tech_count: int
     civ: int
     full_tech_mode: int
@@ -49,8 +49,8 @@ class Tech(GenieClass):
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Tech':
         return cls(
-            required_techs=content.read_int_16_array(6),
-            resource_costs=content.read_class_array(ResearchResourceCost, 3),
+            required_techs=content.read_int_16_array_6(),
+            resource_costs=content.read_class_array_3(ResearchResourceCost),
             required_tech_count=content.read_int_16(),
             civ=content.read_int_16(),
             full_tech_mode=content.read_int_16(),

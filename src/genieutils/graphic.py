@@ -88,7 +88,7 @@ class Graphic(GenieClass):
     layer: int
     player_color: int
     transparent_selection: int
-    coordinates: list[int]
+    coordinates: tuple[int, int, int, int]
     delta_count: int
     sound_id: int
     wwise_sound_id: int
@@ -116,7 +116,7 @@ class Graphic(GenieClass):
         layer = content.read_int_8()
         player_color = content.read_int_16()
         transparent_selection = content.read_int_8()
-        coordinates = content.read_int_16_array(4)
+        coordinates = content.read_int_16_array_4()
         delta_count = content.read_int_16()
         sound_id = content.read_int_16()
         wwise_sound_id = content.read_int_32()

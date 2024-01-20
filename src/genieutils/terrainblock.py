@@ -42,8 +42,8 @@ class Terrain(GenieClass):
     blend_priority: int
     blend_type: int
     overlay_mask_name: str
-    colors: list[int]
-    cliff_colors: list[int]
+    colors: tuple[int, int, int]
+    cliff_colors: tuple[int, int]
     passable_terrain: int
     impassable_terrain: int
     is_animated: int
@@ -58,7 +58,7 @@ class Terrain(GenieClass):
     drawn: int
     frame_data: list[FrameData]
     terrain_to_draw: int
-    terrain_dimensions: list[int]
+    terrain_dimensions: tuple[int, int]
     terrain_unit_masked_density: list[int]
     terrain_unit_id: list[int]
     terrain_unit_density: list[int]
@@ -84,8 +84,8 @@ class Terrain(GenieClass):
             blend_priority=content.read_int_32(),
             blend_type=content.read_int_32(),
             overlay_mask_name=content.read_debug_string(),
-            colors=content.read_int_8_array(3),
-            cliff_colors=content.read_int_8_array(2),
+            colors=content.read_int_8_array_3(),
+            cliff_colors=content.read_int_8_array_2(),
             passable_terrain=content.read_int_8(),
             impassable_terrain=content.read_int_8(),
             is_animated=content.read_int_8(),
@@ -100,7 +100,7 @@ class Terrain(GenieClass):
             drawn=content.read_int_8(),
             frame_data=content.read_class_array(FrameData, TILE_TYPE_COUNT),
             terrain_to_draw=content.read_int_16(),
-            terrain_dimensions=content.read_int_16_array(2),
+            terrain_dimensions=content.read_int_16_array_2(),
             terrain_unit_masked_density=content.read_int_16_array(TERRAIN_UNITS_SIZE),
             terrain_unit_id=content.read_int_16_array(TERRAIN_UNITS_SIZE),
             terrain_unit_density=content.read_int_16_array(TERRAIN_UNITS_SIZE),
