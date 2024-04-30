@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, GenieClass
+from genieutils.versions import Version
 
 
 @dataclass
@@ -17,7 +18,7 @@ class Common(GenieClass):
             mode=content.read_int_32_array_10(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.slots_used),
             self.write_int_32_array(self.unit_research),
@@ -69,7 +70,7 @@ class TechTreeAge(GenieClass):
             line_mode=line_mode,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.id),
             self.write_int_8(self.status),
@@ -79,7 +80,7 @@ class TechTreeAge(GenieClass):
             self.write_int_32_array(self.units),
             self.write_int_8(len(self.techs)),
             self.write_int_32_array(self.techs),
-            self.write_class(self.common),
+            self.write_class(self.common, version),
             self.write_int_8(self.num_building_levels),
             self.write_int_8_array(self.buildings_per_zone),
             self.write_int_8_array(self.group_length_per_zone),
@@ -132,7 +133,7 @@ class BuildingConnection(GenieClass):
             enabling_research=enabling_research,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.id),
             self.write_int_8(self.status),
@@ -142,7 +143,7 @@ class BuildingConnection(GenieClass):
             self.write_int_32_array(self.units),
             self.write_int_8(len(self.techs)),
             self.write_int_32_array(self.techs),
-            self.write_class(self.common),
+            self.write_class(self.common, version),
             self.write_int_8(self.location_in_age),
             self.write_int_8_array(self.units_techs_total),
             self.write_int_8_array(self.units_techs_first),
@@ -190,12 +191,12 @@ class UnitConnection(GenieClass):
             enabling_research=enabling_research,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.id),
             self.write_int_8(self.status),
             self.write_int_32(self.upper_building),
-            self.write_class(self.common),
+            self.write_class(self.common, version),
             self.write_int_32(self.vertical_line),
             self.write_int_8(len(self.units)),
             self.write_int_32_array(self.units),
@@ -247,7 +248,7 @@ class ResearchConnection(GenieClass):
             line_mode=line_mode,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.id),
             self.write_int_8(self.status),
@@ -258,7 +259,7 @@ class ResearchConnection(GenieClass):
             self.write_int_32_array(self.units),
             self.write_int_8(len(self.techs)),
             self.write_int_32_array(self.techs),
-            self.write_class(self.common),
+            self.write_class(self.common, version),
             self.write_int_32(self.vertical_line),
             self.write_int_32(self.location_in_age),
             self.write_int_32(self.line_mode),
@@ -292,15 +293,15 @@ class TechTree(GenieClass):
             research_connections=research_connections,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_8(len(self.tech_tree_ages)),
             self.write_int_8(len(self.building_connections)),
             self.write_int_8(len(self.unit_connections)),
             self.write_int_8(len(self.research_connections)),
             self.write_int_32(self.total_unit_tech_groups),
-            self.write_class_array(self.tech_tree_ages),
-            self.write_class_array(self.building_connections),
-            self.write_class_array(self.unit_connections),
-            self.write_class_array(self.research_connections),
+            self.write_class_array(self.tech_tree_ages, version),
+            self.write_class_array(self.building_connections, version),
+            self.write_class_array(self.unit_connections, version),
+            self.write_class_array(self.research_connections, version),
         ])

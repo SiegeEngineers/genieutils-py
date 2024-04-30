@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, GenieClass
+from genieutils.versions import Version
 
 
 @dataclass
@@ -73,7 +74,7 @@ class Task(GenieClass):
             wwise_resource_deposit_sound_id=content.read_int_32(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.task_type),
             self.write_int_16(self.id),

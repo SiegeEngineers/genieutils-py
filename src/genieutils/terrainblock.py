@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, TILE_TYPE_COUNT, TERRAIN_COUNT, GenieClass, TERRAIN_UNITS_SIZE
+from genieutils.versions import Version
 
 
 @dataclass
@@ -17,7 +18,7 @@ class FrameData(GenieClass):
             shape_id=content.read_int_16(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.frame_count),
             self.write_int_16(self.angle_count),
@@ -109,7 +110,7 @@ class Terrain(GenieClass):
             phantom=content.read_int_16(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_8(self.enabled),
             self.write_int_8(self.random),
@@ -140,7 +141,7 @@ class Terrain(GenieClass):
             self.write_float(self.animate_last),
             self.write_int_8(self.frame_changed),
             self.write_int_8(self.drawn),
-            self.write_class_array(self.frame_data),
+            self.write_class_array(self.frame_data, version),
             self.write_int_16(self.terrain_to_draw),
             self.write_int_16_array(self.terrain_dimensions),
             self.write_int_16_array(self.terrain_unit_masked_density),
@@ -166,7 +167,7 @@ class TileSize(GenieClass):
             delta_y=content.read_int_16(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.width),
             self.write_int_16(self.height),
@@ -250,7 +251,7 @@ class TerrainBlock(GenieClass):
             fog_flag=content.read_int_8(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.virtual_function_ptr, signed=False),
             self.write_int_32(self.map_pointer, signed=False),
@@ -258,9 +259,9 @@ class TerrainBlock(GenieClass):
             self.write_int_32(self.map_height),
             self.write_int_32(self.world_width),
             self.write_int_32(self.world_height),
-            self.write_class_array(self.tile_sizes),
+            self.write_class_array(self.tile_sizes, version),
             self.write_int_16(self.padding_ts),
-            self.write_class_array(self.terrains),
+            self.write_class_array(self.terrains, version),
             self.write_float(self.map_min_x),
             self.write_float(self.map_min_y),
             self.write_float(self.map_max_x),

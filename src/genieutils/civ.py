@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, GenieClass
 from genieutils.unit import Unit
+from genieutils.versions import Version
 
 
 @dataclass
@@ -40,7 +41,7 @@ class Civ(GenieClass):
     def unit_pointers(self) -> list[int]:
         return [(0 if u is None else 1) for u in self.units]
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_8(self.player_type),
             self.write_debug_string(self.name),
@@ -51,5 +52,5 @@ class Civ(GenieClass):
             self.write_int_8(self.icon_set),
             self.write_int_16(len(self.units)),
             self.write_int_32_array(self.unit_pointers),
-            self.write_class_array(self.units),
+            self.write_class_array(self.units, version),
         ])

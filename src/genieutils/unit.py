@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, UnitType, GenieClass
 from genieutils.task import Task
+from genieutils.versions import Version
 
 
 @dataclass
@@ -18,7 +19,7 @@ class ResourceStorage(GenieClass):
             flag=content.read_int_8(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.type),
             self.write_float(self.amount),
@@ -40,7 +41,7 @@ class DamageGraphic(GenieClass):
             apply_mode=content.read_int_8(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.graphic_id),
             self.write_int_16(self.damage_percent),
@@ -84,7 +85,7 @@ class DeadFish(GenieClass):
             min_collision_size_multiplier=content.read_float(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.walking_graphic),
             self.write_int_16(self.running_graphic),
@@ -108,7 +109,7 @@ class Bird(GenieClass):
     default_task_id: int
     search_radius: float
     work_rate: float
-    drop_sites: tuple[int, int, int]
+    drop_sites: list[int]
     task_swap_group: int
     attack_sound: int
     move_sound: int
@@ -122,7 +123,10 @@ class Bird(GenieClass):
         default_task_id = content.read_int_16()
         search_radius = content.read_float()
         work_rate = content.read_float()
-        drop_sites = content.read_int_16_array_3()
+        drop_sites_size = 3
+        if content.version > Version.VER_77:
+            drop_sites_size = content.read_int_16()
+        drop_sites = content.read_int_16_array(drop_sites_size)
         task_swap_group = content.read_int_8()
         attack_sound = content.read_int_16()
         move_sound = content.read_int_16()
@@ -145,11 +149,12 @@ class Bird(GenieClass):
             tasks=tasks,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.default_task_id),
             self.write_float(self.search_radius),
             self.write_float(self.work_rate),
+            self.write_int_16(len(self.drop_sites), if_=(version >= Version.VER_78)),
             self.write_int_16_array(self.drop_sites),
             self.write_int_8(self.task_swap_group),
             self.write_int_16(self.attack_sound),
@@ -158,7 +163,7 @@ class Bird(GenieClass):
             self.write_int_32(self.wwise_move_sound_id),
             self.write_int_8(self.run_pattern),
             self.write_int_16(len(self.tasks)),
-            self.write_class_array(self.tasks),
+            self.write_class_array(self.tasks, version),
         ])
 
 
@@ -174,7 +179,7 @@ class AttackOrArmor(GenieClass):
             amount=content.read_int_16(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.class_),
             self.write_int_16(self.amount),
@@ -257,13 +262,13 @@ class Type50(GenieClass):
             blast_damage=blast_damage,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.base_armor),
             self.write_int_16(len(self.attacks)),
-            self.write_class_array(self.attacks),
+            self.write_class_array(self.attacks, version),
             self.write_int_16(len(self.armours)),
-            self.write_class_array(self.armours),
+            self.write_class_array(self.armours, version),
             self.write_int_16(self.defense_terrain_bonus),
             self.write_float(self.bonus_damage_resistance),
             self.write_float(self.max_range),
@@ -306,7 +311,7 @@ class Projectile(GenieClass):
             projectile_arc=content.read_float(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_8(self.projectile_type),
             self.write_int_8(self.smart_mode),
@@ -331,7 +336,7 @@ class ResourceCost(GenieClass):
             flag=content.read_int_16(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.type),
             self.write_int_16(self.amount),
@@ -399,9 +404,9 @@ class Creatable(GenieClass):
             displayed_pierce_armor=content.read_int_16(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
-            self.write_class_array(self.resource_costs),
+            self.write_class_array(self.resource_costs, version),
             self.write_int_16(self.train_time),
             self.write_int_16(self.train_location_id),
             self.write_int_8(self.button_id),
@@ -444,7 +449,7 @@ class BuildingAnnex(GenieClass):
             misplacement_y=content.read_float(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.unit_id),
             self.write_float(self.misplacement_x),
@@ -512,7 +517,7 @@ class Building(GenieClass):
             looting_table=content.read_int_8_array_6(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.construction_graphic_id),
             self.write_int_16(self.snow_graphic_id),
@@ -528,7 +533,7 @@ class Building(GenieClass):
             self.write_int_16(self.old_overlap_id),
             self.write_int_16(self.tech_id),
             self.write_int_8(self.can_burn),
-            self.write_class_array(self.annexes),
+            self.write_class_array(self.annexes, version),
             self.write_int_16(self.head_unit),
             self.write_int_16(self.transform_unit),
             self.write_int_16(self.transform_sound),
@@ -814,7 +819,7 @@ class Unit(GenieClass):
             building=building,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         speed = b''
         dead_fish = b''
         bird = b''
@@ -826,17 +831,17 @@ class Unit(GenieClass):
             if self.type >= UnitType.Flag:
                 speed = self.write_float(self.speed)
                 if self.type >= UnitType.DeadFish:
-                    dead_fish = self.write_class(self.dead_fish)
+                    dead_fish = self.write_class(self.dead_fish, version)
                 if self.type >= UnitType.Bird:
-                    bird = self.write_class(self.bird)
+                    bird = self.write_class(self.bird, version)
                 if self.type >= UnitType.Combatant:
-                    type_50 = self.write_class(self.type_50)
+                    type_50 = self.write_class(self.type_50, version)
                 if self.type == UnitType.Projectile:
-                    projectile = self.write_class(self.projectile)
+                    projectile = self.write_class(self.projectile, version)
                 if self.type >= UnitType.Creatable:
-                    creatable = self.write_class(self.creatable)
+                    creatable = self.write_class(self.creatable, version)
                 if self.type == UnitType.Building:
-                    building = self.write_class(self.building)
+                    building = self.write_class(self.building, version)
         return b''.join([
             self.write_int_8(self.type),
             self.write_int_16(self.id),
@@ -900,9 +905,9 @@ class Unit(GenieClass):
             self.write_float(self.outline_size_z),
             self.write_int_32(self.scenario_triggers_1),
             self.write_int_32(self.scenario_triggers_2),
-            self.write_class_array(self.resource_storages),
+            self.write_class_array(self.resource_storages, version),
             self.write_int_8(len(self.damage_graphics)),
-            self.write_class_array(self.damage_graphics),
+            self.write_class_array(self.damage_graphics, version),
             self.write_int_16(self.selection_sound),
             self.write_int_16(self.dying_sound),
             self.write_int_32(self.wwise_train_sound_id),

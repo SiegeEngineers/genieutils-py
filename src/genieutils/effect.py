@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, GenieClass
+from genieutils.versions import Version
 
 
 @dataclass
@@ -21,7 +22,7 @@ class EffectCommand(GenieClass):
             d=content.read_float(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_8(self.type),
             self.write_int_16(self.a),
@@ -46,9 +47,9 @@ class Effect(GenieClass):
             effect_commands=effect_commands,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_debug_string(self.name),
             self.write_int_16(len(self.effect_commands)),
-            self.write_class_array(self.effect_commands),
+            self.write_class_array(self.effect_commands, version),
         ])

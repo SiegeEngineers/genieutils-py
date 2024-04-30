@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, GenieClass
 from genieutils.task import Task
+from genieutils.versions import Version
 
 
 @dataclass
@@ -22,9 +23,9 @@ class UnitHeaders(GenieClass):
             task_list=task_list,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_8(self.exists),
             self.write_int_16(len(self.task_list)) if self.exists else b'',
-            self.write_class_array(self.task_list) if self.exists else b'',
+            self.write_class_array(self.task_list, version) if self.exists else b'',
         ])

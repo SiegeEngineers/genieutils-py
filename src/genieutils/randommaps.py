@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, GenieClass
+from genieutils.versions import Version
 
 
 @dataclass
@@ -37,7 +38,7 @@ class MapUnit(GenieClass):
             max_distance_to_players=content.read_int_32(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.unit),
             self.write_int_32(self.host_terrain),
@@ -75,7 +76,7 @@ class MapTerrain(GenieClass):
             clumpiness=content.read_int_32(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.proportion),
             self.write_int_32(self.terrain),
@@ -124,7 +125,7 @@ class MapLand(GenieClass):
             clumpiness=content.read_int_32(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.land_id),
             self.write_int_32(self.terrain, signed=False),
@@ -164,7 +165,7 @@ class MapElevation(GenieClass):
             tile_spacing=content.read_int_32(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.proportion),
             self.write_int_32(self.terrain),
@@ -249,7 +250,7 @@ class MapInfo(GenieClass):
             map_elevations=map_elevations,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.map_id),
             self.write_int_32(self.border_south_west),
@@ -263,16 +264,16 @@ class MapInfo(GenieClass):
             self.write_int_32(self.unused_id),
             self.write_int_32(self.map_lands_size, signed=False),
             self.write_int_32(self.map_lands_ptr),
-            self.write_class_array(self.map_lands),
+            self.write_class_array(self.map_lands, version),
             self.write_int_32(self.map_terrains_size, signed=False),
             self.write_int_32(self.map_terrains_ptr),
-            self.write_class_array(self.map_terrains),
+            self.write_class_array(self.map_terrains, version),
             self.write_int_32(self.map_units_size, signed=False),
             self.write_int_32(self.map_units_ptr),
-            self.write_class_array(self.map_units),
+            self.write_class_array(self.map_units, version),
             self.write_int_32(self.map_elevations_size, signed=False),
             self.write_int_32(self.map_elevations_ptr),
-            self.write_class_array(self.map_elevations),
+            self.write_class_array(self.map_elevations, version),
         ])
 
 
@@ -294,11 +295,11 @@ class RandomMaps(GenieClass):
             map_info_2=map_info_2,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         assert len(self.map_info_1) == len(self.map_info_2)
         return b''.join([
             self.write_int_32(len(self.map_info_1), signed=False),
             self.write_int_32(self.random_maps_ptr),
-            self.write_class_array(self.map_info_1),
-            self.write_class_array(self.map_info_2),
+            self.write_class_array(self.map_info_1, version),
+            self.write_class_array(self.map_info_2, version),
         ])

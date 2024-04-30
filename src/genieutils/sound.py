@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, GenieClass
+from genieutils.versions import Version
 
 
 @dataclass
@@ -21,7 +22,7 @@ class SoundItem(GenieClass):
             icon_set=content.read_int_16(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_debug_string(self.filename),
             self.write_int_32(self.resource_id),
@@ -55,12 +56,12 @@ class Sound(GenieClass):
             items=items,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.id),
             self.write_int_16(self.play_delay),
             self.write_int_16(len(self.items)),
             self.write_int_32(self.cache_time),
             self.write_int_16(self.total_probability),
-            self.write_class_array(self.items),
+            self.write_class_array(self.items, version),
         ])

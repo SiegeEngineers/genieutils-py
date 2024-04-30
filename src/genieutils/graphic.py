@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, GenieClass
+from genieutils.versions import Version
 
 
 @dataclass
@@ -25,7 +26,7 @@ class GraphicDelta(GenieClass):
             padding_2=content.read_int_16(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.graphic_id),
             self.write_int_16(self.padding_1),
@@ -63,7 +64,7 @@ class GraphicAngleSound(GenieClass):
             wwise_sound_id_3=content.read_int_32(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_16(self.frame_num),
             self.write_int_16(self.sound_id),
@@ -158,7 +159,7 @@ class Graphic(GenieClass):
             angle_sounds=angle_sounds,
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_debug_string(self.name),
             self.write_debug_string(self.file_name),
@@ -183,6 +184,6 @@ class Graphic(GenieClass):
             self.write_int_16(self.id),
             self.write_int_8(self.mirroring_mode),
             self.write_int_8(self.editor_flag),
-            self.write_class_array(self.deltas),
-            self.write_class_array(self.angle_sounds),
+            self.write_class_array(self.deltas, version),
+            self.write_class_array(self.angle_sounds, version),
         ])

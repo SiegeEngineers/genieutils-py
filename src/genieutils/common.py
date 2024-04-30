@@ -3,6 +3,7 @@ from enum import IntEnum
 from typing import TypeVar, Sequence
 
 from genieutils.datatypes import Int, Float, String
+from genieutils.versions import Version
 
 TILE_TYPE_COUNT = 19
 TERRAIN_COUNT = 200
@@ -31,7 +32,7 @@ class GenieClass(ABC):
     def from_bytes_with_count(cls, data: 'ByteHandler', terrains_used_1: int):
         raise NotImplementedError
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         raise NotImplementedError
 
     def write_debug_string(self, value: str) -> bytes:
@@ -48,7 +49,9 @@ class GenieClass(ABC):
     def write_int_8_array(self, value: Sequence[int]) -> bytes:
         return b''.join(self.write_int_8(v) for v in value)
 
-    def write_int_16(self, value: int, signed=True) -> bytes:
+    def write_int_16(self, value: int, signed=True, if_=True) -> bytes:
+        if not if_:
+            return b''
         return Int.to_bytes(value, length=2, signed=signed)
 
     def write_int_16_array(self, value: Sequence[int]) -> bytes:
@@ -66,14 +69,14 @@ class GenieClass(ABC):
     def write_float_array(self, value: Sequence[float]) -> bytes:
         return b''.join(self.write_float(v) for v in value)
 
-    def write_class(self, value: 'GenieClass') -> bytes:
-        retval = value.to_bytes()
+    def write_class(self, value: 'GenieClass', version: Version) -> bytes:
+        retval = value.to_bytes(version)
         if retval:
             return retval
         return b''
 
-    def write_class_array(self, value: Sequence['GenieClass | None']) -> bytes:
-        retval = b''.join(self.write_class(v) for v in value if v is not None)
+    def write_class_array(self, value: Sequence['GenieClass | None'], version: Version) -> bytes:
+        retval = b''.join(self.write_class(v, version) for v in value if v is not None)
         if retval:
             return retval
         return b''
@@ -86,6 +89,7 @@ class ByteHandler:
     def __init__(self, content: memoryview):
         self.content = content
         self.offset = 0
+        self.version: Version = Version.UNDEFINED
 
     def consume_range(self, length: int) -> memoryview:
         start = self.offset

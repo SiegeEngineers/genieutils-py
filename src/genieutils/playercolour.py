@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, GenieClass
+from genieutils.versions import Version
 
 
 @dataclass
@@ -29,7 +30,7 @@ class PlayerColour(GenieClass):
             statistics_text=content.read_int_32(),
         )
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_32(self.id),
             self.write_int_32(self.player_color_base),

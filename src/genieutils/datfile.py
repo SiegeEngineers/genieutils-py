@@ -15,6 +15,7 @@ from genieutils.techtree import TechTree
 from genieutils.terrainblock import TerrainBlock
 from genieutils.terrainrestriction import TerrainRestriction
 from genieutils.unitheaders import UnitHeaders
+from genieutils.versions import Version
 
 
 @dataclass
@@ -56,6 +57,7 @@ class DatFile(GenieClass):
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'DatFile':
         version = content.read_string(8)
+        content.version = Version(version)
         terrain_restrictions_size = content.read_int_16()
         terrains_used_1 = content.read_int_16()
         float_ptr_terrain_tables = content.read_int_32_array(terrain_restrictions_size)
@@ -115,7 +117,8 @@ class DatFile(GenieClass):
     def graphic_pointers(self) -> list[int]:
         return [(0 if g is None else 1) for g in self.graphics]
 
-    def to_bytes(self) -> bytes:
+    def to_bytes(self, version: Version = Version.UNDEFINED) -> bytes:
+        version = Version(self.version)
         terrain_restrictions_size = len(self.terrain_restrictions)
         assert len(self.float_ptr_terrain_tables) == len(self.terrain_pass_graphic_pointers) == terrain_restrictions_size
         terrains_used = 0
@@ -128,24 +131,24 @@ class DatFile(GenieClass):
             self.write_int_16(terrains_used),
             self.write_int_32_array(self.float_ptr_terrain_tables),
             self.write_int_32_array(self.terrain_pass_graphic_pointers),
-            self.write_class_array(self.terrain_restrictions),
+            self.write_class_array(self.terrain_restrictions, version),
             self.write_int_16(len(self.player_colours)),
-            self.write_class_array(self.player_colours),
+            self.write_class_array(self.player_colours, version),
             self.write_int_16(len(self.sounds)),
-            self.write_class_array(self.sounds),
+            self.write_class_array(self.sounds, version),
             self.write_int_16(len(self.graphics)),
             self.write_int_32_array(self.graphic_pointers),
-            self.write_class_array(self.graphics),
-            self.write_class(self.terrain_block),
-            self.write_class(self.random_maps),
+            self.write_class_array(self.graphics, version),
+            self.write_class(self.terrain_block, version),
+            self.write_class(self.random_maps, version),
             self.write_int_32(len(self.effects)),
-            self.write_class_array(self.effects),
+            self.write_class_array(self.effects, version),
             self.write_int_32(len(self.unit_headers)),
-            self.write_class_array(self.unit_headers),
+            self.write_class_array(self.unit_headers, version),
             self.write_int_16(len(self.civs)),
-            self.write_class_array(self.civs),
+            self.write_class_array(self.civs, version),
             self.write_int_16(len(self.techs)),
-            self.write_class_array(self.techs),
+            self.write_class_array(self.techs, version),
             self.write_int_32(self.time_slice),
             self.write_int_32(self.unit_kill_rate),
             self.write_int_32(self.unit_kill_total),
@@ -153,5 +156,5 @@ class DatFile(GenieClass):
             self.write_int_32(self.unit_hit_point_total),
             self.write_int_32(self.razing_kill_rate),
             self.write_int_32(self.razing_kill_total),
-            self.write_class(self.tech_tree),
+            self.write_class(self.tech_tree, version),
         ])
