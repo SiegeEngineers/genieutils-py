@@ -26,3 +26,9 @@ Issues = "https://github.com/SiegeEngineers/genieutils-py/issues"
 
 [project.scripts]
 dat-to-json = "genieutils.scripts:dat_to_json"
+
+[tool.ruff]
+line-length = 120
+
+[tool.coverage.run]
+omit = ['tests/*']
