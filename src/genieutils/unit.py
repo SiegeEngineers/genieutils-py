@@ -829,19 +829,19 @@ class Unit(GenieClass):
         building = b''
         if self.type != UnitType.AoeTrees:
             if self.type >= UnitType.Flag:
-                speed = self.write_float(self.speed)
+                speed = self.write_float(self.speed) if self.speed is not None else b''
                 if self.type >= UnitType.DeadFish:
-                    dead_fish = self.write_class(self.dead_fish, version)
+                    dead_fish = self.write_class(self.dead_fish, version) if self.dead_fish is not None else b''
                 if self.type >= UnitType.Bird:
-                    bird = self.write_class(self.bird, version)
+                    bird = self.write_class(self.bird, version) if self.bird is not None else b''
                 if self.type >= UnitType.Combatant:
-                    type_50 = self.write_class(self.type_50, version)
+                    type_50 = self.write_class(self.type_50, version) if self.type_50 is not None else b''
                 if self.type == UnitType.Projectile:
-                    projectile = self.write_class(self.projectile, version)
+                    projectile = self.write_class(self.projectile, version) if self.projectile is not None else b''
                 if self.type >= UnitType.Creatable:
-                    creatable = self.write_class(self.creatable, version)
+                    creatable = self.write_class(self.creatable, version) if self.creatable is not None else b''
                 if self.type == UnitType.Building:
-                    building = self.write_class(self.building, version)
+                    building = self.write_class(self.building, version) if self.building is not None else b''
         return b''.join([
             self.write_int_8(self.type),
             self.write_int_16(self.id),

@@ -7,7 +7,8 @@ This library can be used to read and write `empires2_x2_p1.dat` files for Age of
 
 ## Supported dat versions
 
-Currently, only the latest version used in Age of Empires II Definitive Edition is supported (`GV_LatestDE2`/`GV_C20`).
+Currently, only the recent versions used in Age of Empires II Definitive Edition are supported
+(`GV_C20` and above, corresponding to FileVersion 7.7 and above).
 
 
 ## Installation
@@ -47,6 +48,19 @@ for civ in data.civs:
     civ.units[434].bird.tasks.pop()
 data.save('path/to/modded/empires2_x2_p1.dat')
 ```
+
+## Running tests
+
+**Before running tests, you need to add sample `empires2_x2_p1.dat` files into the `tests/testdata` subfolder.**
+
+1. Create a virtual environment  
+   `python3 -m venv venv`
+2. Activate the virtual environment  
+   `source venv/bin/activate`
+3. Install the dev dependencies  
+   `pip install -r requirements-dev.txt`
+4. Run the test script  
+   `./test`
 
 
 ## Authors
