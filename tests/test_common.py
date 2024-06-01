@@ -23,46 +23,46 @@ class TestGenieClass:
             genie_class.to_bytes(Version.UNDEFINED)
 
     def test_write_debug_string(self, genie_class: GenieClass):
-        assert genie_class.write_debug_string("foobar") == b'`\n\x06\x00foobar'
+        assert genie_class.write_debug_string("foobar") == b'`\x0A\x06\x00foobar'
 
     def test_write_string(self, genie_class: GenieClass):
         assert genie_class.write_string(6, "foobar") == b'foobar'
 
     def test_write_int_8(self, genie_class: GenieClass):
-        assert genie_class.write_int_8(10) == b'\n'
+        assert genie_class.write_int_8(10) == b'\x0A'
         with pytest.raises(OverflowError):
             genie_class.write_int_8(1000)
 
     def test_write_int_8_array(self, genie_class: GenieClass):
-        assert genie_class.write_int_8_array([10, 10, 10]) == b'\n\n\n'
+        assert genie_class.write_int_8_array([10, 10, 10]) == b'\x0A\x0A\x0A'
         with pytest.raises(OverflowError):
             genie_class.write_int_8_array([10, 10, 1000])
 
     def test_write_int_16(self, genie_class: GenieClass):
-        assert genie_class.write_int_16(10) == b'\n\x00'
+        assert genie_class.write_int_16(10) == b'\x0A\x00'
         with pytest.raises(OverflowError):
             genie_class.write_int_16(70000)
 
     def test_write_int_16_array(self, genie_class: GenieClass):
-        assert genie_class.write_int_16_array([10, 10, 10]) == b'\n\x00\n\x00\n\x00'
+        assert genie_class.write_int_16_array([10, 10, 10]) == b'\x0A\x00\x0A\x00\x0A\x00'
         with pytest.raises(OverflowError):
             genie_class.write_int_16_array([10, 10, 70000])
 
     def test_write_int_32(self, genie_class: GenieClass):
-        assert genie_class.write_int_32(10) == b'\n\x00\x00\x00'
+        assert genie_class.write_int_32(10) == b'\x0A\x00\x00\x00'
         with pytest.raises(OverflowError):
             genie_class.write_int_32(5000000000)
 
     def test_write_int_32_array(self, genie_class: GenieClass):
-        assert genie_class.write_int_32_array([10, 10, 10]) == b'\n\x00\x00\x00\n\x00\x00\x00\n\x00\x00\x00'
+        assert genie_class.write_int_32_array([10, 10, 10]) == b'\x0A\x00\x00\x00\x0A\x00\x00\x00\x0A\x00\x00\x00'
         with pytest.raises(OverflowError):
             genie_class.write_int_32_array([10, 10, 5000000000])
 
     def test_write_float(self, genie_class: GenieClass):
-        assert genie_class.write_float(10) == b'\x00\x00 A'
+        assert genie_class.write_float(10) == b'\x00\x00\x20\x41'
 
     def test_write_float_array(self, genie_class: GenieClass):
-        assert genie_class.write_float_array([10, 10, 10]) == b'\x00\x00 A\x00\x00 A\x00\x00 A'
+        assert genie_class.write_float_array([10, 10, 10]) == b'\x00\x00\x20\x41\x00\x00\x20\x41\x00\x00\x20\x41'
 
     def test_write_class(self, genie_class: GenieClass):
         with pytest.raises(NotImplementedError):
