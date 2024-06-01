@@ -9,7 +9,19 @@ class TestGenieClass:
     @pytest.fixture
     def genie_class(self):
         return GenieClass()
-        
+    
+    def test_from_bytes(self, genie_class: GenieClass):
+        with pytest.raises(NotImplementedError):
+            genie_class.from_bytes(ByteHandler(b''))
+
+    def test_from_bytes_with_count(self, genie_class: GenieClass):
+        with pytest.raises(NotImplementedError):
+            genie_class.from_bytes_with_count(ByteHandler(b''), 0)
+
+    def test_to_bytes(self, genie_class: GenieClass):
+        with pytest.raises(NotImplementedError):
+            genie_class.to_bytes(Version.UNDEFINED)
+
     def test_write_debug_string(self, genie_class: GenieClass):
         assert genie_class.write_debug_string("foobar") == b'`\n\x06\x00foobar'
 
