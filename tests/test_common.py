@@ -23,7 +23,7 @@ class TestGenieClass:
             genie_class.to_bytes(Version.UNDEFINED)
 
     def test_write_debug_string(self, genie_class: GenieClass):
-        assert genie_class.write_debug_string("foobar") == b'`\x0A\x06\x00foobar'
+        assert genie_class.write_debug_string("foobar") == b'\x60\x0A\x06\x00foobar'
 
     def test_write_string(self, genie_class: GenieClass):
         assert genie_class.write_string(6, "foobar") == b'foobar'
