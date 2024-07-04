@@ -124,9 +124,6 @@ class TestByteHandler:
     def test_consume_range(self, byte_handler_8: ByteHandler):
         assert bytes(byte_handler_8.consume_range(10)) == b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09'
 
-    def test_read_debug_string(self, byte_handler_8: ByteHandler):
-        ...
-
     def test_read_string(self, byte_handler_8: ByteHandler):
         assert byte_handler_8.read_string(10) == '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09'
 
@@ -237,9 +234,3 @@ class TestByteHandler:
             assert read_class.int_32_val == 2048
             assert read_class.str_val == 'FOOBAR'
             assert read_class.float_val == 1.0
-
-    def test_read_class_array_with_pointers(self, byte_handler_8: ByteHandler, child_genie_class):
-        ...
-
-    def test_read_class_array_with_param(self, byte_handler_8: ByteHandler, child_genie_class):
-        ...
