@@ -59,7 +59,9 @@ data.save('path/to/modded/empires2_x2_p1.dat')
    `source venv/bin/activate`
 3. Install the dev dependencies  
    `pip install -r requirements-dev.txt`
-4. Run the test script  
+4. Install the local checkout of genieutils-py in editable mode
+   `pip install -e .`
+5. Run the test script
    `./test`
 
 
