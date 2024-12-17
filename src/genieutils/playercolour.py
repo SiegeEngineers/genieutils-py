@@ -4,7 +4,7 @@ from genieutils.common import ByteHandler, GenieClass
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class PlayerColour(GenieClass):
     id: int
     player_color_base: int

@@ -4,7 +4,7 @@ from genieutils.common import ByteHandler, GenieClass
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class MapUnit(GenieClass):
     unit: int
     host_terrain: int
@@ -56,7 +56,7 @@ class MapUnit(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class MapTerrain(GenieClass):
     proportion: int
     terrain: int
@@ -87,7 +87,7 @@ class MapTerrain(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class MapLand(GenieClass):
     land_id: int
     terrain: int
@@ -145,7 +145,7 @@ class MapLand(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class MapElevation(GenieClass):
     proportion: int
     terrain: int
@@ -176,7 +176,7 @@ class MapElevation(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class MapInfo(GenieClass):
     map_id: int
     border_south_west: int
@@ -277,7 +277,7 @@ class MapInfo(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class RandomMaps(GenieClass):
     random_maps_ptr: int
     map_info_1: list[MapInfo]

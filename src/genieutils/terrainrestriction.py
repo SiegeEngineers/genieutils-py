@@ -4,7 +4,7 @@ from genieutils.common import ByteHandler, GenieClass
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class TerrainPassGraphic(GenieClass):
     exit_tile_sprite_id: int
     enter_tile_sprite_id: int
@@ -29,7 +29,7 @@ class TerrainPassGraphic(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class TerrainRestriction(GenieClass):
     passable_buildable_dmg_multiplier: list[float]
     terrain_pass_graphics: list[TerrainPassGraphic]

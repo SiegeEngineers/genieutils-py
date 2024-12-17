@@ -4,7 +4,7 @@ from genieutils.common import ByteHandler, GenieClass
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class Task(GenieClass):
     task_type: int
     id: int

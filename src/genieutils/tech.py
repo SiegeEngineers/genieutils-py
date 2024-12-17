@@ -4,7 +4,7 @@ from genieutils.common import ByteHandler, GenieClass
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class ResearchResourceCost(GenieClass):
     type: int
     amount: int
@@ -26,7 +26,7 @@ class ResearchResourceCost(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Tech(GenieClass):
     required_techs: tuple[int, int, int, int, int, int]
     resource_costs: tuple[ResearchResourceCost, ResearchResourceCost, ResearchResourceCost]

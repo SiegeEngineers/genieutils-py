@@ -5,14 +5,13 @@ from genieutils.task import Task
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class UnitHeaders(GenieClass):
     exists: int
     task_list: list[Task] | None = None
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'UnitHeaders':
-        super().__init__(content)
         exists = content.read_int_8()
         task_list = None
         if exists:
