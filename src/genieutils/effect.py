@@ -4,7 +4,7 @@ from genieutils.common import ByteHandler, GenieClass
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class EffectCommand(GenieClass):
     type: int
     a: int
@@ -32,7 +32,7 @@ class EffectCommand(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Effect(GenieClass):
     name: str
     effect_commands: list[EffectCommand]

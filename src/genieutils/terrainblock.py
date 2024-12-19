@@ -4,7 +4,7 @@ from genieutils.common import ByteHandler, TILE_TYPE_COUNT, TERRAIN_COUNT, Genie
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class FrameData(GenieClass):
     frame_count: int
     angle_count: int
@@ -26,7 +26,7 @@ class FrameData(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Terrain(GenieClass):
     enabled: int
     random: int
@@ -153,7 +153,7 @@ class Terrain(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class TileSize(GenieClass):
     width: int
     height: int
@@ -175,7 +175,7 @@ class TileSize(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class TerrainBlock(GenieClass):
     virtual_function_ptr: int
     map_pointer: int

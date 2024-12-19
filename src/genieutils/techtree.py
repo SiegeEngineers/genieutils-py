@@ -4,7 +4,7 @@ from genieutils.common import ByteHandler, GenieClass
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class Common(GenieClass):
     slots_used: int
     unit_research: tuple[int, int, int, int, int, int, int, int, int, int]
@@ -26,7 +26,7 @@ class Common(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class TechTreeAge(GenieClass):
     id: int
     status: int
@@ -89,7 +89,7 @@ class TechTreeAge(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class BuildingConnection(GenieClass):
     id: int
     status: int
@@ -152,7 +152,7 @@ class BuildingConnection(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class UnitConnection(GenieClass):
     id: int
     status: int
@@ -207,7 +207,7 @@ class UnitConnection(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class ResearchConnection(GenieClass):
     id: int
     status: int
@@ -266,7 +266,7 @@ class ResearchConnection(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class TechTree(GenieClass):
     total_unit_tech_groups: int
     tech_tree_ages: list[TechTreeAge]

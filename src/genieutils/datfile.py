@@ -18,7 +18,7 @@ from genieutils.unitheaders import UnitHeaders
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class DatFile(GenieClass):
     version: str
     float_ptr_terrain_tables: list[int]

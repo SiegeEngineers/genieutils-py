@@ -5,7 +5,7 @@ from genieutils.unit import Unit
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class Civ(GenieClass):
     player_type: int
     name: str

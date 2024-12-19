@@ -4,7 +4,7 @@ from genieutils.common import ByteHandler, GenieClass
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class GraphicDelta(GenieClass):
     graphic_id: int
     padding_1: int
@@ -38,7 +38,7 @@ class GraphicDelta(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class GraphicAngleSound(GenieClass):
     frame_num: int
     sound_id: int
@@ -78,7 +78,7 @@ class GraphicAngleSound(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Graphic(GenieClass):
     name: str
     file_name: str

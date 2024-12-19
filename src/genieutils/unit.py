@@ -5,7 +5,7 @@ from genieutils.task import Task
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class ResourceStorage(GenieClass):
     type: int
     amount: float
@@ -27,7 +27,7 @@ class ResourceStorage(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class DamageGraphic(GenieClass):
     graphic_id: int
     damage_percent: int
@@ -49,7 +49,7 @@ class DamageGraphic(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class DeadFish(GenieClass):
     walking_graphic: int
     running_graphic: int
@@ -104,7 +104,7 @@ class DeadFish(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Bird(GenieClass):
     default_task_id: int
     search_radius: float
@@ -167,7 +167,7 @@ class Bird(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class AttackOrArmor(GenieClass):
     class_: int
     amount: int
@@ -186,7 +186,7 @@ class AttackOrArmor(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Type50(GenieClass):
     base_armor: int
     attacks: list[AttackOrArmor]
@@ -291,7 +291,7 @@ class Type50(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Projectile(GenieClass):
     projectile_type: int
     smart_mode: int
@@ -322,7 +322,7 @@ class Projectile(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class ResourceCost(GenieClass):
     type: int
     amount: int
@@ -344,7 +344,7 @@ class ResourceCost(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Creatable(GenieClass):
     resource_costs: tuple[ResourceCost, ResourceCost, ResourceCost]
     train_time: int
@@ -435,7 +435,7 @@ class Creatable(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class BuildingAnnex(GenieClass):
     unit_id: int
     misplacement_x: float
@@ -457,7 +457,7 @@ class BuildingAnnex(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Building(GenieClass):
     construction_graphic_id: int
     snow_graphic_id: int
@@ -548,7 +548,7 @@ class Building(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Unit(GenieClass):
     type: int
     id: int

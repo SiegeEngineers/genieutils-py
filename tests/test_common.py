@@ -101,7 +101,7 @@ class TestByteHandler:
     
     @pytest.fixture
     def child_genie_class(self):
-        @dataclasses.dataclass
+        @dataclasses.dataclass(slots=True)
         class ChildGenieClass(GenieClass):
             int_8_val: int
             int_16_val: int

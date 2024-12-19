@@ -4,7 +4,7 @@ from genieutils.common import ByteHandler, GenieClass
 from genieutils.versions import Version
 
 
-@dataclass
+@dataclass(slots=True)
 class SoundItem(GenieClass):
     filename: str
     resource_id: int
@@ -32,7 +32,7 @@ class SoundItem(GenieClass):
         ])
 
 
-@dataclass
+@dataclass(slots=True)
 class Sound(GenieClass):
     id: int
     play_delay: int
