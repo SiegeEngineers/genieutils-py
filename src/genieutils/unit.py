@@ -1,8 +1,12 @@
+import struct
 from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, UnitType, GenieClass
 from genieutils.task import Task
 from genieutils.versions import Version
+
+RESOURCE_STORAGE_FORMAT = '<hfb'
+RESOURCE_STORAGE_FORMAT_LENGTH = 7
 
 
 @dataclass(slots=True)
@@ -13,19 +17,20 @@ class ResourceStorage(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'ResourceStorage':
+        type_, amount, flag = struct.unpack(RESOURCE_STORAGE_FORMAT,
+                                            content.consume_range(RESOURCE_STORAGE_FORMAT_LENGTH))
         return cls(
-            type=content.read_int_16(),
-            amount=content.read_float(),
-            flag=content.read_int_8(),
+            type=type_,
+            amount=amount,
+            flag=flag,
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
-            self.write_int_16(self.type),
-            self.write_float(self.amount),
-            self.write_int_8(self.flag),
-        ])
+        return struct.pack(RESOURCE_STORAGE_FORMAT, self.type, self.amount, self.flag)
 
+
+DAMAGE_GRAPHIC_FORMAT = '<hhb'
+DAMAGE_GRAPHIC_FORMAT_LENGTH = 5
 
 @dataclass(slots=True)
 class DamageGraphic(GenieClass):
@@ -35,19 +40,21 @@ class DamageGraphic(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'DamageGraphic':
+        graphic_id, \
+            damage_percent, \
+            apply_mode = struct.unpack(DAMAGE_GRAPHIC_FORMAT, content.consume_range(DAMAGE_GRAPHIC_FORMAT_LENGTH))
         return cls(
-            graphic_id=content.read_int_16(),
-            damage_percent=content.read_int_16(),
-            apply_mode=content.read_int_8(),
+            graphic_id=graphic_id,
+            damage_percent=damage_percent,
+            apply_mode=apply_mode,
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
-            self.write_int_16(self.graphic_id),
-            self.write_int_16(self.damage_percent),
-            self.write_int_8(self.apply_mode),
-        ])
+        return struct.pack(DAMAGE_GRAPHIC_FORMAT, self.graphic_id, self.damage_percent, self.apply_mode)
 
+
+DEAD_FISH_FORMAT = '<hhfbhbfbffffff'
+DEAD_FISH_FORMAT_LENGTH = 41
 
 @dataclass(slots=True)
 class DeadFish(GenieClass):
@@ -68,40 +75,55 @@ class DeadFish(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'DeadFish':
+        walking_graphic, \
+            running_graphic, \
+            rotation_speed, \
+            old_size_class, \
+            tracking_unit, \
+            tracking_unit_mode, \
+            tracking_unit_density, \
+            old_move_algorithm, \
+            turn_radius, \
+            turn_radius_speed, \
+            max_yaw_per_second_moving, \
+            stationary_yaw_revolution_time, \
+            max_yaw_per_second_stationary, \
+            min_collision_size_multiplier = struct.unpack(DEAD_FISH_FORMAT,
+                                                          content.consume_range(DEAD_FISH_FORMAT_LENGTH))
         return cls(
-            walking_graphic=content.read_int_16(),
-            running_graphic=content.read_int_16(),
-            rotation_speed=content.read_float(),
-            old_size_class=content.read_int_8(),
-            tracking_unit=content.read_int_16(),
-            tracking_unit_mode=content.read_int_8(),
-            tracking_unit_density=content.read_float(),
-            old_move_algorithm=content.read_int_8(),
-            turn_radius=content.read_float(),
-            turn_radius_speed=content.read_float(),
-            max_yaw_per_second_moving=content.read_float(),
-            stationary_yaw_revolution_time=content.read_float(),
-            max_yaw_per_second_stationary=content.read_float(),
-            min_collision_size_multiplier=content.read_float(),
+            walking_graphic=walking_graphic,
+            running_graphic=running_graphic,
+            rotation_speed=rotation_speed,
+            old_size_class=old_size_class,
+            tracking_unit=tracking_unit,
+            tracking_unit_mode=tracking_unit_mode,
+            tracking_unit_density=tracking_unit_density,
+            old_move_algorithm=old_move_algorithm,
+            turn_radius=turn_radius,
+            turn_radius_speed=turn_radius_speed,
+            max_yaw_per_second_moving=max_yaw_per_second_moving,
+            stationary_yaw_revolution_time=stationary_yaw_revolution_time,
+            max_yaw_per_second_stationary=max_yaw_per_second_stationary,
+            min_collision_size_multiplier=min_collision_size_multiplier,
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
-            self.write_int_16(self.walking_graphic),
-            self.write_int_16(self.running_graphic),
-            self.write_float(self.rotation_speed),
-            self.write_int_8(self.old_size_class),
-            self.write_int_16(self.tracking_unit),
-            self.write_int_8(self.tracking_unit_mode),
-            self.write_float(self.tracking_unit_density),
-            self.write_int_8(self.old_move_algorithm),
-            self.write_float(self.turn_radius),
-            self.write_float(self.turn_radius_speed),
-            self.write_float(self.max_yaw_per_second_moving),
-            self.write_float(self.stationary_yaw_revolution_time),
-            self.write_float(self.max_yaw_per_second_stationary),
-            self.write_float(self.min_collision_size_multiplier),
-        ])
+        return struct.pack(DEAD_FISH_FORMAT,
+                           self.walking_graphic,
+                           self.running_graphic,
+                           self.rotation_speed,
+                           self.old_size_class,
+                           self.tracking_unit,
+                           self.tracking_unit_mode,
+                           self.tracking_unit_density,
+                           self.old_move_algorithm,
+                           self.turn_radius,
+                           self.turn_radius_speed,
+                           self.max_yaw_per_second_moving,
+                           self.stationary_yaw_revolution_time,
+                           self.max_yaw_per_second_stationary,
+                           self.min_collision_size_multiplier
+                           )
 
 
 @dataclass(slots=True)
@@ -167,6 +189,10 @@ class Bird(GenieClass):
         ])
 
 
+ATTACK_OR_ARMOR_FORMAT = '<hh'
+ATTACK_OR_ARMOR_FORMAT_LENGTH = 4
+
+
 @dataclass(slots=True)
 class AttackOrArmor(GenieClass):
     class_: int
@@ -174,16 +200,14 @@ class AttackOrArmor(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'AttackOrArmor':
+        class_, amount = struct.unpack(ATTACK_OR_ARMOR_FORMAT, content.consume_range(ATTACK_OR_ARMOR_FORMAT_LENGTH))
         return cls(
-            class_=content.read_int_16(),
-            amount=content.read_int_16(),
+            class_=class_,
+            amount=amount,
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
-            self.write_int_16(self.class_),
-            self.write_int_16(self.amount),
-        ])
+        return struct.pack(ATTACK_OR_ARMOR_FORMAT, self.class_, self.amount)
 
 
 @dataclass(slots=True)
@@ -291,6 +315,9 @@ class Type50(GenieClass):
         ])
 
 
+PROJECTILE_FORMAT = '<bbbbbf'
+PROJECTILE_FORMAT_LENGTH = 9
+
 @dataclass(slots=True)
 class Projectile(GenieClass):
     projectile_type: int
@@ -302,25 +329,34 @@ class Projectile(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Projectile':
+        projectile_type, \
+            smart_mode, \
+            hit_mode, \
+            vanish_mode, \
+            area_effect_specials, \
+            projectile_arc = struct.unpack(PROJECTILE_FORMAT, content.consume_range(PROJECTILE_FORMAT_LENGTH))
         return cls(
-            projectile_type=content.read_int_8(),
-            smart_mode=content.read_int_8(),
-            hit_mode=content.read_int_8(),
-            vanish_mode=content.read_int_8(),
-            area_effect_specials=content.read_int_8(),
-            projectile_arc=content.read_float(),
+            projectile_type=projectile_type,
+            smart_mode=smart_mode,
+            hit_mode=hit_mode,
+            vanish_mode=vanish_mode,
+            area_effect_specials=area_effect_specials,
+            projectile_arc=projectile_arc,
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
-            self.write_int_8(self.projectile_type),
-            self.write_int_8(self.smart_mode),
-            self.write_int_8(self.hit_mode),
-            self.write_int_8(self.vanish_mode),
-            self.write_int_8(self.area_effect_specials),
-            self.write_float(self.projectile_arc),
-        ])
+        return struct.pack(PROJECTILE_FORMAT,
+                           self.projectile_type,
+                           self.smart_mode,
+                           self.hit_mode,
+                           self.vanish_mode,
+                           self.area_effect_specials,
+                           self.projectile_arc,
+                           )
 
+
+RESOURCE_COST_FORMAT = '<hhh'
+RESOURCE_COST_FORMAT_LENGTH = 6
 
 @dataclass(slots=True)
 class ResourceCost(GenieClass):
@@ -330,19 +366,19 @@ class ResourceCost(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'ResourceCost':
+        type_, amount, flag = struct.unpack(RESOURCE_COST_FORMAT, content.consume_range(RESOURCE_COST_FORMAT_LENGTH))
         return cls(
-            type=content.read_int_16(),
-            amount=content.read_int_16(),
-            flag=content.read_int_16(),
+            type=type_,
+            amount=amount,
+            flag=flag,
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
-            self.write_int_16(self.type),
-            self.write_int_16(self.amount),
-            self.write_int_16(self.flag),
-        ])
+        return struct.pack(RESOURCE_COST_FORMAT, self.type, self.amount, self.flag)
 
+
+CREATABLE_FORMAT = '<hhbffbblhhhffhhffffbfffllbh'
+CREATABLE_FORMAT_LENGTH = 77
 
 @dataclass(slots=True)
 class Creatable(GenieClass):
@@ -375,64 +411,99 @@ class Creatable(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Creatable':
+        resource_costs = content.read_class_array_3(ResourceCost)
+        train_time, \
+            train_location_id, \
+            button_id, \
+            rear_attack_modifier, \
+            flank_attack_modifier, \
+            creatable_type, \
+            hero_mode, \
+            garrison_graphic, \
+            spawning_graphic, \
+            upgrade_graphic, \
+            hero_glow_graphic, \
+            max_charge, \
+            recharge_rate, \
+            charge_event, \
+            charge_type, \
+            min_conversion_time_mod, \
+            max_conversion_time_mod, \
+            conversion_chance_mod, \
+            total_projectiles, \
+            max_total_projectiles, \
+            projectile_spawning_area_1, \
+            projectile_spawning_area_2, \
+            projectile_spawning_area_3, \
+            secondary_projectile_unit, \
+            special_graphic, \
+            special_ability, \
+            displayed_pierce_armor = struct.unpack(CREATABLE_FORMAT, content.consume_range(CREATABLE_FORMAT_LENGTH))
         return cls(
-            resource_costs=content.read_class_array_3(ResourceCost),
-            train_time=content.read_int_16(),
-            train_location_id=content.read_int_16(),
-            button_id=content.read_int_8(),
-            rear_attack_modifier=content.read_float(),
-            flank_attack_modifier=content.read_float(),
-            creatable_type=content.read_int_8(),
-            hero_mode=content.read_int_8(),
-            garrison_graphic=content.read_int_32(),
-            spawning_graphic=content.read_int_16(),
-            upgrade_graphic=content.read_int_16(),
-            hero_glow_graphic=content.read_int_16(),
-            max_charge=content.read_float(),
-            recharge_rate=content.read_float(),
-            charge_event=content.read_int_16(),
-            charge_type=content.read_int_16(),
-            min_conversion_time_mod=content.read_float(),
-            max_conversion_time_mod=content.read_float(),
-            conversion_chance_mod=content.read_float(),
-            total_projectiles=content.read_float(),
-            max_total_projectiles=content.read_int_8(),
-            projectile_spawning_area=content.read_float_array_3(),
-            secondary_projectile_unit=content.read_int_32(),
-            special_graphic=content.read_int_32(),
-            special_ability=content.read_int_8(),
-            displayed_pierce_armor=content.read_int_16(),
+            resource_costs=resource_costs,
+            train_time=train_time,
+            train_location_id=train_location_id,
+            button_id=button_id,
+            rear_attack_modifier=rear_attack_modifier,
+            flank_attack_modifier=flank_attack_modifier,
+            creatable_type=creatable_type,
+            hero_mode=hero_mode,
+            garrison_graphic=garrison_graphic,
+            spawning_graphic=spawning_graphic,
+            upgrade_graphic=upgrade_graphic,
+            hero_glow_graphic=hero_glow_graphic,
+            max_charge=max_charge,
+            recharge_rate=recharge_rate,
+            charge_event=charge_event,
+            charge_type=charge_type,
+            min_conversion_time_mod=min_conversion_time_mod,
+            max_conversion_time_mod=max_conversion_time_mod,
+            conversion_chance_mod=conversion_chance_mod,
+            total_projectiles=total_projectiles,
+            max_total_projectiles=max_total_projectiles,
+            projectile_spawning_area=(
+                projectile_spawning_area_1,
+                projectile_spawning_area_2,
+                projectile_spawning_area_3),
+            secondary_projectile_unit=secondary_projectile_unit,
+            special_graphic=special_graphic,
+            special_ability=special_ability,
+            displayed_pierce_armor=displayed_pierce_armor,
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
-            self.write_class_array(self.resource_costs, version),
-            self.write_int_16(self.train_time),
-            self.write_int_16(self.train_location_id),
-            self.write_int_8(self.button_id),
-            self.write_float(self.rear_attack_modifier),
-            self.write_float(self.flank_attack_modifier),
-            self.write_int_8(self.creatable_type),
-            self.write_int_8(self.hero_mode),
-            self.write_int_32(self.garrison_graphic),
-            self.write_int_16(self.spawning_graphic),
-            self.write_int_16(self.upgrade_graphic),
-            self.write_int_16(self.hero_glow_graphic),
-            self.write_float(self.max_charge),
-            self.write_float(self.recharge_rate),
-            self.write_int_16(self.charge_event),
-            self.write_int_16(self.charge_type),
-            self.write_float(self.min_conversion_time_mod),
-            self.write_float(self.max_conversion_time_mod),
-            self.write_float(self.conversion_chance_mod),
-            self.write_float(self.total_projectiles),
-            self.write_int_8(self.max_total_projectiles),
-            self.write_float_array(self.projectile_spawning_area),
-            self.write_int_32(self.secondary_projectile_unit),
-            self.write_int_32(self.special_graphic),
-            self.write_int_8(self.special_ability),
-            self.write_int_16(self.displayed_pierce_armor),
-        ])
+        return self.write_class_array(self.resource_costs, version) + \
+            struct.pack(CREATABLE_FORMAT,
+                        self.train_time,
+                        self.train_location_id,
+                        self.button_id,
+                        self.rear_attack_modifier,
+                        self.flank_attack_modifier,
+                        self.creatable_type,
+                        self.hero_mode,
+                        self.garrison_graphic,
+                        self.spawning_graphic,
+                        self.upgrade_graphic,
+                        self.hero_glow_graphic,
+                        self.max_charge,
+                        self.recharge_rate,
+                        self.charge_event,
+                        self.charge_type,
+                        self.min_conversion_time_mod,
+                        self.max_conversion_time_mod,
+                        self.conversion_chance_mod,
+                        self.total_projectiles,
+                        self.max_total_projectiles,
+                        *self.projectile_spawning_area,
+                        self.secondary_projectile_unit,
+                        self.special_graphic,
+                        self.special_ability,
+                        self.displayed_pierce_armor,
+                        )
+
+
+BUILDING_ANNEX_FORMAT = '<hff'
+BUILDING_ANNEX_FORMAT_LENGTH = 10
 
 
 @dataclass(slots=True)
@@ -443,19 +514,27 @@ class BuildingAnnex(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'BuildingAnnex':
+        unit_id, misplacement_x, misplacement_y = struct.unpack(BUILDING_ANNEX_FORMAT,
+                                                                content.consume_range(BUILDING_ANNEX_FORMAT_LENGTH))
         return cls(
-            unit_id=content.read_int_16(),
-            misplacement_x=content.read_float(),
-            misplacement_y=content.read_float(),
+            unit_id=unit_id,
+            misplacement_x=misplacement_x,
+            misplacement_y=misplacement_y,
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
-            self.write_int_16(self.unit_id),
-            self.write_float(self.misplacement_x),
-            self.write_float(self.misplacement_y),
-        ])
+        return struct.pack(BUILDING_ANNEX_FORMAT,
+                           self.unit_id,
+                           self.misplacement_x,
+                           self.misplacement_y,
+                           )
 
+
+BUILDING_ANNEX_FORMAT_1 = '<hhhhhhbhbhhhhb'
+BUILDING_ANNEX_FORMAT_1_LENGTH = 25
+
+BUILDING_ANNEX_FORMAT_2 = '<hhhhllbffhbbbbbb'
+BUILDING_ANNEX_FORMAT_2_LENGTH = 33
 
 @dataclass(slots=True)
 class Building(GenieClass):
@@ -488,64 +567,112 @@ class Building(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Building':
+        construction_graphic_id, \
+            snow_graphic_id, \
+            destruction_graphic_id, \
+            destruction_rubble_graphic_id, \
+            researching_graphic, \
+            research_completed_graphic, \
+            adjacent_mode, \
+            graphics_angle, \
+            disappears_when_built, \
+            stack_unit_id, \
+            foundation_terrain_id, \
+            old_overlap_id, \
+            tech_id, \
+            can_burn = struct.unpack(BUILDING_ANNEX_FORMAT_1, content.consume_range(BUILDING_ANNEX_FORMAT_1_LENGTH))
+
+        annexes = content.read_class_array_4(BuildingAnnex)
+
+        head_unit, \
+            transform_unit, \
+            transform_sound, \
+            construction_sound, \
+            wwise_transform_sound_id, \
+            wwise_construction_sound_id, \
+            garrison_type, \
+            garrison_heal_rate, \
+            garrison_repair_rate, \
+            pile_unit, \
+            looting_table_1, \
+            looting_table_2, \
+            looting_table_3, \
+            looting_table_4, \
+            looting_table_5, \
+            looting_table_6 = struct.unpack(BUILDING_ANNEX_FORMAT_2,
+                                            content.consume_range(BUILDING_ANNEX_FORMAT_2_LENGTH))
+
         return cls(
-            construction_graphic_id=content.read_int_16(),
-            snow_graphic_id=content.read_int_16(),
-            destruction_graphic_id=content.read_int_16(),
-            destruction_rubble_graphic_id=content.read_int_16(),
-            researching_graphic=content.read_int_16(),
-            research_completed_graphic=content.read_int_16(),
-            adjacent_mode=content.read_int_8(),
-            graphics_angle=content.read_int_16(),
-            disappears_when_built=content.read_int_8(),
-            stack_unit_id=content.read_int_16(),
-            foundation_terrain_id=content.read_int_16(),
-            old_overlap_id=content.read_int_16(),
-            tech_id=content.read_int_16(),
-            can_burn=content.read_int_8(),
-            annexes=content.read_class_array_4(BuildingAnnex),
-            head_unit=content.read_int_16(),
-            transform_unit=content.read_int_16(),
-            transform_sound=content.read_int_16(),
-            construction_sound=content.read_int_16(),
-            wwise_transform_sound_id=content.read_int_32(),
-            wwise_construction_sound_id=content.read_int_32(),
-            garrison_type=content.read_int_8(),
-            garrison_heal_rate=content.read_float(),
-            garrison_repair_rate=content.read_float(),
-            pile_unit=content.read_int_16(),
-            looting_table=content.read_int_8_array_6(),
+            construction_graphic_id=construction_graphic_id,
+            snow_graphic_id=snow_graphic_id,
+            destruction_graphic_id=destruction_graphic_id,
+            destruction_rubble_graphic_id=destruction_rubble_graphic_id,
+            researching_graphic=researching_graphic,
+            research_completed_graphic=research_completed_graphic,
+            adjacent_mode=adjacent_mode,
+            graphics_angle=graphics_angle,
+            disappears_when_built=disappears_when_built,
+            stack_unit_id=stack_unit_id,
+            foundation_terrain_id=foundation_terrain_id,
+            old_overlap_id=old_overlap_id,
+            tech_id=tech_id,
+            can_burn=can_burn,
+            annexes=annexes,
+            head_unit=head_unit,
+            transform_unit=transform_unit,
+            transform_sound=transform_sound,
+            construction_sound=construction_sound,
+            wwise_transform_sound_id=wwise_transform_sound_id,
+            wwise_construction_sound_id=wwise_construction_sound_id,
+            garrison_type=garrison_type,
+            garrison_heal_rate=garrison_heal_rate,
+            garrison_repair_rate=garrison_repair_rate,
+            pile_unit=pile_unit,
+            looting_table=(
+                looting_table_1,
+                looting_table_2,
+                looting_table_3,
+                looting_table_4,
+                looting_table_5,
+                looting_table_6,
+            ),
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
-            self.write_int_16(self.construction_graphic_id),
-            self.write_int_16(self.snow_graphic_id),
-            self.write_int_16(self.destruction_graphic_id),
-            self.write_int_16(self.destruction_rubble_graphic_id),
-            self.write_int_16(self.researching_graphic),
-            self.write_int_16(self.research_completed_graphic),
-            self.write_int_8(self.adjacent_mode),
-            self.write_int_16(self.graphics_angle),
-            self.write_int_8(self.disappears_when_built),
-            self.write_int_16(self.stack_unit_id),
-            self.write_int_16(self.foundation_terrain_id),
-            self.write_int_16(self.old_overlap_id),
-            self.write_int_16(self.tech_id),
-            self.write_int_8(self.can_burn),
-            self.write_class_array(self.annexes, version),
-            self.write_int_16(self.head_unit),
-            self.write_int_16(self.transform_unit),
-            self.write_int_16(self.transform_sound),
-            self.write_int_16(self.construction_sound),
-            self.write_int_32(self.wwise_transform_sound_id),
-            self.write_int_32(self.wwise_construction_sound_id),
-            self.write_int_8(self.garrison_type),
-            self.write_float(self.garrison_heal_rate),
-            self.write_float(self.garrison_repair_rate),
-            self.write_int_16(self.pile_unit),
-            self.write_int_8_array(self.looting_table),
-        ])
+        return struct.pack(BUILDING_ANNEX_FORMAT_1,
+                           self.construction_graphic_id,
+                           self.snow_graphic_id,
+                           self.destruction_graphic_id,
+                           self.destruction_rubble_graphic_id,
+                           self.researching_graphic,
+                           self.research_completed_graphic,
+                           self.adjacent_mode,
+                           self.graphics_angle,
+                           self.disappears_when_built,
+                           self.stack_unit_id,
+                           self.foundation_terrain_id,
+                           self.old_overlap_id,
+                           self.tech_id,
+                           self.can_burn,
+                           ) + \
+            self.write_class_array(self.annexes, version) + \
+            struct.pack(BUILDING_ANNEX_FORMAT_2,
+                        self.head_unit,
+                        self.transform_unit,
+                        self.transform_sound,
+                        self.construction_sound,
+                        self.wwise_transform_sound_id,
+                        self.wwise_construction_sound_id,
+                        self.garrison_type,
+                        self.garrison_heal_rate,
+                        self.garrison_repair_rate,
+                        self.pile_unit,
+                        *self.looting_table,
+                        )
+
+
+FORMAT = ('<bhllhhhhhbhfbfffhhhhbbhbhbbhhhhffbbhbhfbbbbbfblllbbbbbbbbbhbbfffll')
+FORMAT_LENGTH = 140
 
 
 @dataclass(slots=True)
@@ -635,68 +762,69 @@ class Unit(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Unit':
-        type_ = content.read_int_8()
-        id_ = content.read_int_16()
-        language_dll_name = content.read_int_32()
-        language_dll_creation = content.read_int_32()
-        class_ = content.read_int_16()
-        standing_graphic = content.read_int_16_array_2()
-        dying_graphic = content.read_int_16()
-        undead_graphic = content.read_int_16()
-        undead_mode = content.read_int_8()
-        hit_points = content.read_int_16()
-        line_of_sight = content.read_float()
-        garrison_capacity = content.read_int_8()
-        collision_size_x = content.read_float()
-        collision_size_y = content.read_float()
-        collision_size_z = content.read_float()
-        train_sound = content.read_int_16()
-        damage_sound = content.read_int_16()
-        dead_unit_id = content.read_int_16()
-        blood_unit_id = content.read_int_16()
-        sort_number = content.read_int_8()
-        can_be_built_on = content.read_int_8()
-        icon_id = content.read_int_16()
-        hide_in_editor = content.read_int_8()
-        old_portrait_pict = content.read_int_16()
-        enabled = content.read_int_8()
-        disabled = content.read_int_8()
-        placement_side_terrain = content.read_int_16_array_2()
-        placement_terrain = content.read_int_16_array_2()
-        clearance_size = content.read_float_array_2()
-        hill_mode = content.read_int_8()
-        fog_visibility = content.read_int_8()
-        terrain_restriction = content.read_int_16()
-        fly_mode = content.read_int_8()
-        resource_capacity = content.read_int_16()
-        resource_decay = content.read_float()
-        blast_defense_level = content.read_int_8()
-        combat_level = content.read_int_8()
-        interation_mode = content.read_int_8()
-        minimap_mode = content.read_int_8()
-        interface_kind = content.read_int_8()
-        multiple_attribute_mode = content.read_float()
-        minimap_color = content.read_int_8()
-        language_dll_help = content.read_int_32()
-        language_dll_hotkey_text = content.read_int_32()
-        hot_key = content.read_int_32()
-        recyclable = content.read_int_8()
-        enable_auto_gather = content.read_int_8()
-        create_doppelganger_on_death = content.read_int_8()
-        resource_gather_group = content.read_int_8()
-        occlusion_mode = content.read_int_8()
-        obstruction_type = content.read_int_8()
-        obstruction_class = content.read_int_8()
-        trait = content.read_int_8()
-        civilization = content.read_int_8()
-        nothing = content.read_int_16()
-        selection_effect = content.read_int_8()
-        editor_selection_colour = content.read_int_8()
-        outline_size_x = content.read_float()
-        outline_size_y = content.read_float()
-        outline_size_z = content.read_float()
-        scenario_triggers_1 = content.read_int_32()
-        scenario_triggers_2 = content.read_int_32()
+        type_, \
+            id_, \
+            language_dll_name, \
+            language_dll_creation, \
+            class_, \
+            standing_graphic_1, standing_graphic_2, \
+            dying_graphic, \
+            undead_graphic, \
+            undead_mode, \
+            hit_points, \
+            line_of_sight, \
+            garrison_capacity, \
+            collision_size_x, \
+            collision_size_y, \
+            collision_size_z, \
+            train_sound, \
+            damage_sound, \
+            dead_unit_id, \
+            blood_unit_id, \
+            sort_number, \
+            can_be_built_on, \
+            icon_id, \
+            hide_in_editor, \
+            old_portrait_pict, \
+            enabled, \
+            disabled, \
+            placement_side_terrain_1, placement_side_terrain_2, \
+            placement_terrain_1, placement_terrain_2, \
+            clearance_size_1, clearance_size_2, \
+            hill_mode, \
+            fog_visibility, \
+            terrain_restriction, \
+            fly_mode, \
+            resource_capacity, \
+            resource_decay, \
+            blast_defense_level, \
+            combat_level, \
+            interation_mode, \
+            minimap_mode, \
+            interface_kind, \
+            multiple_attribute_mode, \
+            minimap_color, \
+            language_dll_help, \
+            language_dll_hotkey_text, \
+            hot_key, \
+            recyclable, \
+            enable_auto_gather, \
+            create_doppelganger_on_death, \
+            resource_gather_group, \
+            occlusion_mode, \
+            obstruction_type, \
+            obstruction_class, \
+            trait, \
+            civilization, \
+            nothing, \
+            selection_effect, \
+            editor_selection_colour, \
+            outline_size_x, \
+            outline_size_y, \
+            outline_size_z, \
+            scenario_triggers_1, \
+            scenario_triggers_2 = struct.unpack(FORMAT, content.consume_range(FORMAT_LENGTH))
+
         resource_storages = content.read_class_array_3(ResourceStorage)
         damage_graphic_size = content.read_int_8()
         damage_graphics = content.read_class_array(DamageGraphic, damage_graphic_size)
@@ -740,7 +868,7 @@ class Unit(GenieClass):
             language_dll_name=language_dll_name,
             language_dll_creation=language_dll_creation,
             class_=class_,
-            standing_graphic=standing_graphic,
+            standing_graphic=(standing_graphic_1, standing_graphic_2),
             dying_graphic=dying_graphic,
             undead_graphic=undead_graphic,
             undead_mode=undead_mode,
@@ -761,9 +889,9 @@ class Unit(GenieClass):
             old_portrait_pict=old_portrait_pict,
             enabled=enabled,
             disabled=disabled,
-            placement_side_terrain=placement_side_terrain,
-            placement_terrain=placement_terrain,
-            clearance_size=clearance_size,
+            placement_side_terrain=(placement_side_terrain_1, placement_side_terrain_2),
+            placement_terrain=(placement_terrain_1, placement_terrain_2),
+            clearance_size=(clearance_size_1, clearance_size_2),
             hill_mode=hill_mode,
             fog_visibility=fog_visibility,
             terrain_restriction=terrain_restriction,
@@ -842,69 +970,70 @@ class Unit(GenieClass):
                     creatable = self.write_class(self.creatable, version) if self.creatable is not None else b''
                 if self.type == UnitType.Building:
                     building = self.write_class(self.building, version) if self.building is not None else b''
-        return b''.join([
-            self.write_int_8(self.type),
-            self.write_int_16(self.id),
-            self.write_int_32(self.language_dll_name),
-            self.write_int_32(self.language_dll_creation),
-            self.write_int_16(self.class_),
-            self.write_int_16_array(self.standing_graphic),
-            self.write_int_16(self.dying_graphic),
-            self.write_int_16(self.undead_graphic),
-            self.write_int_8(self.undead_mode),
-            self.write_int_16(self.hit_points),
-            self.write_float(self.line_of_sight),
-            self.write_int_8(self.garrison_capacity),
-            self.write_float(self.collision_size_x),
-            self.write_float(self.collision_size_y),
-            self.write_float(self.collision_size_z),
-            self.write_int_16(self.train_sound),
-            self.write_int_16(self.damage_sound),
-            self.write_int_16(self.dead_unit_id),
-            self.write_int_16(self.blood_unit_id),
-            self.write_int_8(self.sort_number),
-            self.write_int_8(self.can_be_built_on),
-            self.write_int_16(self.icon_id),
-            self.write_int_8(self.hide_in_editor),
-            self.write_int_16(self.old_portrait_pict),
-            self.write_int_8(self.enabled),
-            self.write_int_8(self.disabled),
-            self.write_int_16_array(self.placement_side_terrain),
-            self.write_int_16_array(self.placement_terrain),
-            self.write_float_array(self.clearance_size),
-            self.write_int_8(self.hill_mode),
-            self.write_int_8(self.fog_visibility),
-            self.write_int_16(self.terrain_restriction),
-            self.write_int_8(self.fly_mode),
-            self.write_int_16(self.resource_capacity),
-            self.write_float(self.resource_decay),
-            self.write_int_8(self.blast_defense_level),
-            self.write_int_8(self.combat_level),
-            self.write_int_8(self.interation_mode),
-            self.write_int_8(self.minimap_mode),
-            self.write_int_8(self.interface_kind),
-            self.write_float(self.multiple_attribute_mode),
-            self.write_int_8(self.minimap_color),
-            self.write_int_32(self.language_dll_help),
-            self.write_int_32(self.language_dll_hotkey_text),
-            self.write_int_32(self.hot_key),
-            self.write_int_8(self.recyclable),
-            self.write_int_8(self.enable_auto_gather),
-            self.write_int_8(self.create_doppelganger_on_death),
-            self.write_int_8(self.resource_gather_group),
-            self.write_int_8(self.occlusion_mode),
-            self.write_int_8(self.obstruction_type),
-            self.write_int_8(self.obstruction_class),
-            self.write_int_8(self.trait),
-            self.write_int_8(self.civilization),
-            self.write_int_16(self.nothing),
-            self.write_int_8(self.selection_effect),
-            self.write_int_8(self.editor_selection_colour),
-            self.write_float(self.outline_size_x),
-            self.write_float(self.outline_size_y),
-            self.write_float(self.outline_size_z),
-            self.write_int_32(self.scenario_triggers_1),
-            self.write_int_32(self.scenario_triggers_2),
+        return struct.pack(FORMAT,
+                           self.type,
+                           self.id,
+                           self.language_dll_name,
+                           self.language_dll_creation,
+                           self.class_,
+                           *self.standing_graphic,
+                           self.dying_graphic,
+                           self.undead_graphic,
+                           self.undead_mode,
+                           self.hit_points,
+                           self.line_of_sight,
+                           self.garrison_capacity,
+                           self.collision_size_x,
+                           self.collision_size_y,
+                           self.collision_size_z,
+                           self.train_sound,
+                           self.damage_sound,
+                           self.dead_unit_id,
+                           self.blood_unit_id,
+                           self.sort_number,
+                           self.can_be_built_on,
+                           self.icon_id,
+                           self.hide_in_editor,
+                           self.old_portrait_pict,
+                           self.enabled,
+                           self.disabled,
+                           *self.placement_side_terrain,
+                           *self.placement_terrain,
+                           *self.clearance_size,
+                           self.hill_mode,
+                           self.fog_visibility,
+                           self.terrain_restriction,
+                           self.fly_mode,
+                           self.resource_capacity,
+                           self.resource_decay,
+                           self.blast_defense_level,
+                           self.combat_level,
+                           self.interation_mode,
+                           self.minimap_mode,
+                           self.interface_kind,
+                           self.multiple_attribute_mode,
+                           self.minimap_color,
+                           self.language_dll_help,
+                           self.language_dll_hotkey_text,
+                           self.hot_key,
+                           self.recyclable,
+                           self.enable_auto_gather,
+                           self.create_doppelganger_on_death,
+                           self.resource_gather_group,
+                           self.occlusion_mode,
+                           self.obstruction_type,
+                           self.obstruction_class,
+                           self.trait,
+                           self.civilization,
+                           self.nothing,
+                           self.selection_effect,
+                           self.editor_selection_colour,
+                           self.outline_size_x,
+                           self.outline_size_y,
+                           self.outline_size_z,
+                           self.scenario_triggers_1,
+                           self.scenario_triggers_2,
+                           ) + b''.join([
             self.write_class_array(self.resource_storages, version),
             self.write_int_8(len(self.damage_graphics)),
             self.write_class_array(self.damage_graphics, version),
