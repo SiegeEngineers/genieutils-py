@@ -1,7 +1,11 @@
+import struct
 from dataclasses import dataclass
 
 from genieutils.common import ByteHandler, GenieClass
 from genieutils.versions import Version
+
+FORMAT = '<hhbhhhhhhhhfffbfbbhhbbbhhhhhhll'
+FORMAT_LENGTH = 67
 
 
 @dataclass(slots=True)
@@ -40,71 +44,106 @@ class Task(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Task':
+        task_type, \
+            id_, \
+            is_default, \
+            action_type, \
+            class_id, \
+            unit_id, \
+            terrain_id, \
+            resource_in, \
+            resource_multiplier, \
+            resource_out, \
+            unused_resource, \
+            work_value_1, \
+            work_value_2, \
+            work_range, \
+            auto_search_targets, \
+            search_wait_time, \
+            enable_targeting, \
+            combat_level_flag, \
+            gather_type, \
+            work_flag_2, \
+            target_diplomacy, \
+            carry_check, \
+            pick_for_construction, \
+            moving_graphic_id, \
+            proceeding_graphic_id, \
+            working_graphic_id, \
+            carrying_graphic_id, \
+            resource_gathering_sound_id, \
+            resource_deposit_sound_id, \
+            wwise_resource_gathering_sound_id, \
+            wwise_resource_deposit_sound_id = struct.unpack(
+            FORMAT,
+            content.consume_range(FORMAT_LENGTH)
+        )
+
         return cls(
-            task_type=content.read_int_16(),
-            id=content.read_int_16(),
-            is_default=content.read_int_8(),
-            action_type=content.read_int_16(),
-            class_id=content.read_int_16(),
-            unit_id=content.read_int_16(),
-            terrain_id=content.read_int_16(),
-            resource_in=content.read_int_16(),
-            resource_multiplier=content.read_int_16(),
-            resource_out=content.read_int_16(),
-            unused_resource=content.read_int_16(),
-            work_value_1=content.read_float(),
-            work_value_2=content.read_float(),
-            work_range=content.read_float(),
-            auto_search_targets=content.read_int_8(),
-            search_wait_time=content.read_float(),
-            enable_targeting=content.read_int_8(),
-            combat_level_flag=content.read_int_8(),
-            gather_type=content.read_int_16(),
-            work_flag_2=content.read_int_16(),
-            target_diplomacy=content.read_int_8(),
-            carry_check=content.read_int_8(),
-            pick_for_construction=content.read_int_8(),
-            moving_graphic_id=content.read_int_16(),
-            proceeding_graphic_id=content.read_int_16(),
-            working_graphic_id=content.read_int_16(),
-            carrying_graphic_id=content.read_int_16(),
-            resource_gathering_sound_id=content.read_int_16(),
-            resource_deposit_sound_id=content.read_int_16(),
-            wwise_resource_gathering_sound_id=content.read_int_32(),
-            wwise_resource_deposit_sound_id=content.read_int_32(),
+            task_type=task_type,
+            id=id_,
+            is_default=is_default,
+            action_type=action_type,
+            class_id=class_id,
+            unit_id=unit_id,
+            terrain_id=terrain_id,
+            resource_in=resource_in,
+            resource_multiplier=resource_multiplier,
+            resource_out=resource_out,
+            unused_resource=unused_resource,
+            work_value_1=work_value_1,
+            work_value_2=work_value_2,
+            work_range=work_range,
+            auto_search_targets=auto_search_targets,
+            search_wait_time=search_wait_time,
+            enable_targeting=enable_targeting,
+            combat_level_flag=combat_level_flag,
+            gather_type=gather_type,
+            work_flag_2=work_flag_2,
+            target_diplomacy=target_diplomacy,
+            carry_check=carry_check,
+            pick_for_construction=pick_for_construction,
+            moving_graphic_id=moving_graphic_id,
+            proceeding_graphic_id=proceeding_graphic_id,
+            working_graphic_id=working_graphic_id,
+            carrying_graphic_id=carrying_graphic_id,
+            resource_gathering_sound_id=resource_gathering_sound_id,
+            resource_deposit_sound_id=resource_deposit_sound_id,
+            wwise_resource_gathering_sound_id=wwise_resource_gathering_sound_id,
+            wwise_resource_deposit_sound_id=wwise_resource_deposit_sound_id,
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
-            self.write_int_16(self.task_type),
-            self.write_int_16(self.id),
-            self.write_int_8(self.is_default),
-            self.write_int_16(self.action_type),
-            self.write_int_16(self.class_id),
-            self.write_int_16(self.unit_id),
-            self.write_int_16(self.terrain_id),
-            self.write_int_16(self.resource_in),
-            self.write_int_16(self.resource_multiplier),
-            self.write_int_16(self.resource_out),
-            self.write_int_16(self.unused_resource),
-            self.write_float(self.work_value_1),
-            self.write_float(self.work_value_2),
-            self.write_float(self.work_range),
-            self.write_int_8(self.auto_search_targets),
-            self.write_float(self.search_wait_time),
-            self.write_int_8(self.enable_targeting),
-            self.write_int_8(self.combat_level_flag),
-            self.write_int_16(self.gather_type),
-            self.write_int_16(self.work_flag_2),
-            self.write_int_8(self.target_diplomacy),
-            self.write_int_8(self.carry_check),
-            self.write_int_8(self.pick_for_construction),
-            self.write_int_16(self.moving_graphic_id),
-            self.write_int_16(self.proceeding_graphic_id),
-            self.write_int_16(self.working_graphic_id),
-            self.write_int_16(self.carrying_graphic_id),
-            self.write_int_16(self.resource_gathering_sound_id),
-            self.write_int_16(self.resource_deposit_sound_id),
-            self.write_int_32(self.wwise_resource_gathering_sound_id),
-            self.write_int_32(self.wwise_resource_deposit_sound_id),
-        ])
+        return struct.pack(FORMAT,
+                           self.task_type,
+                           self.id,
+                           self.is_default,
+                           self.action_type,
+                           self.class_id,
+                           self.unit_id,
+                           self.terrain_id,
+                           self.resource_in,
+                           self.resource_multiplier,
+                           self.resource_out,
+                           self.unused_resource,
+                           self.work_value_1,
+                           self.work_value_2,
+                           self.work_range,
+                           self.auto_search_targets,
+                           self.search_wait_time,
+                           self.enable_targeting,
+                           self.combat_level_flag,
+                           self.gather_type,
+                           self.work_flag_2,
+                           self.target_diplomacy,
+                           self.carry_check,
+                           self.pick_for_construction,
+                           self.moving_graphic_id,
+                           self.proceeding_graphic_id,
+                           self.working_graphic_id,
+                           self.carrying_graphic_id,
+                           self.resource_gathering_sound_id,
+                           self.resource_deposit_sound_id,
+                           self.wwise_resource_gathering_sound_id,
+                           self.wwise_resource_deposit_sound_id,
+                           )
