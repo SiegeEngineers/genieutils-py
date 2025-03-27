@@ -714,7 +714,7 @@ class Unit(GenieClass):
     resource_decay: float
     blast_defense_level: int
     combat_level: int
-    interation_mode: int
+    interaction_mode: int
     minimap_mode: int
     interface_kind: int
     multiple_attribute_mode: float
@@ -799,7 +799,7 @@ class Unit(GenieClass):
             resource_decay, \
             blast_defense_level, \
             combat_level, \
-            interation_mode, \
+            interaction_mode, \
             minimap_mode, \
             interface_kind, \
             multiple_attribute_mode, \
@@ -900,7 +900,7 @@ class Unit(GenieClass):
             resource_decay=resource_decay,
             blast_defense_level=blast_defense_level,
             combat_level=combat_level,
-            interation_mode=interation_mode,
+            interaction_mode=interaction_mode,
             minimap_mode=minimap_mode,
             interface_kind=interface_kind,
             multiple_attribute_mode=multiple_attribute_mode,
@@ -1008,7 +1008,7 @@ class Unit(GenieClass):
                            self.resource_decay,
                            self.blast_defense_level,
                            self.combat_level,
-                           self.interation_mode,
+                           self.interaction_mode,
                            self.minimap_mode,
                            self.interface_kind,
                            self.multiple_attribute_mode,
