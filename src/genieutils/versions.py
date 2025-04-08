@@ -11,6 +11,7 @@ class Version(Enum):
     VER_76 = 'VER 7.6'
     VER_77 = 'VER 7.7'
     VER_78 = 'VER 7.8'
+    VER_84 = 'VER 8.4'
 
     def __lt__(self, other: 'Version'):
         return self.value < other.value
