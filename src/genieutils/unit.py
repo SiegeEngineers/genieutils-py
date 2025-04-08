@@ -234,6 +234,11 @@ class Type50(GenieClass):
     displayed_range: float
     displayed_reload_time: float
     blast_damage: float
+    damage_reflection: float
+    friendly_fire_damage: float
+    interrupt_frame: int
+    garrison_firepower: float
+    attack_graphic_2: int
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Type50':
@@ -261,6 +266,17 @@ class Type50(GenieClass):
         displayed_range = content.read_float()
         displayed_reload_time = content.read_float()
         blast_damage = content.read_float()
+        damage_reflection = 0.0
+        friendly_fire_damage = 1.0
+        interrupt_frame = -1
+        garrison_firepower = 0.0
+        attack_graphic_2 = -1
+        if content.version >= Version.VER_84:
+            damage_reflection = content.read_float()
+            friendly_fire_damage = content.read_float()
+            interrupt_frame = content.read_int_16()
+            garrison_firepower = content.read_float()
+            attack_graphic_2 = content.read_int_16()
         return cls(
             base_armor=base_armor,
             attacks=attacks,
@@ -284,10 +300,15 @@ class Type50(GenieClass):
             displayed_range=displayed_range,
             displayed_reload_time=displayed_reload_time,
             blast_damage=blast_damage,
+            damage_reflection=damage_reflection,
+            friendly_fire_damage=friendly_fire_damage,
+            interrupt_frame=interrupt_frame,
+            garrison_firepower=garrison_firepower,
+            attack_graphic_2=attack_graphic_2,
         )
 
     def to_bytes(self, version: Version) -> bytes:
-        return b''.join([
+        value = b''.join([
             self.write_int_16(self.base_armor),
             self.write_int_16(len(self.attacks)),
             self.write_class_array(self.attacks, version),
@@ -313,6 +334,15 @@ class Type50(GenieClass):
             self.write_float(self.displayed_reload_time),
             self.write_float(self.blast_damage),
         ])
+        if version >= Version.VER_84:
+            value += b''.join([
+                self.write_float(self.damage_reflection),
+                self.write_float(self.friendly_fire_damage),
+                self.write_int_16(self.interrupt_frame),
+                self.write_float(self.garrison_firepower),
+                self.write_int_16(self.attack_graphic_2),
+            ])
+        return value
 
 
 PROJECTILE_FORMAT = '<bbbbbf'
@@ -379,6 +409,8 @@ class ResourceCost(GenieClass):
 
 CREATABLE_FORMAT = '<hhbffbblhhhffhhffffbfffllbh'
 CREATABLE_FORMAT_LENGTH = 77
+CREATABLE_FORMAT_84 = '<hhbffbblhhhhffhhhlbfhllhffffbfffllbh'
+CREATABLE_FORMAT_LENGTH_84 = struct.calcsize(CREATABLE_FORMAT_84)
 
 @dataclass(slots=True)
 class Creatable(GenieClass):
@@ -394,10 +426,19 @@ class Creatable(GenieClass):
     spawning_graphic: int
     upgrade_graphic: int
     hero_glow_graphic: int
+    idle_attack_graphic: int
     max_charge: float
     recharge_rate: float
     charge_event: int
     charge_type: int
+    charge_target: int
+    charge_projectile_unit: int
+    attack_priority: int
+    invulnerability_level: float
+    button_icon_id: int
+    button_short_tooltip_id: int
+    button_extended_tooltip_id: int
+    button_hotkey_action: int
     min_conversion_time_mod: float
     max_conversion_time_mod: float
     conversion_chance_mod: float
@@ -411,6 +452,12 @@ class Creatable(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Creatable':
+        if content.version >= Version.VER_84:
+            return cls.from_bytes_84(content)
+        return cls.from_bytes_78(content)
+
+    @classmethod
+    def from_bytes_78(cls, content: ByteHandler) -> 'Creatable':
         resource_costs = content.read_class_array_3(ResourceCost)
         train_time, \
             train_location_id, \
@@ -439,6 +486,15 @@ class Creatable(GenieClass):
             special_graphic, \
             special_ability, \
             displayed_pierce_armor = struct.unpack(CREATABLE_FORMAT, content.consume_range(CREATABLE_FORMAT_LENGTH))
+        idle_attack_graphic = -1
+        charge_target = 0
+        charge_projectile_unit = -1
+        attack_priority = 0
+        invulnerability_level = 0
+        button_icon_id = -1
+        button_short_tooltip_id = -1
+        button_extended_tooltip_id = -1
+        button_hotkey_action = -1
         return cls(
             resource_costs=resource_costs,
             train_time=train_time,
@@ -452,10 +508,100 @@ class Creatable(GenieClass):
             spawning_graphic=spawning_graphic,
             upgrade_graphic=upgrade_graphic,
             hero_glow_graphic=hero_glow_graphic,
+            idle_attack_graphic=idle_attack_graphic,
             max_charge=max_charge,
             recharge_rate=recharge_rate,
             charge_event=charge_event,
             charge_type=charge_type,
+            charge_target=charge_target,
+            charge_projectile_unit=charge_projectile_unit,
+            attack_priority=attack_priority,
+            invulnerability_level=invulnerability_level,
+            button_icon_id=button_icon_id,
+            button_short_tooltip_id=button_short_tooltip_id,
+            button_extended_tooltip_id=button_extended_tooltip_id,
+            button_hotkey_action=button_hotkey_action,
+            min_conversion_time_mod=min_conversion_time_mod,
+            max_conversion_time_mod=max_conversion_time_mod,
+            conversion_chance_mod=conversion_chance_mod,
+            total_projectiles=total_projectiles,
+            max_total_projectiles=max_total_projectiles,
+            projectile_spawning_area=(
+                projectile_spawning_area_1,
+                projectile_spawning_area_2,
+                projectile_spawning_area_3),
+            secondary_projectile_unit=secondary_projectile_unit,
+            special_graphic=special_graphic,
+            special_ability=special_ability,
+            displayed_pierce_armor=displayed_pierce_armor,
+        )
+
+    @classmethod
+    def from_bytes_84(cls, content: ByteHandler) -> 'Creatable':
+        resource_costs = content.read_class_array_3(ResourceCost)
+        train_time, \
+            train_location_id, \
+            button_id, \
+            rear_attack_modifier, \
+            flank_attack_modifier, \
+            creatable_type, \
+            hero_mode, \
+            garrison_graphic, \
+            spawning_graphic, \
+            upgrade_graphic, \
+            hero_glow_graphic, \
+            idle_attack_graphic, \
+            max_charge, \
+            recharge_rate, \
+            charge_event, \
+            charge_type, \
+            charge_target, \
+            charge_projectile_unit, \
+            attack_priority, \
+            invulnerability_level, \
+            button_icon_id, \
+            button_short_tooltip_id, \
+            button_extended_tooltip_id, \
+            button_hotkey_action, \
+            min_conversion_time_mod, \
+            max_conversion_time_mod, \
+            conversion_chance_mod, \
+            total_projectiles, \
+            max_total_projectiles, \
+            projectile_spawning_area_1, \
+            projectile_spawning_area_2, \
+            projectile_spawning_area_3, \
+            secondary_projectile_unit, \
+            special_graphic, \
+            special_ability, \
+            displayed_pierce_armor = struct.unpack(CREATABLE_FORMAT_84,
+                                                   content.consume_range(CREATABLE_FORMAT_LENGTH_84))
+        return cls(
+            resource_costs=resource_costs,
+            train_time=train_time,
+            train_location_id=train_location_id,
+            button_id=button_id,
+            rear_attack_modifier=rear_attack_modifier,
+            flank_attack_modifier=flank_attack_modifier,
+            creatable_type=creatable_type,
+            hero_mode=hero_mode,
+            garrison_graphic=garrison_graphic,
+            spawning_graphic=spawning_graphic,
+            upgrade_graphic=upgrade_graphic,
+            hero_glow_graphic=hero_glow_graphic,
+            idle_attack_graphic=idle_attack_graphic,
+            max_charge=max_charge,
+            recharge_rate=recharge_rate,
+            charge_event=charge_event,
+            charge_type=charge_type,
+            charge_target=charge_target,
+            charge_projectile_unit=charge_projectile_unit,
+            attack_priority=attack_priority,
+            invulnerability_level=invulnerability_level,
+            button_icon_id=button_icon_id,
+            button_short_tooltip_id=button_short_tooltip_id,
+            button_extended_tooltip_id=button_extended_tooltip_id,
+            button_hotkey_action=button_hotkey_action,
             min_conversion_time_mod=min_conversion_time_mod,
             max_conversion_time_mod=max_conversion_time_mod,
             conversion_chance_mod=conversion_chance_mod,
@@ -472,6 +618,11 @@ class Creatable(GenieClass):
         )
 
     def to_bytes(self, version: Version) -> bytes:
+        if version >= Version.VER_84:
+            return self.to_bytes_84(version)
+        return self.to_bytes_78(version)
+
+    def to_bytes_78(self, version: Version) -> bytes:
         return self.write_class_array(self.resource_costs, version) + \
             struct.pack(CREATABLE_FORMAT,
                         self.train_time,
@@ -489,6 +640,45 @@ class Creatable(GenieClass):
                         self.recharge_rate,
                         self.charge_event,
                         self.charge_type,
+                        self.min_conversion_time_mod,
+                        self.max_conversion_time_mod,
+                        self.conversion_chance_mod,
+                        self.total_projectiles,
+                        self.max_total_projectiles,
+                        *self.projectile_spawning_area,
+                        self.secondary_projectile_unit,
+                        self.special_graphic,
+                        self.special_ability,
+                        self.displayed_pierce_armor,
+                        )
+
+    def to_bytes_84(self, version: Version) -> bytes:
+        return self.write_class_array(self.resource_costs, version) + \
+            struct.pack(CREATABLE_FORMAT_84,
+                        self.train_time,
+                        self.train_location_id,
+                        self.button_id,
+                        self.rear_attack_modifier,
+                        self.flank_attack_modifier,
+                        self.creatable_type,
+                        self.hero_mode,
+                        self.garrison_graphic,
+                        self.spawning_graphic,
+                        self.upgrade_graphic,
+                        self.hero_glow_graphic,
+                        self.idle_attack_graphic,
+                        self.max_charge,
+                        self.recharge_rate,
+                        self.charge_event,
+                        self.charge_type,
+                        self.charge_target,
+                        self.charge_projectile_unit,
+                        self.attack_priority,
+                        self.invulnerability_level,
+                        self.button_icon_id,
+                        self.button_short_tooltip_id,
+                        self.button_extended_tooltip_id,
+                        self.button_hotkey_action,
                         self.min_conversion_time_mod,
                         self.max_conversion_time_mod,
                         self.conversion_chance_mod,

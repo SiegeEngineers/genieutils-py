@@ -18,7 +18,7 @@ class TestDatCompatibility:
         version, data = self.get_version(datfile)
         print(datfile)
         print(version)
-        if version in ('VER 7.8', 'VER 7.7'):
+        if version in ('VER 8.4', 'VER 7.8', 'VER 7.7'):
             byte_handler = ByteHandler(memoryview(data))
             content = DatFile.from_bytes(byte_handler)
             re_encoded = content.to_bytes()
