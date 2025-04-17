@@ -297,7 +297,7 @@ class TechTree(GenieClass):
         return b''.join([
             self.write_int_8(len(self.tech_tree_ages)),
             self.write_int_8(len(self.building_connections)),
-            self.write_int_8(len(self.unit_connections)),
+            self.write_int_16(len(self.unit_connections)),
             self.write_int_8(len(self.research_connections)),
             self.write_int_32(self.total_unit_tech_groups),
             self.write_class_array(self.tech_tree_ages, version),
