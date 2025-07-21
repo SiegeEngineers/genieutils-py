@@ -32,6 +32,7 @@ class ResourceStorage(GenieClass):
 DAMAGE_GRAPHIC_FORMAT = '<hhb'
 DAMAGE_GRAPHIC_FORMAT_LENGTH = 5
 
+
 @dataclass(slots=True)
 class DamageGraphic(GenieClass):
     graphic_id: int
@@ -55,6 +56,7 @@ class DamageGraphic(GenieClass):
 
 DEAD_FISH_FORMAT = '<hhfbhbfbffffff'
 DEAD_FISH_FORMAT_LENGTH = 41
+
 
 @dataclass(slots=True)
 class DeadFish(GenieClass):
@@ -348,6 +350,7 @@ class Type50(GenieClass):
 PROJECTILE_FORMAT = '<bbbbbf'
 PROJECTILE_FORMAT_LENGTH = 9
 
+
 @dataclass(slots=True)
 class Projectile(GenieClass):
     projectile_type: int
@@ -388,6 +391,7 @@ class Projectile(GenieClass):
 RESOURCE_COST_FORMAT = '<hhh'
 RESOURCE_COST_FORMAT_LENGTH = 6
 
+
 @dataclass(slots=True)
 class ResourceCost(GenieClass):
     type: int
@@ -407,17 +411,69 @@ class ResourceCost(GenieClass):
         return struct.pack(RESOURCE_COST_FORMAT, self.type, self.amount, self.flag)
 
 
+TRAIN_LOCATION_FORMAT = '<hhb'
+TRAIN_LOCATOIN_FORMAT_LENGTH = struct.calcsize(TRAIN_LOCATION_FORMAT)
+
+TRAIN_LOCATION_FORMAT_88 = '<hhbl'
+TRAIN_LOCATOIN_FORMAT_LENGTH_88 = struct.calcsize(TRAIN_LOCATION_FORMAT_88)
+
+
+@dataclass(slots=True)
+class TrainLocation(GenieClass):
+    train_time: int
+    unit_id: int
+    button_id: int
+    hot_key_id: int
+
+    @classmethod
+    def from_bytes(cls, content: ByteHandler) -> 'TrainLocation':
+        if content.version >= Version.VER_88:
+            return cls.from_bytes_88(content)
+        return cls.from_bytes_84(content)
+
+    @classmethod
+    def from_bytes_84(cls, content: ByteHandler) -> 'TrainLocation':
+        train_time, \
+            unit_id, \
+            button_id = struct.unpack(TRAIN_LOCATION_FORMAT, content.consume_range(TRAIN_LOCATOIN_FORMAT_LENGTH))
+        return cls(
+            train_time=train_time,
+            unit_id=unit_id,
+            button_id=button_id,
+            hot_key_id=16_000,
+        )
+
+    @classmethod
+    def from_bytes_88(cls, content: ByteHandler) -> 'TrainLocation':
+        train_time, \
+            unit_id, \
+            button_id, \
+            hot_key_id = struct.unpack(TRAIN_LOCATION_FORMAT_88, content.consume_range(TRAIN_LOCATOIN_FORMAT_LENGTH_88))
+        return cls(
+            train_time=train_time,
+            unit_id=unit_id,
+            button_id=button_id,
+            hot_key_id=hot_key_id,
+        )
+
+    def to_bytes(self, version: Version) -> bytes:
+        if version >= Version.VER_88:
+            return struct.pack(TRAIN_LOCATION_FORMAT_88, self.train_time, self.unit_id, self.button_id, self.hot_key_id)
+        return struct.pack(TRAIN_LOCATION_FORMAT, self.train_time, self.unit_id, self.button_id)
+
+
 CREATABLE_FORMAT = '<hhbffbblhhhffhhffffbfffllbh'
 CREATABLE_FORMAT_LENGTH = 77
 CREATABLE_FORMAT_84 = '<hhbffbblhhhhffhhhlbfhllhffffbfffllbh'
 CREATABLE_FORMAT_LENGTH_84 = struct.calcsize(CREATABLE_FORMAT_84)
+CREATABLE_FORMAT_88 = '<ffbblhhhhffhhhlbfhllhffffbfffllbh'
+CREATABLE_FORMAT_LENGTH_88 = struct.calcsize(CREATABLE_FORMAT_88)
+
 
 @dataclass(slots=True)
 class Creatable(GenieClass):
     resource_costs: tuple[ResourceCost, ResourceCost, ResourceCost]
-    train_time: int
-    train_location_id: int
-    button_id: int
+    train_locations: list[TrainLocation]
     rear_attack_modifier: float
     flank_attack_modifier: float
     creatable_type: int
@@ -452,7 +508,9 @@ class Creatable(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Creatable':
-        if content.version >= Version.VER_84:
+        if content.version >= Version.VER_88:
+            return cls.from_bytes_88(content)
+        elif content.version >= Version.VER_84:
             return cls.from_bytes_84(content)
         return cls.from_bytes_78(content)
 
@@ -495,11 +553,12 @@ class Creatable(GenieClass):
         button_short_tooltip_id = -1
         button_extended_tooltip_id = -1
         button_hotkey_action = -1
+        train_locations = [
+            TrainLocation(train_time=train_time, unit_id=train_location_id, button_id=button_id, hot_key_id=16000),
+        ]
         return cls(
             resource_costs=resource_costs,
-            train_time=train_time,
-            train_location_id=train_location_id,
-            button_id=button_id,
+            train_locations=train_locations,
             rear_attack_modifier=rear_attack_modifier,
             flank_attack_modifier=flank_attack_modifier,
             creatable_type=creatable_type,
@@ -576,11 +635,90 @@ class Creatable(GenieClass):
             special_ability, \
             displayed_pierce_armor = struct.unpack(CREATABLE_FORMAT_84,
                                                    content.consume_range(CREATABLE_FORMAT_LENGTH_84))
+        train_locations = [
+            TrainLocation(train_time=train_time, unit_id=train_location_id, button_id=button_id, hot_key_id=16000),
+        ]
         return cls(
             resource_costs=resource_costs,
-            train_time=train_time,
-            train_location_id=train_location_id,
-            button_id=button_id,
+            train_locations=train_locations,
+            rear_attack_modifier=rear_attack_modifier,
+            flank_attack_modifier=flank_attack_modifier,
+            creatable_type=creatable_type,
+            hero_mode=hero_mode,
+            garrison_graphic=garrison_graphic,
+            spawning_graphic=spawning_graphic,
+            upgrade_graphic=upgrade_graphic,
+            hero_glow_graphic=hero_glow_graphic,
+            idle_attack_graphic=idle_attack_graphic,
+            max_charge=max_charge,
+            recharge_rate=recharge_rate,
+            charge_event=charge_event,
+            charge_type=charge_type,
+            charge_target=charge_target,
+            charge_projectile_unit=charge_projectile_unit,
+            attack_priority=attack_priority,
+            invulnerability_level=invulnerability_level,
+            button_icon_id=button_icon_id,
+            button_short_tooltip_id=button_short_tooltip_id,
+            button_extended_tooltip_id=button_extended_tooltip_id,
+            button_hotkey_action=button_hotkey_action,
+            min_conversion_time_mod=min_conversion_time_mod,
+            max_conversion_time_mod=max_conversion_time_mod,
+            conversion_chance_mod=conversion_chance_mod,
+            total_projectiles=total_projectiles,
+            max_total_projectiles=max_total_projectiles,
+            projectile_spawning_area=(
+                projectile_spawning_area_1,
+                projectile_spawning_area_2,
+                projectile_spawning_area_3),
+            secondary_projectile_unit=secondary_projectile_unit,
+            special_graphic=special_graphic,
+            special_ability=special_ability,
+            displayed_pierce_armor=displayed_pierce_armor,
+        )
+
+    @classmethod
+    def from_bytes_88(cls, content: ByteHandler) -> 'Creatable':
+        resource_costs = content.read_class_array_3(ResourceCost)
+        train_location_count = content.read_int_16()
+        train_locations = content.read_class_array(TrainLocation, train_location_count)
+        rear_attack_modifier, \
+            flank_attack_modifier, \
+            creatable_type, \
+            hero_mode, \
+            garrison_graphic, \
+            spawning_graphic, \
+            upgrade_graphic, \
+            hero_glow_graphic, \
+            idle_attack_graphic, \
+            max_charge, \
+            recharge_rate, \
+            charge_event, \
+            charge_type, \
+            charge_target, \
+            charge_projectile_unit, \
+            attack_priority, \
+            invulnerability_level, \
+            button_icon_id, \
+            button_short_tooltip_id, \
+            button_extended_tooltip_id, \
+            button_hotkey_action, \
+            min_conversion_time_mod, \
+            max_conversion_time_mod, \
+            conversion_chance_mod, \
+            total_projectiles, \
+            max_total_projectiles, \
+            projectile_spawning_area_1, \
+            projectile_spawning_area_2, \
+            projectile_spawning_area_3, \
+            secondary_projectile_unit, \
+            special_graphic, \
+            special_ability, \
+            displayed_pierce_armor = struct.unpack(CREATABLE_FORMAT_88,
+                                                   content.consume_range(CREATABLE_FORMAT_LENGTH_88))
+        return cls(
+            resource_costs=resource_costs,
+            train_locations=train_locations,
             rear_attack_modifier=rear_attack_modifier,
             flank_attack_modifier=flank_attack_modifier,
             creatable_type=creatable_type,
@@ -618,6 +756,8 @@ class Creatable(GenieClass):
         )
 
     def to_bytes(self, version: Version) -> bytes:
+        if version >= Version.VER_88:
+            return self.to_bytes_88(version)
         if version >= Version.VER_84:
             return self.to_bytes_84(version)
         return self.to_bytes_78(version)
@@ -625,9 +765,9 @@ class Creatable(GenieClass):
     def to_bytes_78(self, version: Version) -> bytes:
         return self.write_class_array(self.resource_costs, version) + \
             struct.pack(CREATABLE_FORMAT,
-                        self.train_time,
-                        self.train_location_id,
-                        self.button_id,
+                        self.train_locations[0].train_time,
+                        self.train_locations[0].unit_id,
+                        self.train_locations[0].button_id,
                         self.rear_attack_modifier,
                         self.flank_attack_modifier,
                         self.creatable_type,
@@ -655,9 +795,47 @@ class Creatable(GenieClass):
     def to_bytes_84(self, version: Version) -> bytes:
         return self.write_class_array(self.resource_costs, version) + \
             struct.pack(CREATABLE_FORMAT_84,
-                        self.train_time,
-                        self.train_location_id,
-                        self.button_id,
+                        self.train_locations[0].train_time,
+                        self.train_locations[0].unit_id,
+                        self.train_locations[0].button_id,
+                        self.rear_attack_modifier,
+                        self.flank_attack_modifier,
+                        self.creatable_type,
+                        self.hero_mode,
+                        self.garrison_graphic,
+                        self.spawning_graphic,
+                        self.upgrade_graphic,
+                        self.hero_glow_graphic,
+                        self.idle_attack_graphic,
+                        self.max_charge,
+                        self.recharge_rate,
+                        self.charge_event,
+                        self.charge_type,
+                        self.charge_target,
+                        self.charge_projectile_unit,
+                        self.attack_priority,
+                        self.invulnerability_level,
+                        self.button_icon_id,
+                        self.button_short_tooltip_id,
+                        self.button_extended_tooltip_id,
+                        self.button_hotkey_action,
+                        self.min_conversion_time_mod,
+                        self.max_conversion_time_mod,
+                        self.conversion_chance_mod,
+                        self.total_projectiles,
+                        self.max_total_projectiles,
+                        *self.projectile_spawning_area,
+                        self.secondary_projectile_unit,
+                        self.special_graphic,
+                        self.special_ability,
+                        self.displayed_pierce_armor,
+                        )
+
+    def to_bytes_88(self, version: Version) -> bytes:
+        return self.write_class_array(self.resource_costs, version) + \
+        self.write_int_16(len(self.train_locations)) + \
+        self.write_class_array(self.train_locations, version) + \
+            struct.pack(CREATABLE_FORMAT_88,
                         self.rear_attack_modifier,
                         self.flank_attack_modifier,
                         self.creatable_type,
@@ -725,6 +903,7 @@ BUILDING_ANNEX_FORMAT_1_LENGTH = 25
 
 BUILDING_ANNEX_FORMAT_2 = '<hhhhllbffhbbbbbb'
 BUILDING_ANNEX_FORMAT_2_LENGTH = 33
+
 
 @dataclass(slots=True)
 class Building(GenieClass):
@@ -864,6 +1043,9 @@ class Building(GenieClass):
 FORMAT = ('<bhllhhhhhbhfbfffhhhhbbhbhbbhhhhffbbhbhfbbbbbfblllbbbbbbbbbhbbfffll')
 FORMAT_LENGTH = 140
 
+FORMAT_88 = ('<bhllhhhhhbhfbfffhhhhbbhbhbbhhhhffbbhbhfbbbbbfbllbbbbbbbbbhbbfffll')
+FORMAT_LENGTH_88 = struct.calcsize(FORMAT_88)
+
 
 @dataclass(slots=True)
 class Unit(GenieClass):
@@ -952,6 +1134,12 @@ class Unit(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Unit':
+        if content.version >= Version.VER_88:
+            return cls.from_bytes_88(content)
+        return cls.from_bytes_84(content)
+
+    @classmethod
+    def from_bytes_84(cls, content: ByteHandler) -> 'Unit':
         type_, \
             id_, \
             language_dll_name, \
@@ -1052,6 +1240,200 @@ class Unit(GenieClass):
                 if type_ == UnitType.Building:
                     building = content.read_class(Building)
 
+        if creatable:
+            if not creatable.train_locations:
+                creatable.train_locations = [TrainLocation(train_time=0, unit_id=-1, button_id=0, hot_key_id=16_000)]
+            creatable.train_locations[0].hot_key_id = hot_key
+
+        return cls(
+            type=type_,
+            id=id_,
+            language_dll_name=language_dll_name,
+            language_dll_creation=language_dll_creation,
+            class_=class_,
+            standing_graphic=(standing_graphic_1, standing_graphic_2),
+            dying_graphic=dying_graphic,
+            undead_graphic=undead_graphic,
+            undead_mode=undead_mode,
+            hit_points=hit_points,
+            line_of_sight=line_of_sight,
+            garrison_capacity=garrison_capacity,
+            collision_size_x=collision_size_x,
+            collision_size_y=collision_size_y,
+            collision_size_z=collision_size_z,
+            train_sound=train_sound,
+            damage_sound=damage_sound,
+            dead_unit_id=dead_unit_id,
+            blood_unit_id=blood_unit_id,
+            sort_number=sort_number,
+            can_be_built_on=can_be_built_on,
+            icon_id=icon_id,
+            hide_in_editor=hide_in_editor,
+            old_portrait_pict=old_portrait_pict,
+            enabled=enabled,
+            disabled=disabled,
+            placement_side_terrain=(placement_side_terrain_1, placement_side_terrain_2),
+            placement_terrain=(placement_terrain_1, placement_terrain_2),
+            clearance_size=(clearance_size_1, clearance_size_2),
+            hill_mode=hill_mode,
+            fog_visibility=fog_visibility,
+            terrain_restriction=terrain_restriction,
+            fly_mode=fly_mode,
+            resource_capacity=resource_capacity,
+            resource_decay=resource_decay,
+            blast_defense_level=blast_defense_level,
+            combat_level=combat_level,
+            interaction_mode=interaction_mode,
+            minimap_mode=minimap_mode,
+            interface_kind=interface_kind,
+            multiple_attribute_mode=multiple_attribute_mode,
+            minimap_color=minimap_color,
+            language_dll_help=language_dll_help,
+            language_dll_hotkey_text=language_dll_hotkey_text,
+            hot_key=hot_key,
+            recyclable=recyclable,
+            enable_auto_gather=enable_auto_gather,
+            create_doppelganger_on_death=create_doppelganger_on_death,
+            resource_gather_group=resource_gather_group,
+            occlusion_mode=occlusion_mode,
+            obstruction_type=obstruction_type,
+            obstruction_class=obstruction_class,
+            trait=trait,
+            civilization=civilization,
+            nothing=nothing,
+            selection_effect=selection_effect,
+            editor_selection_colour=editor_selection_colour,
+            outline_size_x=outline_size_x,
+            outline_size_y=outline_size_y,
+            outline_size_z=outline_size_z,
+            scenario_triggers_1=scenario_triggers_1,
+            scenario_triggers_2=scenario_triggers_2,
+            resource_storages=resource_storages,
+            damage_graphics=damage_graphics,
+            selection_sound=selection_sound,
+            dying_sound=dying_sound,
+            wwise_train_sound_id=wwise_train_sound_id,
+            wwise_damage_sound_id=wwise_damage_sound_id,
+            wwise_selection_sound_id=wwise_selection_sound_id,
+            wwise_dying_sound_id=wwise_dying_sound_id,
+            old_attack_reaction=old_attack_reaction,
+            convert_terrain=convert_terrain,
+            name=name,
+            copy_id=copy_id,
+            base_id=base_id,
+            speed=speed,
+            dead_fish=dead_fish,
+            bird=bird,
+            type_50=type_50,
+            projectile=projectile,
+            creatable=creatable,
+            building=building,
+        )
+
+    @classmethod
+    def from_bytes_88(cls, content: ByteHandler) -> 'Unit':
+        type_, \
+            id_, \
+            language_dll_name, \
+            language_dll_creation, \
+            class_, \
+            standing_graphic_1, standing_graphic_2, \
+            dying_graphic, \
+            undead_graphic, \
+            undead_mode, \
+            hit_points, \
+            line_of_sight, \
+            garrison_capacity, \
+            collision_size_x, \
+            collision_size_y, \
+            collision_size_z, \
+            train_sound, \
+            damage_sound, \
+            dead_unit_id, \
+            blood_unit_id, \
+            sort_number, \
+            can_be_built_on, \
+            icon_id, \
+            hide_in_editor, \
+            old_portrait_pict, \
+            enabled, \
+            disabled, \
+            placement_side_terrain_1, placement_side_terrain_2, \
+            placement_terrain_1, placement_terrain_2, \
+            clearance_size_1, clearance_size_2, \
+            hill_mode, \
+            fog_visibility, \
+            terrain_restriction, \
+            fly_mode, \
+            resource_capacity, \
+            resource_decay, \
+            blast_defense_level, \
+            combat_level, \
+            interaction_mode, \
+            minimap_mode, \
+            interface_kind, \
+            multiple_attribute_mode, \
+            minimap_color, \
+            language_dll_help, \
+            language_dll_hotkey_text, \
+            recyclable, \
+            enable_auto_gather, \
+            create_doppelganger_on_death, \
+            resource_gather_group, \
+            occlusion_mode, \
+            obstruction_type, \
+            obstruction_class, \
+            trait, \
+            civilization, \
+            nothing, \
+            selection_effect, \
+            editor_selection_colour, \
+            outline_size_x, \
+            outline_size_y, \
+            outline_size_z, \
+            scenario_triggers_1, \
+            scenario_triggers_2 = struct.unpack(FORMAT_88, content.consume_range(FORMAT_LENGTH_88))
+
+        hot_key = 16_000
+        resource_storages = content.read_class_array_3(ResourceStorage)
+        damage_graphic_size = content.read_int_8()
+        damage_graphics = content.read_class_array(DamageGraphic, damage_graphic_size)
+        selection_sound = content.read_int_16()
+        dying_sound = content.read_int_16()
+        wwise_train_sound_id = content.read_int_32()
+        wwise_damage_sound_id = content.read_int_32()
+        wwise_selection_sound_id = content.read_int_32()
+        wwise_dying_sound_id = content.read_int_32()
+        old_attack_reaction = content.read_int_8()
+        convert_terrain = content.read_int_8()
+        name = content.read_debug_string()
+        copy_id = content.read_int_16()
+        base_id = content.read_int_16()
+        speed = None
+        dead_fish = None
+        bird = None
+        type_50 = None
+        projectile = None
+        creatable = None
+        building = None
+        if type_ != UnitType.AoeTrees:
+            if type_ >= UnitType.Flag:
+                speed = content.read_float()
+                if type_ >= UnitType.DeadFish:
+                    dead_fish = content.read_class(DeadFish)
+                if type_ >= UnitType.Bird:
+                    bird = content.read_class(Bird)
+                if type_ >= UnitType.Combatant:
+                    type_50 = content.read_class(Type50)
+                if type_ == UnitType.Projectile:
+                    projectile = content.read_class(Projectile)
+                if type_ >= UnitType.Creatable:
+                    creatable = content.read_class(Creatable)
+                if type_ == UnitType.Building:
+                    building = content.read_class(Building)
+        if creatable and creatable.train_locations:
+            hot_key = creatable.train_locations[0].hot_key_id
+
         return cls(
             type=type_,
             id=id_,
@@ -1138,6 +1520,11 @@ class Unit(GenieClass):
         )
 
     def to_bytes(self, version: Version) -> bytes:
+        if version >= Version.VER_88:
+            return self.to_bytes_88(version)
+        return self.to_bytes_84(version)
+
+    def to_bytes_84(self, version: Version) -> bytes:
         speed = b''
         dead_fish = b''
         bird = b''
@@ -1206,6 +1593,115 @@ class Unit(GenieClass):
                            self.language_dll_help,
                            self.language_dll_hotkey_text,
                            self.hot_key,
+                           self.recyclable,
+                           self.enable_auto_gather,
+                           self.create_doppelganger_on_death,
+                           self.resource_gather_group,
+                           self.occlusion_mode,
+                           self.obstruction_type,
+                           self.obstruction_class,
+                           self.trait,
+                           self.civilization,
+                           self.nothing,
+                           self.selection_effect,
+                           self.editor_selection_colour,
+                           self.outline_size_x,
+                           self.outline_size_y,
+                           self.outline_size_z,
+                           self.scenario_triggers_1,
+                           self.scenario_triggers_2,
+                           ) + b''.join([
+            self.write_class_array(self.resource_storages, version),
+            self.write_int_8(len(self.damage_graphics)),
+            self.write_class_array(self.damage_graphics, version),
+            self.write_int_16(self.selection_sound),
+            self.write_int_16(self.dying_sound),
+            self.write_int_32(self.wwise_train_sound_id),
+            self.write_int_32(self.wwise_damage_sound_id),
+            self.write_int_32(self.wwise_selection_sound_id),
+            self.write_int_32(self.wwise_dying_sound_id),
+            self.write_int_8(self.old_attack_reaction),
+            self.write_int_8(self.convert_terrain),
+            self.write_debug_string(self.name),
+            self.write_int_16(self.copy_id),
+            self.write_int_16(self.base_id),
+            speed,
+            dead_fish,
+            bird,
+            type_50,
+            projectile,
+            creatable,
+            building,
+        ])
+
+    def to_bytes_88(self, version: Version) -> bytes:
+        speed = b''
+        dead_fish = b''
+        bird = b''
+        type_50 = b''
+        projectile = b''
+        creatable = b''
+        building = b''
+        if self.type != UnitType.AoeTrees:
+            if self.type >= UnitType.Flag:
+                speed = self.write_float(self.speed) if self.speed is not None else b''
+                if self.type >= UnitType.DeadFish:
+                    dead_fish = self.write_class(self.dead_fish, version) if self.dead_fish is not None else b''
+                if self.type >= UnitType.Bird:
+                    bird = self.write_class(self.bird, version) if self.bird is not None else b''
+                if self.type >= UnitType.Combatant:
+                    type_50 = self.write_class(self.type_50, version) if self.type_50 is not None else b''
+                if self.type == UnitType.Projectile:
+                    projectile = self.write_class(self.projectile, version) if self.projectile is not None else b''
+                if self.type >= UnitType.Creatable:
+                    creatable = self.write_class(self.creatable, version) if self.creatable is not None else b''
+                if self.type == UnitType.Building:
+                    building = self.write_class(self.building, version) if self.building is not None else b''
+        return struct.pack(FORMAT_88,
+                           self.type,
+                           self.id,
+                           self.language_dll_name,
+                           self.language_dll_creation,
+                           self.class_,
+                           *self.standing_graphic,
+                           self.dying_graphic,
+                           self.undead_graphic,
+                           self.undead_mode,
+                           self.hit_points,
+                           self.line_of_sight,
+                           self.garrison_capacity,
+                           self.collision_size_x,
+                           self.collision_size_y,
+                           self.collision_size_z,
+                           self.train_sound,
+                           self.damage_sound,
+                           self.dead_unit_id,
+                           self.blood_unit_id,
+                           self.sort_number,
+                           self.can_be_built_on,
+                           self.icon_id,
+                           self.hide_in_editor,
+                           self.old_portrait_pict,
+                           self.enabled,
+                           self.disabled,
+                           *self.placement_side_terrain,
+                           *self.placement_terrain,
+                           *self.clearance_size,
+                           self.hill_mode,
+                           self.fog_visibility,
+                           self.terrain_restriction,
+                           self.fly_mode,
+                           self.resource_capacity,
+                           self.resource_decay,
+                           self.blast_defense_level,
+                           self.combat_level,
+                           self.interaction_mode,
+                           self.minimap_mode,
+                           self.interface_kind,
+                           self.multiple_attribute_mode,
+                           self.minimap_color,
+                           self.language_dll_help,
+                           self.language_dll_hotkey_text,
                            self.recyclable,
                            self.enable_auto_gather,
                            self.create_doppelganger_on_death,

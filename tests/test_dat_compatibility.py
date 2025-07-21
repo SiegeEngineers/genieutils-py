@@ -18,11 +18,17 @@ class TestDatCompatibility:
         version, data = self.get_version(datfile)
         print(datfile)
         print(version)
-        if version in ('VER 8.4', 'VER 7.8', 'VER 7.7'):
+        if version in ('VER 8.8', 'VER 8.4', 'VER 7.8', 'VER 7.7'):
             byte_handler = ByteHandler(memoryview(data))
             content = DatFile.from_bytes(byte_handler)
             re_encoded = content.to_bytes()
-            assert data == re_encoded
+            index = 0
+            for data_byte, re_encoded_byte in zip(data, re_encoded):
+                if data_byte != re_encoded_byte:
+                    raise Exception(f'Mismatch at byte {index}: {data_byte=} {re_encoded_byte=}')
+                index += 1
+            if len(data) != len(re_encoded):
+                raise Exception(f'Length Mismatch: {len(data)} vs. {len(re_encoded)}')
         else:
             pytest.skip(f'version {version} is currently not supported')
 
