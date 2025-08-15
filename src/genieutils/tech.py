@@ -58,17 +58,13 @@ class Tech(GenieClass):
     required_tech_count: int
     civ: int
     full_tech_mode: int
-    research_location: int
     language_dll_name: int
     language_dll_description: int
-    research_time: int
     effect_id: int
     type: int
     icon_id: int
-    button_id: int
     language_dll_help: int
     language_dll_tech_tree: int
-    hot_key: int
     name: str
     repeatable: int
     research_locations: list[ResearchLocation]
@@ -111,17 +107,13 @@ class Tech(GenieClass):
             required_tech_count=required_tech_count,
             civ=civ,
             full_tech_mode=full_tech_mode,
-            research_location=research_location,
             language_dll_name=language_dll_name,
             language_dll_description=language_dll_description,
-            research_time=research_time,
             effect_id=effect_id,
             type=type,
             icon_id=icon_id,
-            button_id=button_id,
             language_dll_help=language_dll_help,
             language_dll_tech_tree=language_dll_tech_tree,
-            hot_key=hot_key,
             name=name,
             repeatable=repeatable,
             research_locations=research_locations,
@@ -145,32 +137,19 @@ class Tech(GenieClass):
         repeatable = content.read_int_8()
         research_location_count = content.read_int_16()
         research_locations = content.read_class_array(ResearchLocation, research_location_count)
-        research_location = -1
-        research_time = 0
-        button_id = 0
-        hot_key = -1
-        if len(research_locations):
-            research_location = research_locations[0].location_id
-            research_time = research_locations[0].research_time
-            button_id = research_locations[0].button_id
-            hot_key = research_locations[0].hot_key_id
         return cls(
             required_techs=required_techs,
             resource_costs=resource_costs,
             required_tech_count=required_tech_count,
             civ=civ,
             full_tech_mode=full_tech_mode,
-            research_location=research_location,
             language_dll_name=language_dll_name,
             language_dll_description=language_dll_description,
-            research_time=research_time,
             effect_id=effect_id,
             type=type,
             icon_id=icon_id,
-            button_id=button_id,
             language_dll_help=language_dll_help,
             language_dll_tech_tree=language_dll_tech_tree,
-            hot_key=hot_key,
             name=name,
             repeatable=repeatable,
             research_locations=research_locations,
@@ -181,23 +160,32 @@ class Tech(GenieClass):
             return self.to_bytes_88(version)
         return self.to_bytes_84(version)
     def to_bytes_84(self, version: Version) -> bytes:
+        research_location = -1
+        research_time = 0
+        button_id = 0
+        hot_key = -1
+        if len(self.research_locations):
+            research_location = self.research_locations[0].location_id
+            research_time = self.research_locations[0].research_time
+            button_id = self.research_locations[0].button_id
+            hot_key = self.research_locations[0].hot_key_id
         return b''.join([
             self.write_int_16_array(self.required_techs),
             self.write_class_array(self.resource_costs, version),
             self.write_int_16(self.required_tech_count),
             self.write_int_16(self.civ),
             self.write_int_16(self.full_tech_mode),
-            self.write_int_16(self.research_location),
+            self.write_int_16(research_location),
             self.write_int_32(self.language_dll_name),
             self.write_int_32(self.language_dll_description),
-            self.write_int_16(self.research_time),
+            self.write_int_16(research_time),
             self.write_int_16(self.effect_id),
             self.write_int_16(self.type),
             self.write_int_16(self.icon_id),
-            self.write_int_8(self.button_id),
+            self.write_int_8(button_id),
             self.write_int_32(self.language_dll_help),
             self.write_int_32(self.language_dll_tech_tree),
-            self.write_int_32(self.hot_key),
+            self.write_int_32(hot_key),
             self.write_debug_string(self.name),
             self.write_int_8(self.repeatable),
         ])
