@@ -504,7 +504,7 @@ class Creatable(GenieClass):
     secondary_projectile_unit: int
     special_graphic: int
     special_ability: int
-    displayed_pierce_armor: int
+    displayed_pierce_armour: int
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'Creatable':
@@ -543,7 +543,7 @@ class Creatable(GenieClass):
             secondary_projectile_unit, \
             special_graphic, \
             special_ability, \
-            displayed_pierce_armor = struct.unpack(CREATABLE_FORMAT, content.consume_range(CREATABLE_FORMAT_LENGTH))
+            displayed_pierce_armour = struct.unpack(CREATABLE_FORMAT, content.consume_range(CREATABLE_FORMAT_LENGTH))
         idle_attack_graphic = -1
         charge_target = 0
         charge_projectile_unit = -1
@@ -592,7 +592,7 @@ class Creatable(GenieClass):
             secondary_projectile_unit=secondary_projectile_unit,
             special_graphic=special_graphic,
             special_ability=special_ability,
-            displayed_pierce_armor=displayed_pierce_armor,
+            displayed_pierce_armour=displayed_pierce_armour,
         )
 
     @classmethod
@@ -633,7 +633,7 @@ class Creatable(GenieClass):
             secondary_projectile_unit, \
             special_graphic, \
             special_ability, \
-            displayed_pierce_armor = struct.unpack(CREATABLE_FORMAT_84,
+            displayed_pierce_armour = struct.unpack(CREATABLE_FORMAT_84,
                                                    content.consume_range(CREATABLE_FORMAT_LENGTH_84))
         train_locations = [
             TrainLocation(train_time=train_time, unit_id=train_location_id, button_id=button_id, hot_key_id=16000),
@@ -674,7 +674,7 @@ class Creatable(GenieClass):
             secondary_projectile_unit=secondary_projectile_unit,
             special_graphic=special_graphic,
             special_ability=special_ability,
-            displayed_pierce_armor=displayed_pierce_armor,
+            displayed_pierce_armour=displayed_pierce_armour,
         )
 
     @classmethod
@@ -714,7 +714,7 @@ class Creatable(GenieClass):
             secondary_projectile_unit, \
             special_graphic, \
             special_ability, \
-            displayed_pierce_armor = struct.unpack(CREATABLE_FORMAT_88,
+            displayed_pierce_armour = struct.unpack(CREATABLE_FORMAT_88,
                                                    content.consume_range(CREATABLE_FORMAT_LENGTH_88))
         return cls(
             resource_costs=resource_costs,
@@ -752,7 +752,7 @@ class Creatable(GenieClass):
             secondary_projectile_unit=secondary_projectile_unit,
             special_graphic=special_graphic,
             special_ability=special_ability,
-            displayed_pierce_armor=displayed_pierce_armor,
+            displayed_pierce_armour=displayed_pierce_armour,
         )
 
     def to_bytes(self, version: Version) -> bytes:
@@ -789,7 +789,7 @@ class Creatable(GenieClass):
                         self.secondary_projectile_unit,
                         self.special_graphic,
                         self.special_ability,
-                        self.displayed_pierce_armor,
+                        self.displayed_pierce_armour,
                         )
 
     def to_bytes_84(self, version: Version) -> bytes:
@@ -828,7 +828,7 @@ class Creatable(GenieClass):
                         self.secondary_projectile_unit,
                         self.special_graphic,
                         self.special_ability,
-                        self.displayed_pierce_armor,
+                        self.displayed_pierce_armour,
                         )
 
     def to_bytes_88(self, version: Version) -> bytes:
@@ -866,7 +866,7 @@ class Creatable(GenieClass):
                         self.secondary_projectile_unit,
                         self.special_graphic,
                         self.special_ability,
-                        self.displayed_pierce_armor,
+                        self.displayed_pierce_armour,
                         )
 
 
