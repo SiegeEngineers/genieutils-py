@@ -36,9 +36,10 @@ class GenieClass(ABC):
         raise NotImplementedError
 
     def write_debug_string(self, value: str) -> bytes:
+        encoded = value.encode('utf-8')
         return (self.write_int_16(0x0A60, signed=False)
-                + self.write_int_16(len(value), signed=False)
-                + value.encode('utf-8'))
+                + self.write_int_16(len(encoded), signed=False)
+                + encoded)
 
     def write_string(self, length: int, value: str) -> bytes:
         return String.to_bytes(value, length)
