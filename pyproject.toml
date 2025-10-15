@@ -7,7 +7,7 @@ packages = ["src/genieutils"]
 
 [project]
 name = "genieutils-py"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
     { name = "SiegeEngineers", email = "genieutils@siegeengineers.org" },
 ]
