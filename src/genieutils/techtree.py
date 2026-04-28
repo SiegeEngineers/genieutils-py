@@ -276,6 +276,12 @@ class TechTree(GenieClass):
 
     @classmethod
     def from_bytes(cls, content: ByteHandler) -> 'TechTree':
+        if content.version >= Version.VER_89:
+            return cls.from_bytes_89(content)
+        return cls.from_bytes_88(content)
+
+    @classmethod
+    def from_bytes_88(cls, content: ByteHandler) -> 'TechTree':
         age_count = content.read_int_8()
         building_count = content.read_int_8()
         unit_count = content.read_int_8()
@@ -293,11 +299,48 @@ class TechTree(GenieClass):
             research_connections=research_connections,
         )
 
+    @classmethod
+    def from_bytes_89(cls, content: ByteHandler) -> 'TechTree':
+        age_count = content.read_int_8()
+        building_count = content.read_int_8()
+        unit_count = content.read_int_16()
+        research_count = content.read_int_8()
+        total_unit_tech_groups = content.read_int_32()
+        tech_tree_ages = content.read_class_array(TechTreeAge, age_count)
+        building_connections = content.read_class_array(BuildingConnection, building_count)
+        unit_connections = content.read_class_array(UnitConnection, unit_count)
+        research_connections = content.read_class_array(ResearchConnection, research_count)
+        return cls(
+            total_unit_tech_groups=total_unit_tech_groups,
+            tech_tree_ages=tech_tree_ages,
+            building_connections=building_connections,
+            unit_connections=unit_connections,
+            research_connections=research_connections,
+        )
+
     def to_bytes(self, version: Version) -> bytes:
+        if version >= Version.VER_89:
+            return self.to_bytes_89(version)
+        return self.to_bytes_88(version)
+
+    def to_bytes_88(self, version: Version) -> bytes:
         return b''.join([
             self.write_int_8(len(self.tech_tree_ages)),
             self.write_int_8(len(self.building_connections)),
             self.write_int_8(len(self.unit_connections)),
+            self.write_int_8(len(self.research_connections)),
+            self.write_int_32(self.total_unit_tech_groups),
+            self.write_class_array(self.tech_tree_ages, version),
+            self.write_class_array(self.building_connections, version),
+            self.write_class_array(self.unit_connections, version),
+            self.write_class_array(self.research_connections, version),
+        ])
+
+    def to_bytes_89(self, version: Version) -> bytes:
+        return b''.join([
+            self.write_int_8(len(self.tech_tree_ages)),
+            self.write_int_8(len(self.building_connections)),
+            self.write_int_16(len(self.unit_connections)),
             self.write_int_8(len(self.research_connections)),
             self.write_int_32(self.total_unit_tech_groups),
             self.write_class_array(self.tech_tree_ages, version),
